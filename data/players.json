@@ -1,14 +1,12 @@
 {
   "updatedAt": "2026-05-15",
-  "sourceNote": "Paste site ranks into Google Sheet, export, run scripts/build-players.js",
+  "sourceNote": "Built from spreadsheet CSV via scripts/build-players.js",
   "players": [
     {
       "name": "Ja'Marr Chase",
       "pos": "WR",
       "nfl": "CIN",
       "age": 26,
-      "avgRank": 2.3,
-      "nsrc": 12,
       "si": 2,
       "pff": 3,
       "espn": 3,
@@ -20,15 +18,15 @@
       "ffc": 1,
       "df": 1,
       "rb": 1,
-      "ffa": 1
+      "ffa": 1,
+      "avgRank": 2.3,
+      "nsrc": 12
     },
     {
       "name": "Bijan Robinson",
       "pos": "RB",
       "nfl": "ATL",
       "age": 24,
-      "avgRank": 2.8,
-      "nsrc": 12,
       "si": 3,
       "pff": 5,
       "espn": 1,
@@ -40,15 +38,15 @@
       "ffc": 3,
       "df": 5,
       "rb": 3,
-      "ffa": 3
+      "ffa": 3,
+      "avgRank": 2.8,
+      "nsrc": 12
     },
     {
       "name": "Jahmyr Gibbs",
       "pos": "RB",
       "nfl": "DET",
       "age": 24,
-      "avgRank": 4.6,
-      "nsrc": 12,
       "si": 4,
       "pff": 4,
       "espn": 4,
@@ -60,15 +58,15 @@
       "ffc": 5,
       "df": 6,
       "rb": 4,
-      "ffa": 5
+      "ffa": 5,
+      "avgRank": 4.6,
+      "nsrc": 12
     },
     {
       "name": "Jaxon Smith-Njigba",
       "pos": "WR",
       "nfl": "SEA",
       "age": 24,
-      "avgRank": 5,
-      "nsrc": 12,
       "si": 5,
       "pff": 1,
       "espn": 5,
@@ -80,15 +78,15 @@
       "ffc": 18,
       "df": 3,
       "rb": 2,
-      "ffa": 2
+      "ffa": 2,
+      "avgRank": 5,
+      "nsrc": 12
     },
     {
       "name": "Puka Nacua",
       "pos": "WR",
       "nfl": "LAR",
       "age": 25,
-      "avgRank": 5.1,
-      "nsrc": 12,
       "si": 1,
       "pff": 2,
       "espn": 2,
@@ -100,15 +98,15 @@
       "ffc": 8,
       "df": 2,
       "rb": 5,
-      "ffa": 6
+      "ffa": 6,
+      "avgRank": 5.1,
+      "nsrc": 12
     },
     {
       "name": "CeeDee Lamb",
       "pos": "WR",
       "nfl": "DAL",
       "age": 27,
-      "avgRank": 8.6,
-      "nsrc": 11,
       "si": 8,
       "pff": 11,
       "espn": 8,
@@ -120,15 +118,15 @@
       "ffc": 4,
       "df": 4,
       "rb": 9,
-      "ffa": 9
+      "ffa": 9,
+      "avgRank": 8.6,
+      "nsrc": 11
     },
     {
       "name": "Justin Jefferson",
       "pos": "WR",
       "nfl": "MIN",
       "age": 27,
-      "avgRank": 9.5,
-      "nsrc": 11,
       "si": 7,
       "pff": 9,
       "espn": null,
@@ -140,15 +138,15 @@
       "ffc": 2,
       "df": 7,
       "rb": 6,
-      "ffa": 4
+      "ffa": 4,
+      "avgRank": 9.5,
+      "nsrc": 11
     },
     {
       "name": "Amon-Ra St. Brown",
       "pos": "WR",
       "nfl": "DET",
       "age": 26,
-      "avgRank": 9.7,
-      "nsrc": 12,
       "si": 6,
       "pff": 7,
       "espn": 7,
@@ -160,15 +158,15 @@
       "ffc": 7,
       "df": 8,
       "rb": 8,
-      "ffa": 7
+      "ffa": 7,
+      "avgRank": 9.7,
+      "nsrc": 12
     },
     {
       "name": "Malik Nabers",
       "pos": "WR",
       "nfl": "NYG",
       "age": 23,
-      "avgRank": 10.6,
-      "nsrc": 11,
       "si": 9,
       "pff": 10,
       "espn": null,
@@ -180,15 +178,15 @@
       "ffc": 6,
       "df": 10,
       "rb": 7,
-      "ffa": 12
+      "ffa": 12,
+      "avgRank": 10.6,
+      "nsrc": 11
     },
     {
       "name": "De'Von Achane",
       "pos": "RB",
       "nfl": "MIA",
       "age": 24,
-      "avgRank": 11.5,
-      "nsrc": 12,
       "si": 12,
       "pff": 13,
       "espn": 5,
@@ -200,15 +198,15 @@
       "ffc": 14,
       "df": 9,
       "rb": 14,
-      "ffa": 14
+      "ffa": 14,
+      "avgRank": 11.5,
+      "nsrc": 12
     },
     {
       "name": "Ashton Jeanty",
       "pos": "RB",
       "nfl": "LV",
       "age": 22,
-      "avgRank": 12.2,
-      "nsrc": 10,
       "si": 10,
       "pff": 12,
       "espn": null,
@@ -220,15 +218,15 @@
       "ffc": 11,
       "df": 11,
       "rb": 10,
-      "ffa": 11
+      "ffa": 11,
+      "avgRank": 12.2,
+      "nsrc": 10
     },
     {
       "name": "Jeremiyah Love",
       "pos": "RB",
       "nfl": "ARI",
       "age": 20,
-      "avgRank": 12.6,
-      "nsrc": 7,
       "si": 11,
       "pff": 15,
       "espn": null,
@@ -240,15 +238,15 @@
       "ffc": null,
       "df": 12,
       "rb": 12,
-      "ffa": 10
+      "ffa": 10,
+      "avgRank": 12.6,
+      "nsrc": 7
     },
     {
       "name": "Drake London",
       "pos": "WR",
       "nfl": "ATL",
       "age": 25,
-      "avgRank": 14,
-      "nsrc": 8,
       "si": 14,
       "pff": 18,
       "espn": null,
@@ -260,15 +258,15 @@
       "ffc": 15,
       "df": 13,
       "rb": 11,
-      "ffa": 8
+      "ffa": 8,
+      "avgRank": 14,
+      "nsrc": 8
     },
     {
       "name": "James Cook III",
       "pos": "RB",
       "nfl": "BUF",
       "age": 27,
-      "avgRank": 15,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -280,15 +278,15 @@
       "ffc": null,
       "df": 15,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 15,
+      "nsrc": 1
     },
     {
       "name": "Brock Bowers",
       "pos": "TE",
       "nfl": "LV",
       "age": 23,
-      "avgRank": 15.5,
-      "nsrc": 11,
       "si": 15,
       "pff": 8,
       "espn": null,
@@ -300,15 +298,15 @@
       "ffc": 13,
       "df": 31,
       "rb": 13,
-      "ffa": 15
+      "ffa": 15,
+      "avgRank": 15.5,
+      "nsrc": 11
     },
     {
       "name": "Trey McBride",
       "pos": "TE",
       "nfl": "ARI",
       "age": 26,
-      "avgRank": 16.4,
-      "nsrc": 9,
       "si": 13,
       "pff": 6,
       "espn": null,
@@ -320,15 +318,15 @@
       "ffc": 24,
       "df": 23,
       "rb": 15,
-      "ffa": 19
+      "ffa": 19,
+      "avgRank": 16.4,
+      "nsrc": 9
     },
     {
       "name": "Jonathan Taylor",
       "pos": "RB",
       "nfl": "IND",
       "age": 27,
-      "avgRank": 18.3,
-      "nsrc": 10,
       "si": 17,
       "pff": 17,
       "espn": null,
@@ -340,15 +338,15 @@
       "ffc": 26,
       "df": 16,
       "rb": 16,
-      "ffa": 21
+      "ffa": 21,
+      "avgRank": 18.3,
+      "nsrc": 10
     },
     {
       "name": "Tetairoa McMillan",
       "pos": "WR",
       "nfl": "CAR",
       "age": 23,
-      "avgRank": 19,
-      "nsrc": 6,
       "si": 18,
       "pff": 20,
       "espn": null,
@@ -360,15 +358,15 @@
       "ffc": null,
       "df": 18,
       "rb": 18,
-      "ffa": 13
+      "ffa": 13,
+      "avgRank": 19,
+      "nsrc": 6
     },
     {
       "name": "Nico Collins",
       "pos": "WR",
       "nfl": "HOU",
       "age": 27,
-      "avgRank": 20.3,
-      "nsrc": 9,
       "si": 19,
       "pff": 22,
       "espn": null,
@@ -380,15 +378,15 @@
       "ffc": 10,
       "df": 17,
       "rb": 20,
-      "ffa": 20
+      "ffa": 20,
+      "avgRank": 20.3,
+      "nsrc": 9
     },
     {
       "name": "Drake Maye",
       "pos": "QB",
       "nfl": "NE",
       "age": 24,
-      "avgRank": 20.6,
-      "nsrc": 8,
       "si": 28,
       "pff": 21,
       "espn": null,
@@ -400,15 +398,15 @@
       "ffc": null,
       "df": 25,
       "rb": 27,
-      "ffa": 43
+      "ffa": 43,
+      "avgRank": 20.6,
+      "nsrc": 8
     },
     {
       "name": "Emeka Egbuka",
       "pos": "WR",
       "nfl": "TB",
       "age": 23,
-      "avgRank": 21.2,
-      "nsrc": 6,
       "si": 20,
       "pff": 19,
       "espn": null,
@@ -420,15 +418,15 @@
       "ffc": null,
       "df": 22,
       "rb": 19,
-      "ffa": 17
+      "ffa": 17,
+      "avgRank": 21.2,
+      "nsrc": 6
     },
     {
       "name": "Josh Allen",
       "pos": "QB",
       "nfl": "BUF",
       "age": 30,
-      "avgRank": 21.9,
-      "nsrc": 9,
       "si": 22,
       "pff": 14,
       "espn": null,
@@ -440,15 +438,15 @@
       "ffc": 20,
       "df": 19,
       "rb": 21,
-      "ffa": 46
+      "ffa": 46,
+      "avgRank": 21.9,
+      "nsrc": 9
     },
     {
       "name": "Omarion Hampton",
       "pos": "RB",
       "nfl": "LAC",
       "age": 23,
-      "avgRank": 21.9,
-      "nsrc": 8,
       "si": 21,
       "pff": 23,
       "espn": null,
@@ -460,15 +458,15 @@
       "ffc": 23,
       "df": 21,
       "rb": 25,
-      "ffa": 18
+      "ffa": 18,
+      "avgRank": 21.9,
+      "nsrc": 8
     },
     {
       "name": "George Pickens",
       "pos": "WR",
       "nfl": "DAL",
       "age": 25,
-      "avgRank": 23.7,
-      "nsrc": 7,
       "si": 23,
       "pff": 25,
       "espn": null,
@@ -480,15 +478,15 @@
       "ffc": null,
       "df": 20,
       "rb": 24,
-      "ffa": 16
+      "ffa": 16,
+      "avgRank": 23.7,
+      "nsrc": 7
     },
     {
       "name": "Jayden Daniels",
       "pos": "QB",
       "nfl": "WAS",
       "age": 25,
-      "avgRank": 27.8,
-      "nsrc": 9,
       "si": 41,
       "pff": 37,
       "espn": null,
@@ -500,15 +498,15 @@
       "ffc": 27,
       "df": 28,
       "rb": 32,
-      "ffa": 55
+      "ffa": 55,
+      "avgRank": 27.8,
+      "nsrc": 9
     },
     {
       "name": "Lamar Jackson",
       "pos": "QB",
       "nfl": "BAL",
       "age": 29,
-      "avgRank": 27.9,
-      "nsrc": 9,
       "si": 36,
       "pff": 28,
       "espn": null,
@@ -520,15 +518,15 @@
       "ffc": 25,
       "df": 36,
       "rb": 31,
-      "ffa": 63
+      "ffa": 63,
+      "avgRank": 27.9,
+      "nsrc": 9
     },
     {
       "name": "Garrett Wilson",
       "pos": "WR",
       "nfl": "NYJ",
       "age": 26,
-      "avgRank": 28.1,
-      "nsrc": 8,
       "si": 29,
       "pff": 30,
       "espn": null,
@@ -540,15 +538,15 @@
       "ffc": 21,
       "df": 26,
       "rb": 23,
-      "ffa": 27
+      "ffa": 27,
+      "avgRank": 28.1,
+      "nsrc": 8
     },
     {
       "name": "Rashee Rice",
       "pos": "WR",
       "nfl": "KC",
       "age": 26,
-      "avgRank": 28.6,
-      "nsrc": 7,
       "si": 16,
       "pff": 16,
       "espn": null,
@@ -560,15 +558,15 @@
       "ffc": 70,
       "df": 14,
       "rb": 26,
-      "ffa": 45
+      "ffa": 45,
+      "avgRank": 28.6,
+      "nsrc": 7
     },
     {
       "name": "Ladd McConkey",
       "pos": "WR",
       "nfl": "LAC",
       "age": 24,
-      "avgRank": 29,
-      "nsrc": 6,
       "si": 35,
       "pff": 36,
       "espn": null,
@@ -580,15 +578,15 @@
       "ffc": 17,
       "df": 27,
       "rb": 29,
-      "ffa": 30
+      "ffa": 30,
+      "avgRank": 29,
+      "nsrc": 6
     },
     {
       "name": "Carnell Tate",
       "pos": "WR",
       "nfl": "TEN",
       "age": 21,
-      "avgRank": 29.2,
-      "nsrc": 6,
       "si": 24,
       "pff": 27,
       "espn": null,
@@ -600,15 +598,15 @@
       "ffc": null,
       "df": 37,
       "rb": 22,
-      "ffa": 29
+      "ffa": 29,
+      "avgRank": 29.2,
+      "nsrc": 6
     },
     {
       "name": "Jordyn Tyson",
       "pos": "WR",
       "nfl": "NO",
       "age": 21,
-      "avgRank": 32.6,
-      "nsrc": 5,
       "si": 37,
       "pff": 41,
       "espn": null,
@@ -620,15 +618,15 @@
       "ffc": null,
       "df": 29,
       "rb": 28,
-      "ffa": 28
+      "ffa": 28,
+      "avgRank": 32.6,
+      "nsrc": 5
     },
     {
       "name": "A.J. Brown",
       "pos": "WR",
       "nfl": "PHI",
       "age": 29,
-      "avgRank": 32.7,
-      "nsrc": 7,
       "si": 39,
       "pff": 40,
       "espn": null,
@@ -640,15 +638,15 @@
       "ffc": 16,
       "df": 32,
       "rb": 35,
-      "ffa": 39
+      "ffa": 39,
+      "avgRank": 32.7,
+      "nsrc": 7
     },
     {
       "name": "Chris Olave",
       "pos": "WR",
       "nfl": "NO",
       "age": 26,
-      "avgRank": 34.1,
-      "nsrc": 7,
       "si": 27,
       "pff": 29,
       "espn": null,
@@ -660,15 +658,15 @@
       "ffc": 52,
       "df": 30,
       "rb": 30,
-      "ffa": 26
+      "ffa": 26,
+      "avgRank": 34.1,
+      "nsrc": 7
     },
     {
       "name": "Kenneth Walker III",
       "pos": "RB",
       "nfl": "KC",
       "age": 25,
-      "avgRank": 34.7,
-      "nsrc": 7,
       "si": 31,
       "pff": 31,
       "espn": null,
@@ -680,15 +678,15 @@
       "ffc": 40,
       "df": 24,
       "rb": 36,
-      "ffa": 33
+      "ffa": 33,
+      "avgRank": 34.7,
+      "nsrc": 7
     },
     {
       "name": "Christian McCaffrey",
       "pos": "RB",
       "nfl": "SF",
       "age": 30,
-      "avgRank": 35.1,
-      "nsrc": 8,
       "si": 47,
       "pff": 50,
       "espn": null,
@@ -700,15 +698,15 @@
       "ffc": 31,
       "df": 52,
       "rb": 34,
-      "ffa": 56
+      "ffa": 56,
+      "avgRank": 35.1,
+      "nsrc": 8
     },
     {
       "name": "Colston Loveland",
       "pos": "TE",
       "nfl": "CHI",
       "age": 22,
-      "avgRank": 35.2,
-      "nsrc": 6,
       "si": 34,
       "pff": 33,
       "espn": null,
@@ -720,15 +718,15 @@
       "ffc": null,
       "df": 44,
       "rb": 45,
-      "ffa": 23
+      "ffa": 23,
+      "avgRank": 35.2,
+      "nsrc": 6
     },
     {
       "name": "Bucky Irving",
       "pos": "RB",
       "nfl": "TB",
       "age": 24,
-      "avgRank": 35.4,
-      "nsrc": 9,
       "si": 32,
       "pff": 35,
       "espn": null,
@@ -740,15 +738,15 @@
       "ffc": 22,
       "df": 62,
       "rb": 52,
-      "ffa": 48
+      "ffa": 48,
+      "avgRank": 35.4,
+      "nsrc": 9
     },
     {
       "name": "Luther Burden III",
       "pos": "WR",
       "nfl": "CHI",
       "age": 22,
-      "avgRank": 35.8,
-      "nsrc": 5,
       "si": 33,
       "pff": 34,
       "espn": null,
@@ -760,15 +758,15 @@
       "ffc": null,
       "df": 40,
       "rb": 38,
-      "ffa": 34
+      "ffa": 34,
+      "avgRank": 35.8,
+      "nsrc": 5
     },
     {
       "name": "Chase Brown",
       "pos": "RB",
       "nfl": "CIN",
       "age": 26,
-      "avgRank": 37.4,
-      "nsrc": 8,
       "si": 42,
       "pff": 43,
       "espn": null,
@@ -780,15 +778,15 @@
       "ffc": 36,
       "df": 50,
       "rb": 42,
-      "ffa": 51
+      "ffa": 51,
+      "avgRank": 37.4,
+      "nsrc": 8
     },
     {
       "name": "Saquon Barkley",
       "pos": "RB",
       "nfl": "PHI",
       "age": 29,
-      "avgRank": 38.3,
-      "nsrc": 9,
       "si": 56,
       "pff": 60,
       "espn": null,
@@ -800,15 +798,15 @@
       "ffc": 12,
       "df": 55,
       "rb": 39,
-      "ffa": 58
+      "ffa": 58,
+      "avgRank": 38.3,
+      "nsrc": 9
     },
     {
       "name": "TreVeyon Henderson",
       "pos": "RB",
       "nfl": "NE",
       "age": 23,
-      "avgRank": 39.4,
-      "nsrc": 8,
       "si": 26,
       "pff": 26,
       "espn": null,
@@ -820,15 +818,15 @@
       "ffc": 42,
       "df": 65,
       "rb": 43,
-      "ffa": 36
+      "ffa": 36,
+      "avgRank": 39.4,
+      "nsrc": 8
     },
     {
       "name": "Tee Higgins",
       "pos": "WR",
       "nfl": "CIN",
       "age": 27,
-      "avgRank": 40,
-      "nsrc": 6,
       "si": 38,
       "pff": 38,
       "espn": null,
@@ -840,15 +838,15 @@
       "ffc": 28,
       "df": 57,
       "rb": 44,
-      "ffa": 35
+      "ffa": 35,
+      "avgRank": 40,
+      "nsrc": 6
     },
     {
       "name": "DeVonta Smith",
       "pos": "WR",
       "nfl": "PHI",
       "age": 27,
-      "avgRank": 40,
-      "nsrc": 6,
       "si": 40,
       "pff": 42,
       "espn": null,
@@ -860,15 +858,15 @@
       "ffc": 30,
       "df": 41,
       "rb": 50,
-      "ffa": 37
+      "ffa": 37,
+      "avgRank": 40,
+      "nsrc": 6
     },
     {
       "name": "Caleb Williams",
       "pos": "QB",
       "nfl": "CHI",
       "age": 24,
-      "avgRank": 40.7,
-      "nsrc": 7,
       "si": 48,
       "pff": 51,
       "espn": null,
@@ -880,15 +878,15 @@
       "ffc": null,
       "df": 54,
       "rb": 55,
-      "ffa": 59
+      "ffa": 59,
+      "avgRank": 40.7,
+      "nsrc": 7
     },
     {
       "name": "Zay Flowers",
       "pos": "WR",
       "nfl": "BAL",
       "age": 26,
-      "avgRank": 41.8,
-      "nsrc": 5,
       "si": 30,
       "pff": 32,
       "espn": null,
@@ -900,15 +898,15 @@
       "ffc": null,
       "df": 67,
       "rb": 49,
-      "ffa": 31
+      "ffa": 31,
+      "avgRank": 41.8,
+      "nsrc": 5
     },
     {
       "name": "Breece Hall",
       "pos": "RB",
       "nfl": "NYJ",
       "age": 25,
-      "avgRank": 42,
-      "nsrc": 7,
       "si": 45,
       "pff": 47,
       "espn": null,
@@ -920,15 +918,15 @@
       "ffc": 29,
       "df": 39,
       "rb": 47,
-      "ffa": 41
+      "ffa": 41,
+      "avgRank": 42,
+      "nsrc": 7
     },
     {
       "name": "Kyren Williams",
       "pos": "RB",
       "nfl": "LAR",
       "age": 26,
-      "avgRank": 42.7,
-      "nsrc": 7,
       "si": 44,
       "pff": 46,
       "espn": null,
@@ -940,15 +938,15 @@
       "ffc": 35,
       "df": 35,
       "rb": 53,
-      "ffa": 68
+      "ffa": 68,
+      "avgRank": 42.7,
+      "nsrc": 7
     },
     {
       "name": "Jaylen Waddle",
       "pos": "WR",
       "nfl": "DEN",
       "age": 27,
-      "avgRank": 43.1,
-      "nsrc": 7,
       "si": 54,
       "pff": 59,
       "espn": null,
@@ -960,15 +958,15 @@
       "ffc": 45,
       "df": 33,
       "rb": 48,
-      "ffa": 40
+      "ffa": 40,
+      "avgRank": 43.1,
+      "nsrc": 7
     },
     {
       "name": "Tyler Warren",
       "pos": "TE",
       "nfl": "IND",
       "age": 24,
-      "avgRank": 43.3,
-      "nsrc": 6,
       "si": 46,
       "pff": 39,
       "espn": null,
@@ -980,15 +978,15 @@
       "ffc": null,
       "df": 47,
       "rb": 46,
-      "ffa": 44
+      "ffa": 44,
+      "avgRank": 43.3,
+      "nsrc": 6
     },
     {
       "name": "Makai Lemon",
       "pos": "WR",
       "nfl": "PHI",
       "age": 21,
-      "avgRank": 43.6,
-      "nsrc": 5,
       "si": 52,
       "pff": 57,
       "espn": null,
@@ -1000,15 +998,15 @@
       "ffc": null,
       "df": 34,
       "rb": 37,
-      "ffa": 38
+      "ffa": 38,
+      "avgRank": 43.6,
+      "nsrc": 5
     },
     {
       "name": "Rome Odunze",
       "pos": "WR",
       "nfl": "CHI",
       "age": 24,
-      "avgRank": 43.7,
-      "nsrc": 7,
       "si": 51,
       "pff": 55,
       "espn": null,
@@ -1020,15 +1018,15 @@
       "ffc": 37,
       "df": 49,
       "rb": 41,
-      "ffa": 24
+      "ffa": 24,
+      "avgRank": 43.7,
+      "nsrc": 7
     },
     {
       "name": "Brian Thomas Jr.",
       "pos": "WR",
       "nfl": "JAC",
       "age": 23,
-      "avgRank": 44.3,
-      "nsrc": 6,
       "si": 68,
       "pff": 73,
       "espn": null,
@@ -1040,15 +1038,15 @@
       "ffc": 9,
       "df": 43,
       "rb": 51,
-      "ffa": 22
+      "ffa": 22,
+      "avgRank": 44.3,
+      "nsrc": 6
     },
     {
       "name": "Marvin Harrison Jr.",
       "pos": "WR",
       "nfl": "ARI",
       "age": 24,
-      "avgRank": 45,
-      "nsrc": 6,
       "si": 66,
       "pff": 65,
       "espn": null,
@@ -1060,15 +1058,15 @@
       "ffc": 19,
       "df": 38,
       "rb": 33,
-      "ffa": 49
+      "ffa": 49,
+      "avgRank": 45,
+      "nsrc": 6
     },
     {
       "name": "Joe Burrow",
       "pos": "QB",
       "nfl": "CIN",
       "age": 29,
-      "avgRank": 45.4,
-      "nsrc": 7,
       "si": 49,
       "pff": 48,
       "espn": null,
@@ -1080,15 +1078,15 @@
       "ffc": null,
       "df": 42,
       "rb": 61,
-      "ffa": 85
+      "ffa": 85,
+      "avgRank": 45.4,
+      "nsrc": 7
     },
     {
       "name": "Justin Herbert",
       "pos": "QB",
       "nfl": "LAC",
       "age": 28,
-      "avgRank": 48.3,
-      "nsrc": 7,
       "si": 55,
       "pff": 49,
       "espn": null,
@@ -1100,15 +1098,15 @@
       "ffc": null,
       "df": 46,
       "rb": 75,
-      "ffa": 70
+      "ffa": 70,
+      "avgRank": 48.3,
+      "nsrc": 7
     },
     {
       "name": "Quinshon Judkins",
       "pos": "RB",
       "nfl": "CLE",
       "age": 22,
-      "avgRank": 48.3,
-      "nsrc": 7,
       "si": 43,
       "pff": 44,
       "espn": null,
@@ -1120,15 +1118,15 @@
       "ffc": 46,
       "df": 68,
       "rb": 40,
-      "ffa": 50
+      "ffa": 50,
+      "avgRank": 48.3,
+      "nsrc": 7
     },
     {
       "name": "Jalen Hurts",
       "pos": "QB",
       "nfl": "PHI",
       "age": 28,
-      "avgRank": 49.1,
-      "nsrc": 8,
       "si": 50,
       "pff": 45,
       "espn": null,
@@ -1140,15 +1138,15 @@
       "ffc": 53,
       "df": 45,
       "rb": 63,
-      "ffa": 92
+      "ffa": 92,
+      "avgRank": 49.1,
+      "nsrc": 8
     },
     {
       "name": "Josh Jacobs",
       "pos": "RB",
       "nfl": "GB",
       "age": 28,
-      "avgRank": 49.4,
-      "nsrc": 8,
       "si": 69,
       "pff": 72,
       "espn": null,
@@ -1160,15 +1158,15 @@
       "ffc": 38,
       "df": 64,
       "rb": 57,
-      "ffa": 54
+      "ffa": 54,
+      "avgRank": 49.4,
+      "nsrc": 8
     },
     {
       "name": "Patrick Mahomes",
       "pos": "QB",
       "nfl": "KC",
       "age": 31,
-      "avgRank": 50.8,
-      "nsrc": 8,
       "si": 58,
       "pff": 53,
       "espn": null,
@@ -1180,15 +1178,15 @@
       "ffc": 39,
       "df": 51,
       "rb": 66,
-      "ffa": 113
+      "ffa": 113,
+      "avgRank": 50.8,
+      "nsrc": 8
     },
     {
       "name": "Travis Etienne Jr.",
       "pos": "RB",
       "nfl": "NO",
       "age": 27,
-      "avgRank": 52,
-      "nsrc": 7,
       "si": 59,
       "pff": 63,
       "espn": null,
@@ -1200,15 +1198,15 @@
       "ffc": 34,
       "df": 66,
       "rb": 56,
-      "ffa": 67
+      "ffa": 67,
+      "avgRank": 52,
+      "nsrc": 7
     },
     {
       "name": "Jameson Williams",
       "pos": "WR",
       "nfl": "DET",
       "age": 25,
-      "avgRank": 54.8,
-      "nsrc": 5,
       "si": 63,
       "pff": 66,
       "espn": null,
@@ -1220,15 +1218,15 @@
       "ffc": null,
       "df": 59,
       "rb": 54,
-      "ffa": 32
+      "ffa": 32,
+      "avgRank": 54.8,
+      "nsrc": 5
     },
     {
       "name": "Harold Fannin Jr.",
       "pos": "TE",
       "nfl": "CLE",
       "age": 22,
-      "avgRank": 55.8,
-      "nsrc": 5,
       "si": 57,
       "pff": 54,
       "espn": null,
@@ -1240,15 +1238,15 @@
       "ffc": null,
       "df": 48,
       "rb": 59,
-      "ffa": 61
+      "ffa": 61,
+      "avgRank": 55.8,
+      "nsrc": 5
     },
     {
       "name": "Jadarian Price",
       "pos": "RB",
       "nfl": "SEA",
       "age": 22,
-      "avgRank": 59.2,
-      "nsrc": 5,
       "si": 53,
       "pff": 56,
       "espn": null,
@@ -1260,15 +1258,15 @@
       "ffc": null,
       "df": 80,
       "rb": 60,
-      "ffa": 47
+      "ffa": 47,
+      "avgRank": 59.2,
+      "nsrc": 5
     },
     {
       "name": "Jaxson Dart",
       "pos": "QB",
       "nfl": "NYG",
       "age": 23,
-      "avgRank": 62.2,
-      "nsrc": 6,
       "si": 60,
       "pff": 64,
       "espn": null,
@@ -1280,15 +1278,15 @@
       "ffc": null,
       "df": 72,
       "rb": 78,
-      "ffa": 73
+      "ffa": 73,
+      "avgRank": 62.2,
+      "nsrc": 6
     },
     {
       "name": "KC Concepcion",
       "pos": "WR",
       "nfl": "CLE",
       "age": 21,
-      "avgRank": 64.8,
-      "nsrc": 5,
       "si": 67,
       "pff": 74,
       "espn": null,
@@ -1300,15 +1298,15 @@
       "ffc": null,
       "df": 70,
       "rb": 71,
-      "ffa": 42
+      "ffa": 42,
+      "avgRank": 64.8,
+      "nsrc": 5
     },
     {
       "name": "Jordan Addison",
       "pos": "WR",
       "nfl": "MIN",
       "age": 24,
-      "avgRank": 65,
-      "nsrc": 6,
       "si": 71,
       "pff": 78,
       "espn": null,
@@ -1320,15 +1318,15 @@
       "ffc": 41,
       "df": 71,
       "rb": 64,
-      "ffa": 65
+      "ffa": 65,
+      "avgRank": 65,
+      "nsrc": 6
     },
     {
       "name": "Tucker Kraft",
       "pos": "TE",
       "nfl": "GB",
       "age": 25,
-      "avgRank": 65.4,
-      "nsrc": 5,
       "si": 61,
       "pff": 62,
       "espn": null,
@@ -1340,15 +1338,15 @@
       "ffc": null,
       "df": 58,
       "rb": 70,
-      "ffa": 76
+      "ffa": 76,
+      "avgRank": 65.4,
+      "nsrc": 5
     },
     {
       "name": "Cam Skattebo",
       "pos": "RB",
       "nfl": "NYG",
       "age": 24,
-      "avgRank": 65.4,
-      "nsrc": 5,
       "si": 65,
       "pff": 70,
       "espn": null,
@@ -1360,15 +1358,15 @@
       "ffc": null,
       "df": 77,
       "rb": 58,
-      "ffa": 57
+      "ffa": 57,
+      "avgRank": 65.4,
+      "nsrc": 5
     },
     {
       "name": "Sam LaPorta",
       "pos": "TE",
       "nfl": "DET",
       "age": 25,
-      "avgRank": 66.2,
-      "nsrc": 6,
       "si": 76,
       "pff": 75,
       "espn": null,
@@ -1380,15 +1378,15 @@
       "ffc": 33,
       "df": 69,
       "rb": 65,
-      "ffa": 79
+      "ffa": 79,
+      "avgRank": 66.2,
+      "nsrc": 6
     },
     {
       "name": "Javonte Williams",
       "pos": "RB",
       "nfl": "DAL",
       "age": 25,
-      "avgRank": 66.4,
-      "nsrc": 5,
       "si": 62,
       "pff": 68,
       "espn": null,
@@ -1400,15 +1398,15 @@
       "ffc": null,
       "df": 87,
       "rb": 62,
-      "ffa": 53
+      "ffa": 53,
+      "avgRank": 66.4,
+      "nsrc": 5
     },
     {
       "name": "DJ Moore",
       "pos": "WR",
       "nfl": "BUF",
       "age": 28,
-      "avgRank": 67.5,
-      "nsrc": 4,
       "si": null,
       "pff": null,
       "espn": null,
@@ -1420,15 +1418,15 @@
       "ffc": 48,
       "df": 93,
       "rb": 67,
-      "ffa": 62
+      "ffa": 62,
+      "avgRank": 67.5,
+      "nsrc": 4
     },
     {
       "name": "Kyle Pitts Sr.",
       "pos": "TE",
       "nfl": "ATL",
       "age": 25,
-      "avgRank": 68,
-      "nsrc": 5,
       "si": 64,
       "pff": 69,
       "espn": null,
@@ -1440,15 +1438,15 @@
       "ffc": null,
       "df": 53,
       "rb": 74,
-      "ffa": 80
+      "ffa": 80,
+      "avgRank": 68,
+      "nsrc": 5
     },
     {
       "name": "DK Metcalf",
       "pos": "WR",
       "nfl": "PIT",
       "age": 28,
-      "avgRank": 69.2,
-      "nsrc": 6,
       "si": 82,
       "pff": 79,
       "espn": null,
@@ -1460,15 +1458,15 @@
       "ffc": 44,
       "df": 75,
       "rb": 69,
-      "ffa": 66
+      "ffa": 66,
+      "avgRank": 69.2,
+      "nsrc": 6
     },
     {
       "name": "Bo Nix",
       "pos": "QB",
       "nfl": "DEN",
       "age": 26,
-      "avgRank": 69.8,
-      "nsrc": 4,
       "si": null,
       "pff": null,
       "espn": null,
@@ -1480,15 +1478,15 @@
       "ffc": null,
       "df": 56,
       "rb": 96,
-      "ffa": 96
+      "ffa": 96,
+      "avgRank": 69.8,
+      "nsrc": 4
     },
     {
       "name": "Terry McLaurin",
       "pos": "WR",
       "nfl": "WAS",
       "age": 31,
-      "avgRank": 70.3,
-      "nsrc": 7,
       "si": 75,
       "pff": 82,
       "espn": null,
@@ -1500,15 +1498,15 @@
       "ffc": 43,
       "df": 83,
       "rb": 82,
-      "ffa": 95
+      "ffa": 95,
+      "avgRank": 70.3,
+      "nsrc": 7
     },
     {
       "name": "RJ Harvey",
       "pos": "RB",
       "nfl": "DEN",
       "age": 25,
-      "avgRank": 73.8,
-      "nsrc": 6,
       "si": 74,
       "pff": 77,
       "espn": null,
@@ -1520,15 +1518,15 @@
       "ffc": null,
       "df": 120,
       "rb": 84,
-      "ffa": 71
+      "ffa": 71,
+      "avgRank": 73.8,
+      "nsrc": 6
     },
     {
       "name": "Christian Watson",
       "pos": "WR",
       "nfl": "GB",
       "age": 27,
-      "avgRank": 74,
-      "nsrc": 5,
       "si": 72,
       "pff": 80,
       "espn": null,
@@ -1540,15 +1538,15 @@
       "ffc": null,
       "df": 79,
       "rb": 87,
-      "ffa": 52
+      "ffa": 52,
+      "avgRank": 74,
+      "nsrc": 5
     },
     {
       "name": "Derrick Henry",
       "pos": "RB",
       "nfl": "BAL",
       "age": 32,
-      "avgRank": 74.4,
-      "nsrc": 7,
       "si": 89,
       "pff": 85,
       "espn": null,
@@ -1560,15 +1558,15 @@
       "ffc": 75,
       "df": 86,
       "rb": 73,
-      "ffa": 84
+      "ffa": 84,
+      "avgRank": 74.4,
+      "nsrc": 7
     },
     {
       "name": "Bhayshul Tuten",
       "pos": "RB",
       "nfl": "JAC",
       "age": 23,
-      "avgRank": 74.7,
-      "nsrc": 6,
       "si": 90,
       "pff": 88,
       "espn": null,
@@ -1580,15 +1578,15 @@
       "ffc": null,
       "df": 101,
       "rb": 68,
-      "ffa": 77
+      "ffa": 77,
+      "avgRank": 74.7,
+      "nsrc": 6
     },
     {
       "name": "Trevor Lawrence",
       "pos": "QB",
       "nfl": "JAC",
       "age": 26,
-      "avgRank": 77.3,
-      "nsrc": 6,
       "si": 70,
       "pff": 76,
       "espn": null,
@@ -1600,15 +1598,15 @@
       "ffc": null,
       "df": 60,
       "rb": 101,
-      "ffa": 128
+      "ffa": 128,
+      "avgRank": 77.3,
+      "nsrc": 6
     },
     {
       "name": "Kenyon Sadiq",
       "pos": "TE",
       "nfl": "NYJ",
       "age": 21,
-      "avgRank": 79.2,
-      "nsrc": 5,
       "si": 87,
       "pff": 91,
       "espn": null,
@@ -1620,15 +1618,15 @@
       "ffc": null,
       "df": 63,
       "rb": 81,
-      "ffa": 74
+      "ffa": 74,
+      "avgRank": 79.2,
+      "nsrc": 5
     },
     {
       "name": "Xavier Worthy",
       "pos": "WR",
       "nfl": "KC",
       "age": 23,
-      "avgRank": 80.7,
-      "nsrc": 6,
       "si": 86,
       "pff": 84,
       "espn": null,
@@ -1640,15 +1638,15 @@
       "ffc": 47,
       "df": 73,
       "rb": 105,
-      "ffa": 89
+      "ffa": 89,
+      "avgRank": 80.7,
+      "nsrc": 6
     },
     {
       "name": "Jayden Higgins",
       "pos": "WR",
       "nfl": "HOU",
       "age": 23,
-      "avgRank": 80.8,
-      "nsrc": 5,
       "si": 85,
       "pff": 83,
       "espn": null,
@@ -1660,15 +1658,15 @@
       "ffc": null,
       "df": 82,
       "rb": 90,
-      "ffa": 64
+      "ffa": 64,
+      "avgRank": 80.8,
+      "nsrc": 5
     },
     {
       "name": "Matthew Golden",
       "pos": "WR",
       "nfl": "GB",
       "age": 23,
-      "avgRank": 82.6,
-      "nsrc": 5,
       "si": 81,
       "pff": 71,
       "espn": null,
@@ -1680,15 +1678,15 @@
       "ffc": null,
       "df": 100,
       "rb": 89,
-      "ffa": 72
+      "ffa": 72,
+      "avgRank": 82.6,
+      "nsrc": 5
     },
     {
       "name": "Michael Pittman Jr.",
       "pos": "WR",
       "nfl": "PIT",
       "age": 28,
-      "avgRank": 83,
-      "nsrc": 7,
       "si": 93,
       "pff": 92,
       "espn": null,
@@ -1700,15 +1698,15 @@
       "ffc": 63,
       "df": 92,
       "rb": 109,
-      "ffa": 101
+      "ffa": 101,
+      "avgRank": 83,
+      "nsrc": 7
     },
     {
       "name": "Brock Purdy",
       "pos": "QB",
       "nfl": "SF",
       "age": 26,
-      "avgRank": 83.2,
-      "nsrc": 6,
       "si": 91,
       "pff": 87,
       "espn": null,
@@ -1720,15 +1718,15 @@
       "ffc": null,
       "df": 61,
       "rb": 108,
-      "ffa": 115
+      "ffa": 115,
+      "avgRank": 83.2,
+      "nsrc": 6
     },
     {
       "name": "Davante Adams",
       "pos": "WR",
       "nfl": "LAR",
       "age": 33,
-      "avgRank": 84,
-      "nsrc": 3,
       "si": null,
       "pff": null,
       "espn": null,
@@ -1740,15 +1738,15 @@
       "ffc": null,
       "df": 94,
       "rb": 83,
-      "ffa": 75
+      "ffa": 75,
+      "avgRank": 84,
+      "nsrc": 3
     },
     {
       "name": "Wan'Dale Robinson",
       "pos": "WR",
       "nfl": "TEN",
       "age": 25,
-      "avgRank": 84.2,
-      "nsrc": 6,
       "si": 94,
       "pff": 97,
       "espn": null,
@@ -1760,15 +1758,15 @@
       "ffc": null,
       "df": 95,
       "rb": 77,
-      "ffa": 98
+      "ffa": 98,
+      "avgRank": 84.2,
+      "nsrc": 6
     },
     {
       "name": "Kyle Monangai",
       "pos": "RB",
       "nfl": "CHI",
       "age": 24,
-      "avgRank": 85.2,
-      "nsrc": 6,
       "si": 95,
       "pff": 99,
       "espn": null,
@@ -1780,15 +1778,15 @@
       "ffc": null,
       "df": 104,
       "rb": 88,
-      "ffa": 90
+      "ffa": 90,
+      "avgRank": 85.2,
+      "nsrc": 6
     },
     {
       "name": "Omar Cooper Jr.",
       "pos": "WR",
       "nfl": "NYJ",
       "age": 22,
-      "avgRank": 86.4,
-      "nsrc": 5,
       "si": 83,
       "pff": 86,
       "espn": null,
@@ -1800,15 +1798,15 @@
       "ffc": null,
       "df": 115,
       "rb": 79,
-      "ffa": 69
+      "ffa": 69,
+      "avgRank": 86.4,
+      "nsrc": 5
     },
     {
       "name": "Courtland Sutton",
       "pos": "WR",
       "nfl": "DEN",
       "age": 30,
-      "avgRank": 89,
-      "nsrc": 6,
       "si": 97,
       "pff": 98,
       "espn": null,
@@ -1820,15 +1818,15 @@
       "ffc": null,
       "df": 113,
       "rb": 91,
-      "ffa": 105
+      "ffa": 105,
+      "avgRank": 89,
+      "nsrc": 6
     },
     {
       "name": "Alec Pierce",
       "pos": "WR",
       "nfl": "IND",
       "age": 26,
-      "avgRank": 89,
-      "nsrc": 2,
       "si": null,
       "pff": null,
       "espn": null,
@@ -1840,15 +1838,15 @@
       "ffc": null,
       "df": 102,
       "rb": 76,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 89,
+      "nsrc": 2
     },
     {
       "name": "Ricky Pearsall",
       "pos": "WR",
       "nfl": "SF",
       "age": 26,
-      "avgRank": 89.8,
-      "nsrc": 5,
       "si": 108,
       "pff": 110,
       "espn": null,
@@ -1860,15 +1858,15 @@
       "ffc": null,
       "df": 76,
       "rb": 95,
-      "ffa": 60
+      "ffa": 60,
+      "avgRank": 89.8,
+      "nsrc": 5
     },
     {
       "name": "Fernando Mendoza",
       "pos": "QB",
       "nfl": "LV",
       "age": 22,
-      "avgRank": 96.3,
-      "nsrc": 6,
       "si": 103,
       "pff": 102,
       "espn": null,
@@ -1880,15 +1878,15 @@
       "ffc": null,
       "df": 84,
       "rb": 125,
-      "ffa": 123
+      "ffa": 123,
+      "avgRank": 96.3,
+      "nsrc": 6
     },
     {
       "name": "Jordan Love",
       "pos": "QB",
       "nfl": "GB",
       "age": 27,
-      "avgRank": 96.5,
-      "nsrc": 6,
       "si": 92,
       "pff": 89,
       "espn": null,
@@ -1900,15 +1898,15 @@
       "ffc": null,
       "df": 109,
       "rb": 114,
-      "ffa": 131
+      "ffa": 131,
+      "avgRank": 96.5,
+      "nsrc": 6
     },
     {
       "name": "Jaylen Warren",
       "pos": "RB",
       "nfl": "PIT",
       "age": 27,
-      "avgRank": 96.5,
-      "nsrc": 6,
       "si": 110,
       "pff": 112,
       "espn": null,
@@ -1920,15 +1918,15 @@
       "ffc": null,
       "df": 90,
       "rb": 103,
-      "ffa": 132
+      "ffa": 132,
+      "avgRank": 96.5,
+      "nsrc": 6
     },
     {
       "name": "Jayden Reed",
       "pos": "WR",
       "nfl": "GB",
       "age": 26,
-      "avgRank": 97.4,
-      "nsrc": 7,
       "si": 125,
       "pff": 128,
       "espn": null,
@@ -1940,15 +1938,15 @@
       "ffc": 79,
       "df": 128,
       "rb": 102,
-      "ffa": 78
+      "ffa": 78,
+      "avgRank": 97.4,
+      "nsrc": 7
     },
     {
       "name": "Chris Godwin Jr.",
       "pos": "WR",
       "nfl": "TB",
       "age": 30,
-      "avgRank": 98.7,
-      "nsrc": 3,
       "si": null,
       "pff": null,
       "espn": null,
@@ -1960,15 +1958,15 @@
       "ffc": null,
       "df": 105,
       "rb": 98,
-      "ffa": 93
+      "ffa": 93,
+      "avgRank": 98.7,
+      "nsrc": 3
     },
     {
       "name": "David Montgomery",
       "pos": "RB",
       "nfl": "HOU",
       "age": 29,
-      "avgRank": 99.7,
-      "nsrc": 6,
       "si": 114,
       "pff": 117,
       "espn": null,
@@ -1980,15 +1978,15 @@
       "ffc": null,
       "df": 136,
       "rb": 97,
-      "ffa": 107
+      "ffa": 107,
+      "avgRank": 99.7,
+      "nsrc": 6
     },
     {
       "name": "Jakobi Meyers",
       "pos": "WR",
       "nfl": "JAC",
       "age": 29,
-      "avgRank": 100,
-      "nsrc": 6,
       "si": 122,
       "pff": 125,
       "espn": null,
@@ -2000,15 +1998,15 @@
       "ffc": null,
       "df": 124,
       "rb": 86,
-      "ffa": 104
+      "ffa": 104,
+      "avgRank": 100,
+      "nsrc": 6
     },
     {
       "name": "Parker Washington",
       "pos": "WR",
       "nfl": "JAC",
       "age": 24,
-      "avgRank": 100,
-      "nsrc": 5,
       "si": 101,
       "pff": 104,
       "espn": null,
@@ -2020,15 +2018,15 @@
       "ffc": null,
       "df": 112,
       "rb": 100,
-      "ffa": 83
+      "ffa": 83,
+      "avgRank": 100,
+      "nsrc": 5
     },
     {
       "name": "Rhamondre Stevenson",
       "pos": "RB",
       "nfl": "NE",
       "age": 28,
-      "avgRank": 100.3,
-      "nsrc": 7,
       "si": 112,
       "pff": 115,
       "espn": null,
@@ -2040,15 +2038,15 @@
       "ffc": 69,
       "df": 132,
       "rb": 142,
-      "ffa": 102
+      "ffa": 102,
+      "avgRank": 100.3,
+      "nsrc": 7
     },
     {
       "name": "Jake Ferguson",
       "pos": "TE",
       "nfl": "DAL",
       "age": 27,
-      "avgRank": 100.8,
-      "nsrc": 4,
       "si": 104,
       "pff": 106,
       "espn": null,
@@ -2060,15 +2058,15 @@
       "ffc": null,
       "df": 78,
       "rb": 115,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 100.8,
+      "nsrc": 4
     },
     {
       "name": "D'Andre Swift",
       "pos": "RB",
       "nfl": "CHI",
       "age": 27,
-      "avgRank": 101.2,
-      "nsrc": 5,
       "si": 100,
       "pff": 101,
       "espn": null,
@@ -2080,15 +2078,15 @@
       "ffc": null,
       "df": 98,
       "rb": 80,
-      "ffa": 127
+      "ffa": 127,
+      "avgRank": 101.2,
+      "nsrc": 5
     },
     {
       "name": "Denzel Boston",
       "pos": "WR",
       "nfl": "CLE",
       "age": 22,
-      "avgRank": 103,
-      "nsrc": 5,
       "si": 99,
       "pff": 96,
       "espn": null,
@@ -2100,15 +2098,15 @@
       "ffc": null,
       "df": 134,
       "rb": 99,
-      "ffa": 87
+      "ffa": 87,
+      "avgRank": 103,
+      "nsrc": 5
     },
     {
       "name": "Oronde Gadsden",
       "pos": "TE",
       "nfl": "LAC",
       "age": 23,
-      "avgRank": 103.8,
-      "nsrc": 5,
       "si": 132,
       "pff": 133,
       "espn": null,
@@ -2120,15 +2118,15 @@
       "ffc": null,
       "df": 74,
       "rb": 94,
-      "ffa": 86
+      "ffa": 86,
+      "avgRank": 103.8,
+      "nsrc": 5
     },
     {
       "name": "Khalil Shakir",
       "pos": "WR",
       "nfl": "BUF",
       "age": 26,
-      "avgRank": 104,
-      "nsrc": 6,
       "si": 123,
       "pff": 126,
       "espn": null,
@@ -2140,15 +2138,15 @@
       "ffc": null,
       "df": 97,
       "rb": 122,
-      "ffa": 121
+      "ffa": 121,
+      "avgRank": 104,
+      "nsrc": 6
     },
     {
       "name": "Dak Prescott",
       "pos": "QB",
       "nfl": "DAL",
       "age": 33,
-      "avgRank": 104.5,
-      "nsrc": 2,
       "si": null,
       "pff": null,
       "espn": null,
@@ -2160,15 +2158,15 @@
       "ffc": null,
       "df": 96,
       "rb": 113,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 104.5,
+      "nsrc": 2
     },
     {
       "name": "Tony Pollard",
       "pos": "RB",
       "nfl": "TEN",
       "age": 28,
-      "avgRank": 104.7,
-      "nsrc": 6,
       "si": 115,
       "pff": 118,
       "espn": null,
@@ -2180,15 +2178,15 @@
       "ffc": 77,
       "df": 156,
       "rb": 137,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 104.7,
+      "nsrc": 6
     },
     {
       "name": "Josh Downs",
       "pos": "WR",
       "nfl": "IND",
       "age": 25,
-      "avgRank": 104.8,
-      "nsrc": 5,
       "si": 124,
       "pff": 127,
       "espn": null,
@@ -2200,15 +2198,15 @@
       "ffc": null,
       "df": 99,
       "rb": 93,
-      "ffa": 81
+      "ffa": 81,
+      "avgRank": 104.8,
+      "nsrc": 5
     },
     {
       "name": "Isaiah Likely",
       "pos": "TE",
       "nfl": "NYG",
       "age": 26,
-      "avgRank": 105.2,
-      "nsrc": 5,
       "si": 107,
       "pff": 105,
       "espn": null,
@@ -2220,15 +2218,15 @@
       "ffc": null,
       "df": 89,
       "rb": 128,
-      "ffa": 97
+      "ffa": 97,
+      "avgRank": 105.2,
+      "nsrc": 5
     },
     {
       "name": "Mike Evans",
       "pos": "WR",
       "nfl": "SF",
       "age": 33,
-      "avgRank": 106,
-      "nsrc": 5,
       "si": 121,
       "pff": 124,
       "espn": null,
@@ -2240,15 +2238,15 @@
       "ffc": null,
       "df": 106,
       "rb": 85,
-      "ffa": 94
+      "ffa": 94,
+      "avgRank": 106,
+      "nsrc": 5
     },
     {
       "name": "Dalton Kincaid",
       "pos": "TE",
       "nfl": "BUF",
       "age": 27,
-      "avgRank": 107.6,
-      "nsrc": 5,
       "si": 111,
       "pff": 113,
       "espn": null,
@@ -2260,15 +2258,15 @@
       "ffc": null,
       "df": 81,
       "rb": 107,
-      "ffa": 126
+      "ffa": 126,
+      "avgRank": 107.6,
+      "nsrc": 5
     },
     {
       "name": "Bryce Young",
       "pos": "QB",
       "nfl": "CAR",
       "age": 24,
-      "avgRank": 111,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -2280,15 +2278,15 @@
       "ffc": null,
       "df": 111,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 111,
+      "nsrc": 1
     },
     {
       "name": "Zach Charbonnet",
       "pos": "RB",
       "nfl": "SEA",
       "age": 25,
-      "avgRank": 111.6,
-      "nsrc": 5,
       "si": 96,
       "pff": 94,
       "espn": null,
@@ -2300,15 +2298,15 @@
       "ffc": null,
       "df": 145,
       "rb": 104,
-      "ffa": 119
+      "ffa": 119,
+      "avgRank": 111.6,
+      "nsrc": 5
     },
     {
       "name": "Chris Bell",
       "pos": "WR",
       "nfl": "MIA",
       "age": 21,
-      "avgRank": 112,
-      "nsrc": 3,
       "si": null,
       "pff": null,
       "espn": null,
@@ -2320,15 +2318,15 @@
       "ffc": null,
       "df": 118,
       "rb": 119,
-      "ffa": 99
+      "ffa": 99,
+      "avgRank": 112,
+      "nsrc": 3
     },
     {
       "name": "Chuba Hubbard",
       "pos": "RB",
       "nfl": "CAR",
       "age": 27,
-      "avgRank": 112.4,
-      "nsrc": 5,
       "si": 106,
       "pff": 108,
       "espn": null,
@@ -2340,15 +2338,15 @@
       "ffc": null,
       "df": 108,
       "rb": 120,
-      "ffa": 120
+      "ffa": 120,
+      "avgRank": 112.4,
+      "nsrc": 5
     },
     {
       "name": "Quentin Johnston",
       "pos": "WR",
       "nfl": "LAC",
       "age": 25,
-      "avgRank": 112.6,
-      "nsrc": 5,
       "si": 113,
       "pff": 116,
       "espn": null,
@@ -2360,15 +2358,15 @@
       "ffc": null,
       "df": 122,
       "rb": 124,
-      "ffa": 88
+      "ffa": 88,
+      "avgRank": 112.6,
+      "nsrc": 5
     },
     {
       "name": "Rico Dowdle",
       "pos": "RB",
       "nfl": "PIT",
       "age": 28,
-      "avgRank": 112.8,
-      "nsrc": 6,
       "si": 126,
       "pff": 129,
       "espn": null,
@@ -2380,15 +2378,15 @@
       "ffc": null,
       "df": 129,
       "rb": 126,
-      "ffa": 134
+      "ffa": 134,
+      "avgRank": 112.8,
+      "nsrc": 6
     },
     {
       "name": "Eli Stowers",
       "pos": "TE",
       "nfl": "PHI",
       "age": 23,
-      "avgRank": 113,
-      "nsrc": 3,
       "si": null,
       "pff": null,
       "espn": null,
@@ -2400,15 +2398,15 @@
       "ffc": null,
       "df": 117,
       "rb": 110,
-      "ffa": 112
+      "ffa": 112,
+      "avgRank": 113,
+      "nsrc": 3
     },
     {
       "name": "De'Zhaun Stribling",
       "pos": "WR",
       "nfl": "SF",
       "age": 21,
-      "avgRank": 115.3,
-      "nsrc": 3,
       "si": null,
       "pff": null,
       "espn": null,
@@ -2420,15 +2418,15 @@
       "ffc": null,
       "df": 135,
       "rb": 111,
-      "ffa": 100
+      "ffa": 100,
+      "avgRank": 115.3,
+      "nsrc": 3
     },
     {
       "name": "Germie Bernard",
       "pos": "WR",
       "nfl": "PIT",
       "age": 22,
-      "avgRank": 115.8,
-      "nsrc": 4,
       "si": 109,
       "pff": 107,
       "espn": null,
@@ -2440,15 +2438,15 @@
       "ffc": null,
       "df": null,
       "rb": 123,
-      "ffa": 124
+      "ffa": 124,
+      "avgRank": 115.8,
+      "nsrc": 4
     },
     {
       "name": "Blake Corum",
       "pos": "RB",
       "nfl": "LAR",
       "age": 25,
-      "avgRank": 116.4,
-      "nsrc": 5,
       "si": 116,
       "pff": 119,
       "espn": null,
@@ -2460,15 +2458,15 @@
       "ffc": null,
       "df": 133,
       "rb": 106,
-      "ffa": 108
+      "ffa": 108,
+      "avgRank": 116.4,
+      "nsrc": 5
     },
     {
       "name": "Travis Hunter",
       "pos": "WR",
       "nfl": "JAC",
       "age": 23,
-      "avgRank": 119.4,
-      "nsrc": 5,
       "si": 138,
       "pff": 140,
       "espn": null,
@@ -2480,15 +2478,15 @@
       "ffc": null,
       "df": 125,
       "rb": 112,
-      "ffa": 82
+      "ffa": 82,
+      "avgRank": 119.4,
+      "nsrc": 5
     },
     {
       "name": "George Kittle",
       "pos": "TE",
       "nfl": "SF",
       "age": 32,
-      "avgRank": 120.8,
-      "nsrc": 5,
       "si": 88,
       "pff": 90,
       "espn": null,
@@ -2500,15 +2498,15 @@
       "ffc": null,
       "df": 167,
       "rb": 118,
-      "ffa": 141
+      "ffa": 141,
+      "avgRank": 120.8,
+      "nsrc": 5
     },
     {
       "name": "Justin Joly",
       "pos": "WR",
       "nfl": "?",
       "age": 26,
-      "avgRank": 121,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -2520,15 +2518,15 @@
       "ffc": null,
       "df": 121,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 121,
+      "nsrc": 1
     },
     {
       "name": "J.K. Dobbins",
       "pos": "RB",
       "nfl": "DEN",
       "age": 27,
-      "avgRank": 121.4,
-      "nsrc": 5,
       "si": 141,
       "pff": 143,
       "espn": null,
@@ -2540,15 +2538,15 @@
       "ffc": null,
       "df": 161,
       "rb": 136,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 121.4,
+      "nsrc": 5
     },
     {
       "name": "Antonio Williams",
       "pos": "WR",
       "nfl": "WAS",
       "age": 21,
-      "avgRank": 121.8,
-      "nsrc": 5,
       "si": 146,
       "pff": 149,
       "espn": null,
@@ -2560,15 +2558,15 @@
       "ffc": null,
       "df": 107,
       "rb": 116,
-      "ffa": 91
+      "ffa": 91,
+      "avgRank": 121.8,
+      "nsrc": 5
     },
     {
       "name": "C.J. Stroud",
       "pos": "QB",
       "nfl": "HOU",
       "age": 24,
-      "avgRank": 122,
-      "nsrc": 6,
       "si": 133,
       "pff": 135,
       "espn": null,
@@ -2580,15 +2578,15 @@
       "ffc": 66,
       "df": 127,
       "rb": 131,
-      "ffa": 140
+      "ffa": 140,
+      "avgRank": 122,
+      "nsrc": 6
     },
     {
       "name": "Max Klare",
       "pos": "WR",
       "nfl": "?",
       "age": 26,
-      "avgRank": 123,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -2600,15 +2598,15 @@
       "ffc": null,
       "df": 123,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 123,
+      "nsrc": 1
     },
     {
       "name": "Woody Marks",
       "pos": "RB",
       "nfl": "HOU",
       "age": 25,
-      "avgRank": 123.8,
-      "nsrc": 5,
       "si": 128,
       "pff": 131,
       "espn": null,
@@ -2620,15 +2618,15 @@
       "ffc": null,
       "df": 88,
       "rb": 134,
-      "ffa": 138
+      "ffa": 138,
+      "avgRank": 123.8,
+      "nsrc": 5
     },
     {
       "name": "Baker Mayfield",
       "pos": "QB",
       "nfl": "TB",
       "age": 31,
-      "avgRank": 126,
-      "nsrc": 5,
       "si": 129,
       "pff": 132,
       "espn": null,
@@ -2640,15 +2638,15 @@
       "ffc": null,
       "df": 91,
       "rb": 132,
-      "ffa": 146
+      "ffa": 146,
+      "avgRank": 126,
+      "nsrc": 5
     },
     {
       "name": "Rachaad White",
       "pos": "RB",
       "nfl": "WAS",
       "age": 27,
-      "avgRank": 126.7,
-      "nsrc": 6,
       "si": 147,
       "pff": 150,
       "espn": null,
@@ -2660,15 +2658,15 @@
       "ffc": 51,
       "df": 169,
       "rb": 129,
-      "ffa": 114
+      "ffa": 114,
+      "avgRank": 126.7,
+      "nsrc": 6
     },
     {
       "name": "Brandon Aiyuk",
       "pos": "WR",
       "nfl": "SF",
       "age": 28,
-      "avgRank": 126.8,
-      "nsrc": 6,
       "si": 186,
       "pff": 186,
       "espn": null,
@@ -2680,15 +2678,15 @@
       "ffc": 49,
       "df": 164,
       "rb": 138,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 126.8,
+      "nsrc": 6
     },
     {
       "name": "Tyreek Hill",
       "pos": "WR",
       "nfl": "FA",
       "age": 32,
-      "avgRank": 127.5,
-      "nsrc": 4,
       "si": null,
       "pff": null,
       "espn": null,
@@ -2700,15 +2698,15 @@
       "ffc": 32,
       "df": 165,
       "rb": 164,
-      "ffa": 149
+      "ffa": 149,
+      "avgRank": 127.5,
+      "nsrc": 4
     },
     {
       "name": "Cam Ward",
       "pos": "QB",
       "nfl": "TEN",
       "age": 23,
-      "avgRank": 128,
-      "nsrc": 2,
       "si": null,
       "pff": null,
       "espn": null,
@@ -2720,15 +2718,15 @@
       "ffc": null,
       "df": 139,
       "rb": 117,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 128,
+      "nsrc": 2
     },
     {
       "name": "Jared Goff",
       "pos": "QB",
       "nfl": "DET",
       "age": 31,
-      "avgRank": 128.4,
-      "nsrc": 5,
       "si": 119,
       "pff": 120,
       "espn": null,
@@ -2740,15 +2738,15 @@
       "ffc": null,
       "df": 110,
       "rb": 148,
-      "ffa": 145
+      "ffa": 145,
+      "avgRank": 128.4,
+      "nsrc": 5
     },
     {
       "name": "Aaron Jones Sr.",
       "pos": "RB",
       "nfl": "MIN",
       "age": 31,
-      "avgRank": 129.9,
-      "nsrc": 7,
       "si": 158,
       "pff": 160,
       "espn": null,
@@ -2760,15 +2758,15 @@
       "ffc": 81,
       "df": 175,
       "rb": 165,
-      "ffa": 142
+      "ffa": 142,
+      "avgRank": 129.9,
+      "nsrc": 7
     },
     {
       "name": "Michael Wilson",
       "pos": "WR",
       "nfl": "ARI",
       "age": 26,
-      "avgRank": 130,
-      "nsrc": 2,
       "si": null,
       "pff": null,
       "espn": null,
@@ -2780,15 +2778,15 @@
       "ffc": null,
       "df": 85,
       "rb": 175,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 130,
+      "nsrc": 2
     },
     {
       "name": "Terrance Ferguson",
       "pos": "WR",
       "nfl": "?",
       "age": 26,
-      "avgRank": 130,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -2800,15 +2798,15 @@
       "ffc": null,
       "df": 130,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 130,
+      "nsrc": 1
     },
     {
       "name": "Jonah Coleman",
       "pos": "RB",
       "nfl": "DEN",
       "age": 22,
-      "avgRank": 130.2,
-      "nsrc": 5,
       "si": 145,
       "pff": 148,
       "espn": null,
@@ -2820,15 +2818,15 @@
       "ffc": null,
       "df": 148,
       "rb": 92,
-      "ffa": 118
+      "ffa": 118,
+      "avgRank": 130.2,
+      "nsrc": 5
     },
     {
       "name": "Kyler Murray",
       "pos": "QB",
       "nfl": "MIN",
       "age": 29,
-      "avgRank": 133.6,
-      "nsrc": 5,
       "si": 134,
       "pff": 136,
       "espn": null,
@@ -2840,15 +2838,15 @@
       "ffc": null,
       "df": 126,
       "rb": 133,
-      "ffa": 139
+      "ffa": 139,
+      "avgRank": 133.6,
+      "nsrc": 5
     },
     {
       "name": "Romeo Doubs",
       "pos": "WR",
       "nfl": "NE",
       "age": 26,
-      "avgRank": 136.2,
-      "nsrc": 5,
       "si": 144,
       "pff": 147,
       "espn": null,
@@ -2860,15 +2858,15 @@
       "ffc": null,
       "df": 166,
       "rb": 121,
-      "ffa": 103
+      "ffa": 103,
+      "avgRank": 136.2,
+      "nsrc": 5
     },
     {
       "name": "Mark Andrews",
       "pos": "TE",
       "nfl": "BAL",
       "age": 31,
-      "avgRank": 137.3,
-      "nsrc": 6,
       "si": 131,
       "pff": 134,
       "espn": null,
@@ -2880,15 +2878,15 @@
       "ffc": 60,
       "df": 179,
       "rb": 168,
-      "ffa": 152
+      "ffa": 152,
+      "avgRank": 137.3,
+      "nsrc": 6
     },
     {
       "name": "Jalen Coker",
       "pos": "WR",
       "nfl": "CAR",
       "age": 24,
-      "avgRank": 137.6,
-      "nsrc": 5,
       "si": 151,
       "pff": 154,
       "espn": null,
@@ -2900,15 +2898,15 @@
       "ffc": null,
       "df": 119,
       "rb": 127,
-      "ffa": 137
+      "ffa": 137,
+      "avgRank": 137.6,
+      "nsrc": 5
     },
     {
       "name": "Jonathon Brooks",
       "pos": "RB",
       "nfl": "CAR",
       "age": 23,
-      "avgRank": 138,
-      "nsrc": 3,
       "si": null,
       "pff": null,
       "espn": null,
@@ -2920,15 +2918,15 @@
       "ffc": null,
       "df": 162,
       "rb": 130,
-      "ffa": 122
+      "ffa": 122,
+      "avgRank": 138,
+      "nsrc": 3
     },
     {
       "name": "Jacory Croskey-Merritt",
       "pos": "RB",
       "nfl": "WAS",
       "age": 25,
-      "avgRank": 139.5,
-      "nsrc": 4,
       "si": 118,
       "pff": 121,
       "espn": null,
@@ -2940,15 +2938,15 @@
       "ffc": null,
       "df": 174,
       "rb": 145,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 139.5,
+      "nsrc": 4
     },
     {
       "name": "Jonathan Brooks",
       "pos": "RB",
       "nfl": "CAR",
       "age": 23,
-      "avgRank": 140,
-      "nsrc": 2,
       "si": 139,
       "pff": 141,
       "espn": null,
@@ -2960,15 +2958,15 @@
       "ffc": null,
       "df": null,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 140,
+      "nsrc": 2
     },
     {
       "name": "Tyler Shough",
       "pos": "QB",
       "nfl": "NO",
       "age": 27,
-      "avgRank": 140.5,
-      "nsrc": 2,
       "si": null,
       "pff": null,
       "espn": null,
@@ -2980,15 +2978,15 @@
       "ffc": null,
       "df": 141,
       "rb": 140,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 140.5,
+      "nsrc": 2
     },
     {
       "name": "Travis Kelce",
       "pos": "TE",
       "nfl": "KC",
       "age": 36,
-      "avgRank": 140.8,
-      "nsrc": 6,
       "si": 135,
       "pff": 137,
       "espn": null,
@@ -3000,15 +2998,15 @@
       "ffc": 72,
       "df": 178,
       "rb": 173,
-      "ffa": 150
+      "ffa": 150,
+      "avgRank": 140.8,
+      "nsrc": 6
     },
     {
       "name": "Tyrone Tracy Jr.",
       "pos": "RB",
       "nfl": "NYG",
       "age": 26,
-      "avgRank": 142,
-      "nsrc": 5,
       "si": 140,
       "pff": 142,
       "espn": null,
@@ -3020,15 +3018,15 @@
       "ffc": null,
       "df": 140,
       "rb": 141,
-      "ffa": 147
+      "ffa": 147,
+      "avgRank": 142,
+      "nsrc": 5
     },
     {
       "name": "J.J. McCarthy",
       "pos": "QB",
       "nfl": "MIN",
       "age": 23,
-      "avgRank": 142,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3040,15 +3038,15 @@
       "ffc": null,
       "df": 142,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 142,
+      "nsrc": 1
     },
     {
       "name": "Alvin Kamara",
       "pos": "RB",
       "nfl": "NO",
       "age": 31,
-      "avgRank": 143.8,
-      "nsrc": 4,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3060,15 +3058,15 @@
       "ffc": 76,
       "df": 171,
       "rb": 171,
-      "ffa": 157
+      "ffa": 157,
+      "avgRank": 143.8,
+      "nsrc": 4
     },
     {
       "name": "Jalen McMillan",
       "pos": "WR",
       "nfl": "TB",
       "age": 24,
-      "avgRank": 144.8,
-      "nsrc": 5,
       "si": 127,
       "pff": 130,
       "espn": null,
@@ -3080,15 +3078,15 @@
       "ffc": null,
       "df": 187,
       "rb": 144,
-      "ffa": 136
+      "ffa": 136,
+      "avgRank": 144.8,
+      "nsrc": 5
     },
     {
       "name": "Malik Willis",
       "pos": "QB",
       "nfl": "MIA",
       "age": 27,
-      "avgRank": 146,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3100,15 +3098,15 @@
       "ffc": null,
       "df": 146,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 146,
+      "nsrc": 1
     },
     {
       "name": "Troy Franklin",
       "pos": "WR",
       "nfl": "DEN",
       "age": 23,
-      "avgRank": 146.7,
-      "nsrc": 3,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3120,15 +3118,15 @@
       "ffc": null,
       "df": 144,
       "rb": 161,
-      "ffa": 135
+      "ffa": 135,
+      "avgRank": 146.7,
+      "nsrc": 3
     },
     {
       "name": "Chimere Dike",
       "pos": "WR",
       "nfl": "TEN",
       "age": 24,
-      "avgRank": 147.7,
-      "nsrc": 3,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3140,15 +3138,15 @@
       "ffc": null,
       "df": 183,
       "rb": 149,
-      "ffa": 111
+      "ffa": 111,
+      "avgRank": 147.7,
+      "nsrc": 3
     },
     {
       "name": "T.J. Hockenson",
       "pos": "TE",
       "nfl": "MIN",
       "age": 29,
-      "avgRank": 147.8,
-      "nsrc": 5,
       "si": 136,
       "pff": 138,
       "espn": null,
@@ -3160,15 +3158,15 @@
       "ffc": null,
       "df": 151,
       "rb": 163,
-      "ffa": 151
+      "ffa": 151,
+      "avgRank": 147.8,
+      "nsrc": 5
     },
     {
       "name": "Tyler Allgeier",
       "pos": "RB",
       "nfl": "ARI",
       "age": 26,
-      "avgRank": 147.8,
-      "nsrc": 5,
       "si": 149,
       "pff": 152,
       "espn": null,
@@ -3180,15 +3178,15 @@
       "ffc": null,
       "df": 154,
       "rb": 151,
-      "ffa": 133
+      "ffa": 133,
+      "avgRank": 147.8,
+      "nsrc": 5
     },
     {
       "name": "Chig Okonkwo",
       "pos": "TE",
       "nfl": "WAS",
       "age": 26,
-      "avgRank": 148,
-      "nsrc": 2,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3200,15 +3198,15 @@
       "ffc": null,
       "df": null,
       "rb": 152,
-      "ffa": 144
+      "ffa": 144,
+      "avgRank": 148,
+      "nsrc": 2
     },
     {
       "name": "Jordan Mason",
       "pos": "RB",
       "nfl": "MIN",
       "age": 27,
-      "avgRank": 148.8,
-      "nsrc": 5,
       "si": 142,
       "pff": 144,
       "espn": null,
@@ -3220,15 +3218,15 @@
       "ffc": null,
       "df": 170,
       "rb": 172,
-      "ffa": 116
+      "ffa": 116,
+      "avgRank": 148.8,
+      "nsrc": 5
     },
     {
       "name": "Brenton Strange",
       "pos": "TE",
       "nfl": "JAC",
       "age": 25,
-      "avgRank": 150,
-      "nsrc": 4,
       "si": 170,
       "pff": 171,
       "espn": null,
@@ -3240,15 +3238,15 @@
       "ffc": null,
       "df": 116,
       "rb": 143,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 150,
+      "nsrc": 4
     },
     {
       "name": "Nick Singleton",
       "pos": "RB",
       "nfl": "TEN",
       "age": 22,
-      "avgRank": 152,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3260,15 +3258,15 @@
       "ffc": null,
       "df": 152,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 152,
+      "nsrc": 1
     },
     {
       "name": "Dylan Sampson",
       "pos": "RB",
       "nfl": "CLE",
       "age": 22,
-      "avgRank": 152.7,
-      "nsrc": 3,
       "si": 148,
       "pff": 151,
       "espn": null,
@@ -3280,15 +3278,15 @@
       "ffc": null,
       "df": 159,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 152.7,
+      "nsrc": 3
     },
     {
       "name": "Dallas Goedert",
       "pos": "TE",
       "nfl": "PHI",
       "age": 31,
-      "avgRank": 152.8,
-      "nsrc": 5,
       "si": 172,
       "pff": 173,
       "espn": null,
@@ -3300,15 +3298,15 @@
       "ffc": null,
       "df": 114,
       "rb": 162,
-      "ffa": 143
+      "ffa": 143,
+      "avgRank": 152.8,
+      "nsrc": 5
     },
     {
       "name": "Juwan Johnson",
       "pos": "TE",
       "nfl": "NO",
       "age": 30,
-      "avgRank": 153,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3320,15 +3318,15 @@
       "ffc": null,
       "df": 153,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 153,
+      "nsrc": 1
     },
     {
       "name": "Isaiah Bond",
       "pos": "WR",
       "nfl": "?",
       "age": 26,
-      "avgRank": 153.5,
-      "nsrc": 2,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3340,15 +3338,15 @@
       "ffc": null,
       "df": 131,
       "rb": 176,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 153.5,
+      "nsrc": 2
     },
     {
       "name": "Kayshon Boutte",
       "pos": "WR",
       "nfl": "NE",
       "age": 24,
-      "avgRank": 154.3,
-      "nsrc": 3,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3360,15 +3358,15 @@
       "ffc": null,
       "df": 186,
       "rb": 147,
-      "ffa": 130
+      "ffa": 130,
+      "avgRank": 154.3,
+      "nsrc": 3
     },
     {
       "name": "Kenneth Gainwell",
       "pos": "RB",
       "nfl": "TB",
       "age": 27,
-      "avgRank": 154.5,
-      "nsrc": 2,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3380,15 +3378,15 @@
       "ffc": null,
       "df": 163,
       "rb": 146,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 154.5,
+      "nsrc": 2
     },
     {
       "name": "Tank Dell",
       "pos": "WR",
       "nfl": "HOU",
       "age": 26,
-      "avgRank": 156.7,
-      "nsrc": 3,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3400,15 +3398,15 @@
       "ffc": null,
       "df": 177,
       "rb": 135,
-      "ffa": 158
+      "ffa": 158,
+      "avgRank": 156.7,
+      "nsrc": 3
     },
     {
       "name": "Sam Darnold",
       "pos": "QB",
       "nfl": "SEA",
       "age": 29,
-      "avgRank": 157.5,
-      "nsrc": 4,
       "si": 166,
       "pff": 167,
       "espn": null,
@@ -3420,15 +3418,15 @@
       "ffc": null,
       "df": 137,
       "rb": 160,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 157.5,
+      "nsrc": 4
     },
     {
       "name": "Dalton Schultz",
       "pos": "TE",
       "nfl": "HOU",
       "age": 29,
-      "avgRank": 158,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3440,15 +3438,15 @@
       "ffc": null,
       "df": 158,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 158,
+      "nsrc": 1
     },
     {
       "name": "Jerry Jeudy",
       "pos": "WR",
       "nfl": "CLE",
       "age": 27,
-      "avgRank": 160,
-      "nsrc": 5,
       "si": 165,
       "pff": 168,
       "espn": null,
@@ -3460,15 +3458,15 @@
       "ffc": null,
       "df": 147,
       "rb": 167,
-      "ffa": 153
+      "ffa": 153,
+      "avgRank": 160,
+      "nsrc": 5
     },
     {
       "name": "Kaytron Allen",
       "pos": "WR",
       "nfl": "?",
       "age": 26,
-      "avgRank": 160,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3480,15 +3478,15 @@
       "ffc": null,
       "df": 160,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 160,
+      "nsrc": 1
     },
     {
       "name": "Stefon Diggs",
       "pos": "WR",
       "nfl": "FA",
       "age": 32,
-      "avgRank": 160,
-      "nsrc": 3,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3500,15 +3498,15 @@
       "ffc": null,
       "df": 185,
       "rb": 170,
-      "ffa": 125
+      "ffa": 125,
+      "avgRank": 160,
+      "nsrc": 3
     },
     {
       "name": "Rashid Shaheed",
       "pos": "WR",
       "nfl": "SEA",
       "age": 28,
-      "avgRank": 161.4,
-      "nsrc": 5,
       "si": 187,
       "pff": 188,
       "espn": null,
@@ -3520,15 +3518,15 @@
       "ffc": null,
       "df": 150,
       "rb": 153,
-      "ffa": 129
+      "ffa": 129,
+      "avgRank": 161.4,
+      "nsrc": 5
     },
     {
       "name": "Braelon Allen",
       "pos": "RB",
       "nfl": "NYJ",
       "age": 22,
-      "avgRank": 162,
-      "nsrc": 4,
       "si": 160,
       "pff": 161,
       "espn": null,
@@ -3540,15 +3538,15 @@
       "ffc": null,
       "df": 172,
       "rb": null,
-      "ffa": 155
+      "ffa": 155,
+      "avgRank": 162,
+      "nsrc": 4
     },
     {
       "name": "Tyjae Spears",
       "pos": "RB",
       "nfl": "TEN",
       "age": 25,
-      "avgRank": 162,
-      "nsrc": 3,
       "si": 163,
       "pff": 166,
       "espn": null,
@@ -3560,15 +3558,15 @@
       "ffc": null,
       "df": 157,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 162,
+      "nsrc": 3
     },
     {
       "name": "Deebo Samuel",
       "pos": "WR",
       "nfl": "FA",
       "age": 30,
-      "avgRank": 162,
-      "nsrc": 2,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3580,15 +3578,15 @@
       "ffc": null,
       "df": 155,
       "rb": 169,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 162,
+      "nsrc": 2
     },
     {
       "name": "Chris Rodriguez Jr.",
       "pos": "RB",
       "nfl": "JAC",
       "age": 26,
-      "avgRank": 167.5,
-      "nsrc": 2,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3600,15 +3598,15 @@
       "ffc": null,
       "df": 181,
       "rb": 154,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 167.5,
+      "nsrc": 2
     },
     {
       "name": "AJ Barner",
       "pos": "TE",
       "nfl": "SEA",
       "age": 24,
-      "avgRank": 171,
-      "nsrc": 2,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3620,15 +3618,15 @@
       "ffc": null,
       "df": 168,
       "rb": 174,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 171,
+      "nsrc": 2
     },
     {
       "name": "Brian Robinson Jr.",
       "pos": "RB",
       "nfl": "ATL",
       "age": 27,
-      "avgRank": 173,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3640,15 +3638,15 @@
       "ffc": null,
       "df": 173,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 173,
+      "nsrc": 1
     },
     {
       "name": "Cooper Kupp",
       "pos": "WR",
       "nfl": "SEA",
       "age": 32,
-      "avgRank": 173,
-      "nsrc": 2,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3660,15 +3658,15 @@
       "ffc": null,
       "df": 180,
       "rb": 166,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 173,
+      "nsrc": 2
     },
     {
       "name": "Tank Bigsby",
       "pos": "RB",
       "nfl": "PHI",
       "age": 25,
-      "avgRank": 173.5,
-      "nsrc": 2,
       "si": 173,
       "pff": 174,
       "espn": null,
@@ -3680,15 +3678,15 @@
       "ffc": null,
       "df": null,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 173.5,
+      "nsrc": 2
     },
     {
       "name": "Calvin Ridley",
       "pos": "WR",
       "nfl": "TEN",
       "age": 31,
-      "avgRank": 176,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3700,15 +3698,15 @@
       "ffc": null,
       "df": 176,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 176,
+      "nsrc": 1
     },
     {
       "name": "Hunter Henry",
       "pos": "TE",
       "nfl": "NE",
       "age": 31,
-      "avgRank": 182.3,
-      "nsrc": 3,
       "si": 196,
       "pff": 195,
       "espn": null,
@@ -3720,15 +3718,15 @@
       "ffc": null,
       "df": null,
       "rb": null,
-      "ffa": 156
+      "ffa": 156,
+      "avgRank": 182.3,
+      "nsrc": 3
     },
     {
       "name": "Daniel Jones",
       "pos": "QB",
       "nfl": "IND",
       "age": 29,
-      "avgRank": 183,
-      "nsrc": 3,
       "si": 183,
       "pff": 184,
       "espn": null,
@@ -3740,15 +3738,15 @@
       "ffc": null,
       "df": 182,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 183,
+      "nsrc": 3
     },
     {
       "name": "Emanuel Wilson",
       "pos": "RB",
       "nfl": "SEA",
       "age": 26,
-      "avgRank": 184,
-      "nsrc": 1,
       "si": null,
       "pff": null,
       "espn": null,
@@ -3760,7 +3758,9 @@
       "ffc": null,
       "df": 184,
       "rb": null,
-      "ffa": null
+      "ffa": null,
+      "avgRank": 184,
+      "nsrc": 1
     }
   ]
 }
