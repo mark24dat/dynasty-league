@@ -1,6 +1,6 @@
 let PLAYERS = [];
 
-const RANK_SOURCES = ["si","pff","espn","ktc","pfn","ftn","gen","ktc2","ffc","df","rb","ffa"];
+const RANK_SOURCES = ["si","pff","espn","ktc","pfn","ftn","gen","ktc2","ffc","df","rb","ffa","sleeper"];
 
 function computeAvgRank(p){
   const vals=RANK_SOURCES.map(k=>p[k]).filter(v=>v!=null&&v>0);

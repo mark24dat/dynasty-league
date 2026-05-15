@@ -7,13 +7,14 @@
  *   node scripts/build-players.js path/to/your-export.csv
  *
  * CSV must have a header row. Required column: name
- * Optional: pos, nfl, age, si, pff, espn, ktc, pfn, ftn, gen, ktc2, ffc, df, rb, ffa
+ * Optional: pos, nfl, age, si, pff, espn, ktc, pfn, ftn, gen, ktc2, ffc, df, rb, ffa, sleeper
  * Empty cells = that site has no rank for that player.
+ * Averages use scripts/rank-sources.js (includes optional auto sleeper from daily job).
  */
 const fs = require("fs");
 const path = require("path");
+const { RANK_SOURCES, recomputeAverages, normalizeName } = require("./rank-sources");
 
-const RANK_SOURCES = ["si", "pff", "espn", "ktc", "pfn", "ftn", "gen", "ktc2", "ffc", "df", "rb", "ffa"];
 const ROOT = path.join(__dirname, "..");
 const defaultCsv = path.join(ROOT, "data", "sheet-export.csv");
 const outFile = path.join(ROOT, "data", "players.json");
@@ -55,10 +56,16 @@ function num(v) {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
-function avgRank(p) {
-  const vals = RANK_SOURCES.map((k) => p[k]).filter((v) => v != null);
-  if (!vals.length) return null;
-  return Math.round((vals.reduce((a, b) => a + b, 0) / vals.length) * 10) / 10;
+function loadPreviousSleeperByName() {
+  const m = new Map();
+  if (!fs.existsSync(outFile)) return m;
+  try {
+    const prev = JSON.parse(fs.readFileSync(outFile, "utf8"));
+    for (const p of prev.players || []) {
+      if (p.sleeper != null && Number(p.sleeper) > 0) m.set(normalizeName(p.name), Number(p.sleeper));
+    }
+  } catch (_) {}
+  return m;
 }
 
 function main() {
@@ -77,6 +84,8 @@ function main() {
   const idx = (name) => headers.indexOf(name);
 
   const players = [];
+  const prevSleeper = loadPreviousSleeperByName();
+
   for (let r = 1; r < rows.length; r++) {
     const cols = rows[r];
     const name = cols[idx("name")];
@@ -91,15 +100,12 @@ function main() {
       const i = idx(src);
       if (i >= 0) p[src] = num(cols[i]);
     });
-    const avg = avgRank(p);
-    if (avg != null) {
-      p.avgRank = avg;
-      p.nsrc = RANK_SOURCES.filter((k) => p[k] != null).length;
-    }
+    const slp = prevSleeper.get(normalizeName(p.name));
+    if (slp != null && (p.sleeper == null || p.sleeper === "")) p.sleeper = slp;
     players.push(p);
   }
 
-  players.sort((a, b) => (a.avgRank || 999) - (b.avgRank || 999));
+  recomputeAverages(players);
 
   const out = {
     updatedAt: new Date().toISOString().slice(0, 10),
