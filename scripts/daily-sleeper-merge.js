@@ -1,67 +1,66 @@
 #!/usr/bin/env node
 /**
- * Free daily signal: Sleeper public NFL players API (search_rank).
- * Merges into data/players.json by player name; re-averages with your manual columns.
+ * Rebuilds data/players.json from Sleeper top 500 (search_rank) + manual ranks
+ * preserved from the previous file when names match.
  *
  * Run: node scripts/daily-sleeper-merge.js
- * GitHub Actions: .github/workflows/daily-sleeper-ranks.yml
  */
 const fs = require("fs");
 const path = require("path");
-const { recomputeAverages, normalizeName } = require("./rank-sources");
+const { recomputeAverages, normalizeName, MANUAL_RANK_KEYS } = require("./rank-sources");
+const { fetchTopSleeperPlayers, TOP_N_DEFAULT } = require("./sleeper-top500");
 
 const ROOT = path.join(__dirname, "..");
 const PLAYERS_PATH = path.join(ROOT, "data", "players.json");
 
-function sleeperFullName(p) {
-  const a = (p.first_name || "").trim();
-  const b = (p.last_name || "").trim();
-  return [a, b].filter(Boolean).join(" ");
+function extractManualOverlay(players) {
+  const m = new Map();
+  for (const p of players || []) {
+    const o = {};
+    for (const k of MANUAL_RANK_KEYS) {
+      if (p[k] != null && Number(p[k]) > 0) o[k] = Number(p[k]);
+    }
+    if (Object.keys(o).length === 0) continue;
+    if (p.pos) o._pos = p.pos;
+    if (p.nfl) o._nfl = p.nfl;
+    if (p.age) o._age = p.age;
+    m.set(normalizeName(p.name), o);
+  }
+  return m;
 }
 
-async function fetchSleeperRankMap() {
-  const res = await fetch("https://api.sleeper.app/v1/players/nfl");
-  if (!res.ok) throw new Error("Sleeper API " + res.status);
-  const data = await res.json();
-  const map = new Map();
-  for (const p of Object.values(data)) {
-    if (!p || p.sport !== "nfl") continue;
-    const pos = p.position;
-    if (!["QB", "RB", "WR", "TE", "K", "DEF"].includes(pos)) continue;
-    const rank = p.search_rank;
-    if (rank == null || Number(rank) <= 0) continue;
-    const key = normalizeName(sleeperFullName(p));
-    if (!key) continue;
-    const prev = map.get(key);
-    if (prev == null || Number(rank) < prev) map.set(key, Number(rank));
+function applyOverlay(player, overlayMap) {
+  const o = overlayMap.get(normalizeName(player.name));
+  if (!o) return;
+  for (const k of MANUAL_RANK_KEYS) {
+    if (o[k] != null) player[k] = o[k];
   }
-  return map;
+  if (o._pos) player.pos = o._pos;
+  if (o._nfl) player.nfl = o._nfl;
+  if (o._age != null) player.age = o._age;
 }
 
 async function main() {
-  const rankMap = await fetchSleeperRankMap();
-  const raw = JSON.parse(fs.readFileSync(PLAYERS_PATH, "utf8"));
-  const players = raw.players || [];
-  let matched = 0;
-  for (const p of players) {
-    const key = normalizeName(p.name);
-    const r = rankMap.get(key);
-    if (r != null) {
-      p.sleeper = r;
-      matched++;
-    } else {
-      delete p.sleeper;
-    }
+  let overlay = new Map();
+  if (fs.existsSync(PLAYERS_PATH)) {
+    try {
+      const prev = JSON.parse(fs.readFileSync(PLAYERS_PATH, "utf8"));
+      overlay = extractManualOverlay(prev.players);
+    } catch (_) {}
   }
+
+  const players = await fetchTopSleeperPlayers(TOP_N_DEFAULT);
+  for (const p of players) applyOverlay(p, overlay);
+
   recomputeAverages(players);
+
   const out = {
     updatedAt: new Date().toISOString().slice(0, 10),
-    sourceNote:
-      "Sleeper search_rank merged daily (free API) + manual columns from sheet. See scripts/daily-sleeper-merge.js",
+    sourceNote: `Top ${TOP_N_DEFAULT} NFL players by Sleeper search_rank + merged manual ranks. See scripts/daily-sleeper-merge.js`,
     players,
   };
   fs.writeFileSync(PLAYERS_PATH, JSON.stringify(out, null, 2));
-  console.log("Updated", players.length, "players · Sleeper matched:", matched);
+  console.log("Wrote", players.length, "players · manual overlays:", overlay.size);
 }
 
 main().catch((e) => {

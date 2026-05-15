@@ -27,6 +27,8 @@ const RANK_SOURCES = [
   "sleeper",
 ];
 
+const MANUAL_RANK_KEYS = RANK_SOURCES.filter((k) => k !== "sleeper");
+
 function recomputeAverages(players) {
   for (const p of players) {
     const vals = RANK_SOURCES.map((k) => p[k]).filter((v) => v != null && Number(v) > 0);
@@ -41,4 +43,4 @@ function recomputeAverages(players) {
   players.sort((a, b) => (a.avgRank ?? 999) - (b.avgRank ?? 999));
 }
 
-module.exports = { RANK_SOURCES, recomputeAverages, normalizeName };
+module.exports = { RANK_SOURCES, MANUAL_RANK_KEYS, recomputeAverages, normalizeName };

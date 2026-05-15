@@ -16,9 +16,10 @@ function processPlayers(raw){
     else if(!p.nsrc){p.nsrc=RANK_SOURCES.map(k=>p[k]).filter(x=>x!=null&&x>0).length;}
   });
   list.sort((a,b)=>a.avgRank-b.avgRank);
+  const maxAR=Math.max(149,...list.map(p=>Number(p.avgRank)||0));
   list.forEach((p,i)=>{
     p.rank=i+1;
-    p.score=Math.max(10,Math.round(99-((p.avgRank-1)/149)*89));
+    p.score=Math.max(10,Math.round(99-((p.avgRank-1)/maxAR)*89));
     p.trend=Math.round(Math.sin(p.rank*2.3+1.1)*6);
     const base=p.score;
     p.history=Array.from({length:8},(_,j)=>Math.max(10,Math.min(99,Math.round(base+Math.sin((p.rank+j)*1.7)*5))));
@@ -153,10 +154,22 @@ const TEAMS = {
 const OWNER={};
 const OWNER_FUZZY={};
 function fuzzyName(n){return n.toLowerCase().replace(/[.\'\-]/g,"").replace(/\s+/g," ").trim();}
-Object.entries(TEAMS).forEach(([k,t])=>t.roster.forEach(r=>{
-  OWNER[r.name.toLowerCase()]=t.name;
-  OWNER_FUZZY[fuzzyName(r.name)]=t.name;
-}));
+/** Same name key as getP() uses for roster ↔ pool matching */
+function rosterNameKey(name){return String(name).toLowerCase().replace(/[.\']/g,"");}
+function syncOwnerMaps(){
+  Object.keys(OWNER).forEach(k=>delete OWNER[k]);
+  Object.keys(OWNER_FUZZY).forEach(k=>delete OWNER_FUZZY[k]);
+  Object.entries(TEAMS).forEach(([k,t])=>t.roster.forEach(r=>{
+    OWNER[r.name.toLowerCase()]=t.name;
+    OWNER_FUZZY[fuzzyName(r.name)]=t.name;
+  }));
+}
+function buildRosteredPlayerKeys(){
+  const set=new Set();
+  Object.values(TEAMS).forEach(t=>t.roster.forEach(r=>set.add(rosterNameKey(r.name))));
+  return set;
+}
+syncOwnerMaps();
 
 function getP(name){const n=name.toLowerCase().replace(/[.\']/g,"");return PLAYERS.find(p=>p.name.toLowerCase().replace(/[.\']/g,"")==n)||null;}
 function ps(name){const p=getP(name);return p?p.score:42;}
@@ -199,10 +212,10 @@ function go(page){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
   document.getElementById("page-"+page).classList.add("active");
-  const pageMap={home:0,power:1,rosters:2,improve:3,rankings:4,trends:5,metrics:6,trade:7,finder:8,editor:9};
+  const pageMap={home:0,power:1,rosters:2,improve:3,rankings:4,waiver:5,trends:6,metrics:7,trade:8,finder:9,editor:10};
   document.querySelectorAll(".nav-item")[pageMap[page]]?.classList.add("active");
   currentPage=page;
-  const inits={power:initPower,rosters:initRosters,improve:initImprove,rankings:renderRankings,trends:initTrends,metrics:initMetrics,trade:initTrade,finder:initFinder,editor:initEditor};
+  const inits={power:initPower,rosters:initRosters,improve:initImprove,rankings:renderRankings,waiver:renderWaiver,trends:initTrends,metrics:initMetrics,trade:initTrade,finder:initFinder,editor:initEditor};
   if(inits[page])inits[page]();
 }
 
@@ -746,7 +759,7 @@ function renderRankings(){
     if(rankPos!=="ALL"&&p.pos!==rankPos)return false;
     if(q&&!p.name.toLowerCase().includes(q)&&!p.nfl.toLowerCase().includes(q))return false;
     return p.rank>0;
-  }).slice(0,150);
+  }).slice(0,500);
   document.getElementById("rank-tbody").innerHTML=list.map((p,i)=>`
     <tr onclick="showPlayer(this.dataset.pn)" data-pn="${p.name}">
       <td class="mono" style="color:var(--text3)">${i+1}</td>
@@ -774,6 +787,48 @@ function renderRankings(){
       <td>${spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d")} <span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span></td>
       <td style="font-size:11px;color:var(--accent)">${OWNER_FUZZY[fuzzyName(p.name)]||OWNER[p.name.toLowerCase()]||""}</td>
     </tr>`).join("");
+}
+
+// ═══════════════════════════════════════════════
+// WAIVERS (top pool · not on any roster)
+// ═══════════════════════════════════════════════
+let waiverPos="ALL";
+function setWaiverPos(pos,btn){
+  waiverPos=pos;
+  document.querySelectorAll("#waiver-pills .pill").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  renderWaiver();
+}
+function renderWaiver(){
+  const rostered=buildRosteredPlayerKeys();
+  const q=(document.getElementById("waiver-search")||{value:""}).value.toLowerCase();
+  const uniq={};
+  let list=PLAYERS.filter(p=>{
+    if(uniq[p.name])return false;
+    uniq[p.name]=true;
+    if(p.rank<=0)return false;
+    if(rostered.has(rosterNameKey(p.name)))return false;
+    if(waiverPos!=="ALL"&&String(p.pos).replace("/ST","")!==waiverPos)return false;
+    if(q&&!p.name.toLowerCase().includes(q)&&!(p.nfl&&p.nfl.toLowerCase().includes(q)))return false;
+    return true;
+  }).sort((a,b)=>b.score-a.score);
+  const cnt=document.getElementById("waiver-count");
+  if(cnt)cnt.textContent=list.length?`${list.length} free agent${list.length===1?"":"s"}`:"No matches";
+  const tbody=document.getElementById("waiver-tbody");
+  if(!tbody)return;
+  tbody.innerHTML=list.length?list.map((p,i)=>`
+    <tr onclick="showPlayer(this.dataset.pn)" data-pn="${p.name}">
+      <td class="mono" style="color:var(--text3)">${i+1}</td>
+      <td style="font-weight:500;cursor:pointer">${p.name}</td>
+      <td>${pb(p.pos)}</td>
+      <td class="mono" style="font-size:11px;color:var(--text2)">${p.nfl||"—"}</td>
+      <td class="mono" style="font-size:11px;color:var(--text2)">${p.age!=null?p.age:"—"}</td>
+      <td class="mono" style="font-size:11px;color:var(--text3)">#${p.rank}</td>
+      <td class="mono" style="font-size:11px;color:var(--text3)">${p.avgRank}<span style="font-size:9px;color:var(--text3);margin-left:2px">(${p.nsrc||0})</span></td>
+      <td><div style="display:flex;align-items:center;gap:6px"><span class="mono" style="font-weight:600">${p.score}</span><div class="sbar" style="width:60px"><div class="sbar-fill ${barColor(p.score)}" style="width:${p.score}%"></div></div></div></td>
+      <td>${tier(p.score)}</td>
+      <td>${spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d")} <span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span></td>
+    </tr>`).join(""):`<tr><td colspan="10" style="text-align:center;padding:28px;color:var(--text3);font-size:14px">Everyone in the pool is rostered — or narrow your filters.</td></tr>`;
 }
 
 // ═══════════════════════════════════════════════
@@ -1209,6 +1264,9 @@ function executeTrade(){
   const giveNames=givePlayers.join(", ")||"—";
   const recvNames=recvPlayers.join(", ")||"—";
   document.getElementById("trade-exec-status").innerHTML=`<span style="color:var(--green)">✓ Trade executed! ${TEAMS[giveKey].name} gave ${giveNames} · received ${recvNames}</span>`;
+  syncOwnerMaps();
+  if(currentPage==="waiver")renderWaiver();
+  if(currentPage==="rankings")renderRankings();
   
   // Reload the checkboxes
   loadTradeGivePlayers();
@@ -1227,6 +1285,9 @@ function addPlayer(){
   const validPos=["QB","RB","WR","TE","K","DEF"].includes(pos)?pos:"WR";
   
   TEAMS[k].roster.push({name,pos:validPos});
+  syncOwnerMaps();
+  if(currentPage==="waiver")renderWaiver();
+  if(currentPage==="rankings")renderRankings();
   document.getElementById("add-player-input").value="";
   document.getElementById("adddrop-status").innerHTML=`<span style="color:var(--green)">✓ Added ${name} (${validPos}) to ${TEAMS[k].name}</span>`;
   loadDropSelect();
@@ -1241,6 +1302,9 @@ function dropPlayer(){
   const idx=TEAMS[k].roster.findIndex(r=>r.name===name);
   if(idx>-1){
     TEAMS[k].roster.splice(idx,1);
+    syncOwnerMaps();
+    if(currentPage==="waiver")renderWaiver();
+    if(currentPage==="rankings")renderRankings();
     document.getElementById("adddrop-status").innerHTML=`<span style="color:var(--gold)">✓ Dropped ${name} from ${TEAMS[k].name}</span>`;
     loadDropSelect();
     initEditor();
