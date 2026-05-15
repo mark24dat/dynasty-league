@@ -942,21 +942,22 @@ function selectPower(key){
     return {...r, leagueRank: entry?entry.leagueRank:null, leagueRankOf: leaguePos[pos]?.length||null};
   });
 
-  // ── Positional summary: rank teams by AVERAGE score at each position ──
+  // ── Positional summary: rank teams by avg of TOP starters at each position ──
+  // QB: top 2, RB: top 4, WR: top 5, TE: top 2
   const posOrder=["QB","RB","WR","TE"];
+  const posTopN={QB:2,RB:4,WR:5,TE:2};
   const posSummary = posOrder.map(pos=>{
     const teamPlayers = withLeagueRank.filter(r=>r.pos===pos);
-    // For each team, compute avg score across ALL their players at this position
+    const n = posTopN[pos];
     const allTeamAvgScores = Object.entries(TEAMS).map(([k,t])=>{
-      const pl = t.roster.filter(r=>r.pos===pos);
-      const avg = pl.length ? Math.round(pl.map(r=>ps(r.name)).reduce((a,b)=>a+b,0)/pl.length) : 0;
-      const total = pl.map(r=>ps(r.name)).reduce((a,b)=>a+b,0);
-      return {teamKey:k, teamName:TEAMS[k].name, avg, total, count:pl.length};
+      const pl = t.roster.filter(r=>r.pos===pos).map(r=>ps(r.name)).sort((a,b)=>b-a);
+      const topN = pl.slice(0,n);
+      const avg = topN.length ? Math.round(topN.reduce((a,b)=>a+b,0)/topN.length) : 0;
+      return {teamKey:k, teamName:TEAMS[k].name, avg, count:pl.length, topN};
     }).sort((a,b)=>b.avg-a.avg);
     const teamPosRank = allTeamAvgScores.findIndex(t=>t.teamKey===key)+1;
     const myEntry = allTeamAvgScores.find(t=>t.teamKey===key);
-    const topPlayer = teamPlayers.sort((a,b)=>b.score-a.score)[0];
-    return {pos, teamPlayers, teamPosRank, total:allTeamAvgScores.length, allTeamAvgScores, myEntry, topPlayer};
+    return {pos, teamPlayers, teamPosRank, total:allTeamAvgScores.length, allTeamAvgScores, myEntry, n};
   });
 
   const byPos={QB:[],RB:[],WR:[],TE:[],K:[],DEF:[]};
@@ -989,7 +990,7 @@ function selectPower(key){
         <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:${col};line-height:1">${medal||("#"+s.teamPosRank)}</div>
         <div style="font-size:10px;color:var(--text3);margin-top:2px">of ${s.total} teams</div>
         <div style="font-size:11px;color:var(--text2);margin-top:6px;font-weight:500">${s.myEntry?"Avg: "+s.myEntry.avg:"—"}</div>
-        <div style="font-size:10px;color:var(--text3)">${s.myEntry?s.myEntry.count+" players":"No players"}</div>
+        <div style="font-size:10px;color:var(--text3)">Top ${s.n} avg</div>
       </div>`;
     }).join("")}
     </div>
@@ -1000,14 +1001,14 @@ function selectPower(key){
       ${posOrder.map(pos=>{
         const s = posSummary.find(p=>p.pos===pos);
         return `<div style="margin-bottom:16px">
-          <div style="font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)">${pos} — ranked by avg dynasty score across all roster spots</div>
+          <div style="font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid var(--border)">${pos} — ranked by avg of top ${posTopN[pos]} starters</div>
           <div style="display:flex;flex-direction:column;gap:4px">
           ${s.allTeamAvgScores.map((t,i)=>{
             const isMe = t.teamKey===key;
             const col = rankColor(i+1, s.allTeamAvgScores.length);
             const barW = s.allTeamAvgScores[0].avg > 0 ? Math.round((t.avg/s.allTeamAvgScores[0].avg)*100) : 0;
             // Get top 2 players for this team at this pos
-            const topPl = TEAMS[t.teamKey].roster.filter(r=>r.pos===pos).map(r=>({name:r.name,score:ps(r.name)})).sort((a,b)=>b.score-a.score).slice(0,2);
+            const topPl = TEAMS[t.teamKey].roster.filter(r=>r.pos===pos).map(r=>({name:r.name,score:ps(r.name)})).sort((a,b)=>b.score-a.score).slice(0,s.n);
             return `<div style="display:flex;align-items:center;gap:10px;padding:6px 10px;background:${isMe?"rgba(0,229,255,0.07)":"var(--bg3)"};border:1px solid ${isMe?"var(--accent)":"var(--border)"};border-radius:8px">
               <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:${col};min-width:24px">${i===0?"🥇":i===1?"🥈":i===2?"🥉":"#"+(i+1)}</span>
               <span style="font-size:13px;font-weight:${isMe?"700":"500"};color:${isMe?"var(--accent)":"var(--text)"};min-width:160px">${t.teamName}</span>
