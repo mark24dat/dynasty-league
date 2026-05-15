@@ -913,30 +913,133 @@ function initPower(){
 function selectPower(key){
   powerSel=key;
   const team=TEAMS[key];
+
+  // Build scored roster
+  const scored = team.roster.map(r=>({...r, p:getP(r.name), score:ps(r.name)})).sort((a,b)=>b.score-a.score);
+
+  // ── League-wide positional rankings ──
+  // For each position, rank ALL players across ALL teams
+  const leaguePos = {};
+  Object.entries(TEAMS).forEach(([k,t])=>{
+    t.roster.forEach(r=>{
+      const pos = r.pos.replace("/ST","");
+      if(!["QB","RB","WR","TE"].includes(pos)) return;
+      if(!leaguePos[pos]) leaguePos[pos]=[];
+      leaguePos[pos].push({name:r.name, teamKey:k, teamName:TEAMS[k].name, score:ps(r.name), p:getP(r.name)});
+    });
+  });
+  // Sort each position by score desc, assign league rank
+  Object.keys(leaguePos).forEach(pos=>{
+    leaguePos[pos].sort((a,b)=>b.score-a.score);
+    leaguePos[pos].forEach((p,i)=>p.leagueRank=i+1);
+  });
+
+  // For this team's players, find their league rank at their position
+  const withLeagueRank = scored.map(r=>{
+    const pos = r.pos.replace("/ST","");
+    if(!leaguePos[pos]) return {...r, leagueRank:null, leagueRankOf:null};
+    const entry = leaguePos[pos].find(p=>p.name===r.name);
+    return {...r, leagueRank: entry?entry.leagueRank:null, leagueRankOf: leaguePos[pos]?.length||null};
+  });
+
+  // ── Positional summary: how does this team rank vs league for each position ──
+  const posOrder=["QB","RB","WR","TE"];
+  const posSummary = posOrder.map(pos=>{
+    const teamPlayers = withLeagueRank.filter(r=>r.pos===pos||r.pos===pos+"/ST");
+    const leaguePlayers = leaguePos[pos]||[];
+    // Team's top starter score vs league avg top starter
+    const teamTopScore = teamPlayers.length ? Math.max(...teamPlayers.map(r=>r.score)) : 0;
+    // Rank team's top starter among all top starters at this pos
+    const allTeamTopScores = Object.entries(TEAMS).map(([k,t])=>{
+      const pl = t.roster.filter(r=>r.pos===pos||(pos==="DEF"&&r.pos==="DEF"));
+      return {teamKey:k, teamName:TEAMS[k].name, score: pl.length?Math.max(...pl.map(r=>ps(r.name))):0};
+    }).sort((a,b)=>b.score-a.score);
+    const teamPosRank = allTeamTopScores.findIndex(t=>t.teamKey===key)+1;
+    const better = allTeamTopScores.filter(t=>t.teamKey!==key&&t.score>teamTopScore);
+    return {pos, teamPlayers, teamTopScore, teamPosRank, total:allTeamTopScores.length, allTeamTopScores};
+  });
+
   const byPos={QB:[],RB:[],WR:[],TE:[],K:[],DEF:[]};
-  team.roster.forEach(r=>{const pos=r.pos.replace("/ST","");if(!byPos[pos])byPos[pos]=[];byPos[pos].push(r);});
-  const posOrder=["QB","RB","WR","TE","K","DEF"];
+  withLeagueRank.forEach(r=>{const pos=r.pos.replace("/ST","");if(!byPos[pos])byPos[pos]=[];byPos[pos].push(r);});
+
+  // Rank badge color
+  function rankColor(r, total){
+    const pct = r/total;
+    if(pct<=0.15) return "var(--accent)";
+    if(pct<=0.33) return "var(--green)";
+    if(pct<=0.60) return "var(--gold)";
+    return "var(--red)";
+  }
+
   let html=`<div class="card mb">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px">
       <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700">${team.name}</div>
       <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text2)">Roster value: <strong style="color:var(--accent)">${teamScore(key)}</strong></div>
     </div>
+
+    <!-- Positional rank summary cards -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px">
+    ${posOrder.map(pos=>{
+      const s = posSummary.find(p=>p.pos===pos);
+      const col = rankColor(s.teamPosRank, s.total);
+      const medal = s.teamPosRank===1?"🥇":s.teamPosRank===2?"🥈":s.teamPosRank===3?"🥉":"";
+      const topPlayer = s.teamPlayers.sort((a,b)=>b.score-a.score)[0];
+      return `<div style="background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:12px;text-align:center">
+        <div style="font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:6px">${pos}</div>
+        <div style="font-family:'Syne',sans-serif;font-size:26px;font-weight:800;color:${col};line-height:1">${medal||("#"+s.teamPosRank)}</div>
+        <div style="font-size:10px;color:var(--text3);margin-top:2px">of ${s.total} teams</div>
+        <div style="font-size:11px;color:var(--text2);margin-top:6px;font-weight:500">${topPlayer?topPlayer.name.split(" ").pop():"—"}</div>
+        <div style="font-size:10px;color:var(--text3)">${topPlayer?"Score: "+topPlayer.score:"No players"}</div>
+      </div>`;
+    }).join("")}
+    </div>
+
+    <!-- League-wide positional rankings breakdown -->
+    <div style="margin-bottom:20px">
+      <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:12px;color:var(--text2)">League Positional Rankings</div>
+      ${posOrder.map(pos=>{
+        const leaguePlayers = leaguePos[pos]||[];
+        const teamPlayerNames = new Set((byPos[pos]||[]).map(r=>r.name));
+        return `<div style="margin-bottom:14px">
+          <div style="font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)">${pos} — ${leaguePlayers.length} players ranked across all 12 teams</div>
+          <div style="display:flex;flex-wrap:wrap;gap:4px">
+          ${leaguePlayers.map((p,i)=>{
+            const isMe = p.teamKey===key;
+            const col = rankColor(i+1, leaguePlayers.length);
+            return `<div title="${p.name} — ${p.teamName} — Score: ${p.score}" style="display:inline-flex;align-items:center;gap:5px;background:${isMe?"rgba(0,229,255,0.1)":"var(--bg3)"};border:1px solid ${isMe?"var(--accent)":"var(--border)"};border-radius:6px;padding:4px 8px;cursor:default">
+              <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:${col};font-weight:600;min-width:18px">#${i+1}</span>
+              <span style="font-size:11px;font-weight:${isMe?"700":"400"};color:${isMe?"var(--accent)":"var(--text)"}">${p.name.split(" ").slice(-1)[0]}</span>
+              <span style="font-size:10px;color:var(--text3)">${p.score}</span>
+            </div>`;
+          }).join("")}
+          </div>
+        </div>`;
+      }).join("")}
+    </div>
+
+    <!-- Full roster table -->
+    <div style="font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:10px;color:var(--text2)">Full Roster</div>
     <div class="tbl-wrap"><table>
-    <thead><tr><th>Pos</th><th>Player</th><th>NFL</th><th>Age</th><th>Rank</th><th>Score</th><th>Tier</th><th>7-day</th></tr></thead>
+    <thead><tr><th>Pos</th><th>Player</th><th>NFL</th><th>Age</th><th>Rank</th><th>Score</th><th>League Pos Rank</th><th>Tier</th><th>Trend</th></tr></thead>
     <tbody>`;
-  posOrder.forEach(pos=>{
+
+  posOrder.concat(["K","DEF"]).forEach(pos=>{
     if(!byPos[pos]||!byPos[pos].length)return;
     byPos[pos].forEach(r=>{
-      const p=getP(r.name);
+      const lrk = r.leagueRank;
+      const lof = r.leagueRankOf;
+      const lrkColor = lrk&&lof ? rankColor(lrk,lof) : "var(--text3)";
+      const lrkLabel = lrk&&lof ? `<span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:${lrkColor}">#${lrk}</span><span style="font-size:10px;color:var(--text3)"> of ${lof}</span>` : "—";
       html+=`<tr onclick="showPlayer('${r.name.replace(/'/g,"\\'")}')">
         <td>${pb(r.pos)}</td>
         <td style="font-weight:500">${r.name}</td>
-        <td class="mono" style="font-size:11px;color:var(--text2)">${p?p.nfl:"—"}</td>
-        <td class="mono" style="font-size:11px;color:var(--text2)">${p?p.age:"—"}</td>
-        <td class="mono" style="color:var(--text3)">${p?"#"+p.rank:"—"}</td>
-        <td><div style="display:flex;align-items:center;gap:6px"><span class="mono" style="font-weight:600">${p?p.score:"—"}</span>${p?`<div class="sbar" style="width:50px"><div class="sbar-fill ${p?barColor(p.score):""}" style="width:${p?p.score:0}%"></div></div>`:""}</div></td>
-        <td>${p?tier(p.score):"<span class='badge b-depth'>—</span>"}</td>
-        <td>${p?spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d"):""} ${p?`<span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span>`:""}</td>
+        <td class="mono" style="font-size:11px;color:var(--text2)">${r.p?r.p.nfl:"—"}</td>
+        <td class="mono" style="font-size:11px;color:var(--text2)">${r.p?r.p.age:"—"}</td>
+        <td class="mono" style="color:var(--text3)">${r.p?"#"+r.p.rank:"—"}</td>
+        <td><div style="display:flex;align-items:center;gap:6px"><span class="mono" style="font-weight:600">${r.score}</span><div class="sbar" style="width:50px"><div class="sbar-fill ${barColor(r.score)}" style="width:${r.score}%"></div></div></div></td>
+        <td>${lrkLabel}</td>
+        <td>${r.p?tier(r.score):"<span class='badge b-depth'>—</span>"}</td>
+        <td>${r.p?spark(r.p.history,r.p.trend>0?"#00ff9d":"#ff4d6d"):""} ${r.p?`<span class="badge ${r.p.trend>0?"b-up":"b-down"}">${r.p.trend>0?"+":""}${r.p.trend}</span>`:""}</td>
       </tr>`;
     });
   });
