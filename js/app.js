@@ -343,10 +343,10 @@ function go(page){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
   document.getElementById("page-"+page).classList.add("active");
-  const pageMap={home:0,power:1,rosters:2,rankings:3,trends:4,metrics:5,trade:6,finder:7,editor:8};
+  const pageMap={home:0,power:1,rosters:2,improve:3,rankings:4,trends:5,metrics:6,trade:7,finder:8,editor:9};
   document.querySelectorAll(".nav-item")[pageMap[page]]?.classList.add("active");
   currentPage=page;
-  const inits={power:initPower,rosters:initRosters,rankings:renderRankings,trends:initTrends,metrics:initMetrics,trade:initTrade,finder:initFinder,editor:initEditor};
+  const inits={power:initPower,rosters:initRosters,improve:initImprove,rankings:renderRankings,trends:initTrends,metrics:initMetrics,trade:initTrade,finder:initFinder,editor:initEditor};
   if(inits[page])inits[page]();
 }
 
@@ -661,10 +661,221 @@ function selectRoster(key){
 }
 
 // ═══════════════════════════════════════════════
-// WAIVER WIRE
+// TEAM IMPROVEMENTS
 // ═══════════════════════════════════════════════
+let improveKey=localStorage.getItem("dc_my_team")||null;
+if(improveKey&&!TEAMS[improveKey])improveKey=null;
 
+function saveMyTeam(k){
+  improveKey=k;
+  if(k)localStorage.setItem("dc_my_team",k);
+  else localStorage.removeItem("dc_my_team");
+  finderKey=k;
+}
 
+function impRankColor(rank,total){
+  const pct=rank/total;
+  if(pct<=0.25)return"var(--green)";
+  if(pct<=0.5)return"var(--accent)";
+  if(pct<=0.67)return"var(--gold)";
+  return"var(--red)";
+}
+
+function getPosImprovementData(key){
+  const posOrder=["QB","RB","WR","TE"];
+  const starterTop={QB:1,RB:3,WR:3,TE:1};
+  return posOrder.map(pos=>{
+    const allTeams=Object.entries(TEAMS).map(([k,t])=>{
+      const scores=t.roster.filter(r=>r.pos.replace("/ST","")===pos).map(r=>ps(r.name)).sort((a,b)=>b-a);
+      const topN=starterTop[pos];
+      const starterAvg=scores.length?Math.round(scores.slice(0,topN).reduce((a,b)=>a+b,0)/Math.min(topN,scores.length)):0;
+      return{teamKey:k,starterAvg,count:scores.length};
+    }).sort((a,b)=>b.starterAvg-a.starterAvg);
+    const rank=allTeams.findIndex(t=>t.teamKey===key)+1;
+    const myPlayers=TEAMS[key].roster.filter(r=>r.pos.replace("/ST","")===pos).map(r=>{
+      const p=getP(r.name);
+      return{name:r.name,pos:r.pos,score:ps(r.name),age:p?p.age:null,p};
+    }).sort((a,b)=>b.score-a.score);
+    const leagueStarterAvg=Math.round(allTeams.reduce((s,t)=>s+t.starterAvg,0)/allTeams.length);
+    const myStarterAvg=myPlayers.length?Math.round(myPlayers.slice(0,starterTop[pos]).reduce((s,p)=>s+p.score,0)/Math.min(starterTop[pos],myPlayers.length)):0;
+    const gap=myStarterAvg-leagueStarterAvg;
+    return{pos,rank,total:allTeams.length,myPlayers,myStarterAvg,leagueStarterAvg,gap,depth:myPlayers.length};
+  });
+}
+
+function improveLabel(rank,total){
+  if(rank<=2)return{label:"Strength",badge:"b-great",color:"var(--green)"};
+  if(rank<=Math.ceil(total/2))return{label:"Solid",badge:"b-solid",color:"var(--gold)"};
+  if(rank<=total-3)return{label:"Needs work",badge:"b-down",color:"var(--orange)"};
+  return{label:"Priority fix",badge:"b-down",color:"var(--red)"};
+}
+
+function posAdvice(pos,rank,total,myPlayers,gap,depth){
+  const tips=[];
+  const weak=myPlayers.filter(p=>p.score<55);
+  const elite=myPlayers.filter(p=>p.score>=74);
+  if(rank>=total-2)tips.push(`Your ${pos} room ranks near the bottom of the league. Target upgrades via trade or draft capital.`);
+  else if(rank>Math.ceil(total/2))tips.push(`Below-average ${pos} production vs other teams. Look to add a higher-scored starter.`);
+  if(gap<-8)tips.push(`Starter quality is about ${Math.abs(gap)} pts below league average — closing that gap should be a focus.`);
+  if(depth<(pos==="WR"?5:pos==="RB"?4:2))tips.push(`Thin depth at ${pos} (${depth} rostered). Dynasty value often comes from depth at this spot.`);
+  if(weak.length)tips.push(`Weakest links: ${weak.map(p=>p.name.split(" ").pop()+" (${p.score})").join(", ")}.`);
+  if(!elite.length)tips.push(`No elite-tier ${pos} on roster (74+ score). One star can anchor the room.`);
+  const ages=myPlayers.filter(p=>p.age).map(p=>p.age);
+  if(ages.length&&ages.reduce((a,b)=>a+b,0)/ages.length>29)tips.push(`Aging ${pos} group — consider younger upside for long-term dynasty value.`);
+  if(!tips.length)tips.push(`Competitive ${pos} room. Maintain depth and monitor trade windows.`);
+  return tips;
+}
+
+function renderImprovements(key){
+  const team=TEAMS[key];
+  const sorted=Object.entries(TEAMS).map(([k])=>({k,score:teamScore(k)})).sort((a,b)=>b.score-a.score);
+  const overallRank=sorted.findIndex(t=>t.k===key)+1;
+  const score=teamScore(key);
+  const {needs,strengths}=getTeamNeeds(key);
+  const posData=getPosImprovementData(key);
+  const top5=team.roster.map(r=>{const p=getP(r.name);return{score:ps(r.name),age:p?p.age:26};}).sort((a,b)=>b.score-a.score).slice(0,5);
+  const youthAvg=top5.length?Math.round(top5.reduce((s,p)=>s+p.age,0)/top5.length*10)/10:0;
+  const eliteCount=team.roster.filter(r=>ps(r.name)>=80).length;
+  const depthCount=team.roster.filter(r=>ps(r.name)<50).length;
+
+  const priorities=[];
+  posData.filter(p=>p.rank>=9).forEach(p=>{
+    priorities.push({sev:"high",title:`Upgrade ${p.pos}`,text:posAdvice(p.pos,p.rank,p.total,p.myPlayers,p.gap,p.depth)[0]});
+  });
+  posData.filter(p=>p.rank>=6&&p.rank<9).forEach(p=>{
+    priorities.push({sev:"med",title:`Improve ${p.pos}`,text:`Ranked #${p.rank} of ${p.total} — starter avg ${p.myStarterAvg} vs league ${p.leagueStarterAvg}.`});
+  });
+  if(youthAvg>=29)priorities.push({sev:"med",title:"Roster aging at the top",text:`Top-5 players average ${youthAvg} years old. Youth adds long-term upside in dynasty.`});
+  if(eliteCount<=1)priorities.push({sev:"med",title:"Star power",text:`Only ${eliteCount} elite player(s) (80+ score). Building around 1–2 studs helps in trades and contention.`});
+  if(depthCount>=6)priorities.push({sev:"low",title:"Replaceable depth",text:`${depthCount} players score under 50 — consider consolidating into a starter upgrade.`});
+  if(!priorities.length)priorities.push({sev:"low",title:"Stay aggressive",text:"No glaring holes. Target buy-low windows and keep depth on the waiver wire."});
+
+  const sevStyle={high:"var(--red)",med:"var(--gold)",low:"var(--text2)"};
+
+  let html=`<div class="card mb">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:20px">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:700">${team.name}</div>
+        <div style="font-size:13px;color:var(--text2);margin-top:4px">Dynasty roster breakdown · where to improve next</div>
+      </div>
+      <div style="display:flex;gap:12px;flex-wrap:wrap">
+        <div class="card-sm" style="text-align:center;min-width:90px">
+          <div class="stat-label">Power rank</div>
+          <div class="stat-val" style="color:${impRankColor(overallRank,sorted.length)}">#${overallRank}</div>
+          <div class="stat-sub">of ${sorted.length}</div>
+        </div>
+        <div class="card-sm" style="text-align:center;min-width:90px">
+          <div class="stat-label">Roster score</div>
+          <div class="stat-val" style="color:var(--accent)">${score}</div>
+        </div>
+        <div class="card-sm" style="text-align:center;min-width:90px">
+          <div class="stat-label">Elite players</div>
+          <div class="stat-val">${eliteCount}</div>
+          <div class="stat-sub">80+ score</div>
+        </div>
+        <div class="card-sm" style="text-align:center;min-width:90px">
+          <div class="stat-label">Top-5 age</div>
+          <div class="stat-val" style="color:${youthAvg<=26?"var(--green)":youthAvg<=29?"var(--gold)":"var(--red)"}">${youthAvg}</div>
+          <div class="stat-sub">yrs avg</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="g2 mb">
+      <div>
+        <div class="section-title" style="color:var(--green)">✓ Strengths</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${strengths.length?strengths.map(s=>`<span class="badge b-great">${s.pos} · avg ${s.avg}</span>`).join(""):`<span style="font-size:13px;color:var(--text3)">No clear surplus positions — focus on upgrades below.</span>`}
+        </div>
+      </div>
+      <div>
+        <div class="section-title" style="color:var(--red)">⚠ Needs attention</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px">
+        ${needs.length?needs.map(n=>`<span class="badge b-down">${n.pos} · avg ${n.avg}</span>`).join(""):`<span style="font-size:13px;color:var(--text3)">No critical positional gaps flagged.</span>`}
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title">🎯 Priority improvements</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:8px">
+    ${priorities.slice(0,6).map((p,i)=>`
+      <div style="display:flex;gap:12px;padding:12px 14px;background:var(--bg3);border:1px solid var(--border);border-left:3px solid ${sevStyle[p.sev]};border-radius:8px">
+        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);min-width:18px">${i+1}</span>
+        <div>
+          <div style="font-weight:600;font-size:14px;margin-bottom:4px">${p.title}</div>
+          <div style="font-size:13px;color:var(--text2);line-height:1.5">${p.text}</div>
+        </div>
+      </div>`).join("")}
+    </div>
+    <button class="btn btn-primary" style="margin-top:8px" onclick="saveMyTeam('${key}');go('finder')">Find trades for this team →</button>
+  </div>`;
+
+  html+=`<div class="section-title mb" style="margin-top:8px">Position-by-position breakdown</div>`;
+  html+=`<div class="g2">`;
+  posData.forEach(p=>{
+    const lab=improveLabel(p.rank,p.total);
+    const tips=posAdvice(p.pos,p.rank,p.total,p.myPlayers,p.gap,p.depth);
+    const starters=p.myPlayers.slice(0,p.pos==="RB"||p.pos==="WR"?3:1);
+    html+=`<div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:center;gap:10px">
+          ${pb(p.pos)}
+          <span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700">${p.pos}</span>
+        </div>
+        <span class="badge ${lab.badge}">${lab.label}</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;text-align:center">
+        <div class="card-sm" style="padding:10px">
+          <div style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace">LEAGUE RANK</div>
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:${lab.color}">#${p.rank}</div>
+          <div style="font-size:10px;color:var(--text3)">of ${p.total}</div>
+        </div>
+        <div class="card-sm" style="padding:10px">
+          <div style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace">STARTER AVG</div>
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--accent)">${p.myStarterAvg}</div>
+          <div style="font-size:10px;color:var(--text3)">league ${p.leagueStarterAvg}</div>
+        </div>
+        <div class="card-sm" style="padding:10px">
+          <div style="font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace">DEPTH</div>
+          <div style="font-family:'Syne',sans-serif;font-size:22px;font-weight:800">${p.depth}</div>
+          <div style="font-size:10px;color:var(--text3)">players</div>
+        </div>
+      </div>
+      <div style="font-size:11px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px">Starters</div>
+      <div style="margin-bottom:12px">
+      ${starters.length?starters.map(pl=>`
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)">
+          <span style="font-size:13px;font-weight:500">${pl.name}</span>
+          <span class="mono" style="font-size:12px;color:var(--accent)">${pl.score}</span>
+        </div>`).join(""):`<span style="font-size:12px;color:var(--text3)">No ${p.pos} on roster</span>`}
+      </div>
+      <div style="font-size:11px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px">What to do</div>
+      <ul style="margin:0;padding-left:18px;font-size:13px;color:var(--text2);line-height:1.6">
+        ${tips.map(t=>`<li style="margin-bottom:4px">${t}</li>`).join("")}
+      </ul>
+    </div>`;
+  });
+  html+=`</div>`;
+
+  document.getElementById("improve-detail").innerHTML=html;
+  document.getElementById("improve-detail").scrollIntoView({behavior:"smooth"});
+}
+
+function initImprove(){
+  const leagueSorted=Object.entries(TEAMS).map(([kk])=>({kk,score:teamScore(kk)})).sort((a,b)=>b.score-a.score);
+  document.getElementById("improve-team-grid").innerHTML=Object.entries(TEAMS).map(([k,t])=>`
+    <div class="team-tile ${improveKey===k?"sel":""}" onclick="selImprove('${k}')">
+      <div style="font-size:13px;font-weight:600;font-family:'Syne',sans-serif">${t.name}</div>
+      <div style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-top:4px">${teamScore(k)} pts · #${leagueSorted.findIndex(x=>x.kk===k)+1} in league</div>
+    </div>`).join("");
+  if(improveKey)renderImprovements(improveKey);
+  else document.getElementById("improve-detail").innerHTML=`<div class="card" style="text-align:center;padding:40px;color:var(--text3)"><div style="font-size:32px;margin-bottom:12px">👆</div><div style="font-size:14px">Select your team above to see strengths, weaknesses, and upgrade priorities.</div></div>`;
+}
+
+function selImprove(k){
+  saveMyTeam(k);
+  initImprove();
+}
 
 // ═══════════════════════════════════════════════
 // RANKINGS TABLE
@@ -921,7 +1132,8 @@ Provide: 1) Clear winner, 2) Age/upside for each player, 3) Positional fit, 4) C
 // ═══════════════════════════════════════════════
 // TRADE FINDER
 // ═══════════════════════════════════════════════
-let finderKey=null;
+let finderKey=localStorage.getItem("dc_my_team")||null;
+if(finderKey&&!TEAMS[finderKey])finderKey=null;
 function initFinder(){
   document.getElementById("finder-team-grid").innerHTML=Object.entries(TEAMS).map(([k,t])=>`
     <div class="team-tile ${finderKey===k?"sel":""}" onclick="selFinder('${k}')">
@@ -929,7 +1141,7 @@ function initFinder(){
       <div style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-top:4px">${teamScore(k)} pts · ${t.roster.length} players</div>
     </div>`).join("");
 }
-function selFinder(k){finderKey=k;initFinder();document.getElementById("finder-btn").disabled=false;document.getElementById("finder-result").innerHTML="";}
+function selFinder(k){saveMyTeam(k);initFinder();document.getElementById("finder-btn").disabled=false;document.getElementById("finder-result").innerHTML="";}
 
 function getTeamNeeds(key){
   const byPos={QB:[],RB:[],WR:[],TE:[]};
