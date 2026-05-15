@@ -2298,7 +2298,7 @@
     {
       "name": "Isaiah Bond",
       "pos": "WR",
-      "nfl": "?",
+      "nfl": "CLE",
       "age": 26,
       "df": 131,
       "rb": 176,
@@ -2374,7 +2374,7 @@
     {
       "name": "Kaytron Allen",
       "pos": "WR",
-      "nfl": "?",
+      "nfl": "WAS",
       "age": 26,
       "df": 160,
       "nsrc": 1,
@@ -2525,6 +2525,444 @@
       "df": 184,
       "nsrc": 1,
       "avgRank": 184
+    },
+    {
+      "name": "George Holani",
+      "pos": "RB",
+      "nfl": "SEA",
+      "age": 23
+    },
+    {
+      "name": "Tre Tucker",
+      "pos": "WR",
+      "nfl": "LV",
+      "age": 25
+    },
+    {
+      "name": "Pat Freiermuth",
+      "pos": "TE",
+      "nfl": "PIT",
+      "age": 27
+    },
+    {
+      "name": "Christian Kirk",
+      "pos": "WR",
+      "nfl": "SF",
+      "age": 29
+    },
+    {
+      "name": "Kaelon Black",
+      "pos": "RB",
+      "nfl": "SF",
+      "age": 23
+    },
+    {
+      "name": "Ja'Kobi Lane",
+      "pos": "WR",
+      "nfl": "BAL",
+      "age": 22
+    },
+    {
+      "name": "Isaac TeSlaa",
+      "pos": "WR",
+      "nfl": "DET",
+      "age": 24
+    },
+    {
+      "name": "Emmett Johnson",
+      "pos": "RB",
+      "nfl": "KC",
+      "age": 22
+    },
+    {
+      "name": "Nicholas Singleton",
+      "pos": "RB",
+      "nfl": "TEN",
+      "age": 22
+    },
+    {
+      "name": "Evan Engram",
+      "pos": "TE",
+      "nfl": "DEN",
+      "age": 31
+    },
+    {
+      "name": "Justice Hill",
+      "pos": "RB",
+      "nfl": "BAL",
+      "age": 26
+    },
+    {
+      "name": "Adonai Mitchell",
+      "pos": "WR",
+      "nfl": "NYJ",
+      "age": 23
+    },
+    {
+      "name": "Keon Coleman",
+      "pos": "WR",
+      "nfl": "BUF",
+      "age": 23
+    },
+    {
+      "name": "Zachariah Branch",
+      "pos": "WR",
+      "nfl": "ATL",
+      "age": 21
+    },
+    {
+      "name": "Rashod Bateman",
+      "pos": "WR",
+      "nfl": "BAL",
+      "age": 26
+    },
+    {
+      "name": "Malik Washington",
+      "pos": "WR",
+      "nfl": "MIA",
+      "age": 25
+    },
+    {
+      "name": "Trey Benson",
+      "pos": "RB",
+      "nfl": "ARI",
+      "age": 23
+    },
+    {
+      "name": "Ray Davis",
+      "pos": "RB",
+      "nfl": "BUF",
+      "age": 26
+    },
+    {
+      "name": "Tre' Harris",
+      "pos": "WR",
+      "nfl": "LAC",
+      "age": 24
+    },
+    {
+      "name": "Malachi Fields",
+      "pos": "WR",
+      "nfl": "NYG",
+      "age": 22
+    },
+    {
+      "name": "Jake Tonges",
+      "pos": "TE",
+      "nfl": "SF",
+      "age": 23
+    },
+    {
+      "name": "Joe Mixon",
+      "pos": "RB",
+      "nfl": "FA",
+      "age": 30
+    },
+    {
+      "name": "Jack Bech",
+      "pos": "WR",
+      "nfl": "LV",
+      "age": 23
+    },
+    {
+      "name": "Jaydon Blue",
+      "pos": "RB",
+      "nfl": "DAL",
+      "age": 22
+    },
+    {
+      "name": "Cade Otton",
+      "pos": "TE",
+      "nfl": "TB",
+      "age": 27
+    },
+    {
+      "name": "Gunnar Helm",
+      "pos": "TE",
+      "nfl": "TEN",
+      "age": 23
+    },
+    {
+      "name": "Samaje Perine",
+      "pos": "RB",
+      "nfl": "CIN",
+      "age": 30
+    },
+    {
+      "name": "Ryan Flournoy",
+      "pos": "WR",
+      "nfl": "DAL",
+      "age": 26
+    },
+    {
+      "name": "Caleb Douglas",
+      "pos": "WR",
+      "nfl": "MIA",
+      "age": 22
+    },
+    {
+      "name": "Mike Gesicki",
+      "pos": "TE",
+      "nfl": "CIN",
+      "age": 29
+    },
+    {
+      "name": "Xavier Legette",
+      "pos": "WR",
+      "nfl": "CAR",
+      "age": 25
+    },
+    {
+      "name": "Mason Taylor",
+      "pos": "TE",
+      "nfl": "NYJ",
+      "age": 22
+    },
+    {
+      "name": "Ollie Gordon II",
+      "pos": "RB",
+      "nfl": "MIA",
+      "age": 22
+    },
+    {
+      "name": "Skyler Bell",
+      "pos": "WR",
+      "nfl": "BUF",
+      "age": 22
+    },
+    {
+      "name": "Kaleb Johnson",
+      "pos": "RB",
+      "nfl": "PIT",
+      "age": 22
+    },
+    {
+      "name": "Ty Johnson",
+      "pos": "RB",
+      "nfl": "BUF",
+      "age": 27
+    },
+    {
+      "name": "Darnell Washington",
+      "pos": "TE",
+      "nfl": "PIT",
+      "age": 23
+    },
+    {
+      "name": "Brashard Smith",
+      "pos": "RB",
+      "nfl": "KC",
+      "age": 23
+    },
+    {
+      "name": "Kyle Juszczyk",
+      "pos": "RB",
+      "nfl": "SF",
+      "age": 34
+    },
+    {
+      "name": "Dawson Knox",
+      "pos": "TE",
+      "nfl": "BUF",
+      "age": 28
+    },
+    {
+      "name": "Devaughn Vele",
+      "pos": "WR",
+      "nfl": "NO",
+      "age": 28
+    },
+    {
+      "name": "Jalen Tolbert",
+      "pos": "WR",
+      "nfl": "MIA",
+      "age": 27
+    },
+    {
+      "name": "Tory Horton",
+      "pos": "WR",
+      "nfl": "SEA",
+      "age": 23
+    },
+    {
+      "name": "Colby Parkinson",
+      "pos": "TE",
+      "nfl": "LAR",
+      "age": 27
+    },
+    {
+      "name": "Cole Kmet",
+      "pos": "TE",
+      "nfl": "CHI",
+      "age": 26
+    },
+    {
+      "name": "Trevor Etienne",
+      "pos": "RB",
+      "nfl": "CAR",
+      "age": 21
+    },
+    {
+      "name": "Shedeur Sanders",
+      "pos": "QB",
+      "nfl": "CLE",
+      "age": 24
+    },
+    {
+      "name": "Jacoby Brissett",
+      "pos": "QB",
+      "nfl": "ARI",
+      "age": 33
+    },
+    {
+      "name": "Carson Beck",
+      "pos": "QB",
+      "nfl": "ARI",
+      "age": 23
+    },
+    {
+      "name": "Tua Tagovailoa",
+      "pos": "QB",
+      "nfl": "ATL",
+      "age": 28
+    },
+    {
+      "name": "Aaron Rodgers",
+      "pos": "QB",
+      "nfl": "FA",
+      "age": 42
+    },
+    {
+      "name": "Justin Fields",
+      "pos": "QB",
+      "nfl": "KC",
+      "age": 27
+    },
+    {
+      "name": "Geno Smith",
+      "pos": "QB",
+      "nfl": "NYJ",
+      "age": 35
+    },
+    {
+      "name": "Ty Simpson",
+      "pos": "QB",
+      "nfl": "LAR",
+      "age": 23
+    },
+    {
+      "name": "Deshaun Watson",
+      "pos": "QB",
+      "nfl": "CLE",
+      "age": 30
+    },
+    {
+      "name": "Kirk Cousins",
+      "pos": "QB",
+      "nfl": "LV",
+      "age": 37
+    },
+    {
+      "name": "Michael Penix Jr.",
+      "pos": "QB",
+      "nfl": "ATL",
+      "age": 26
+    },
+    {
+      "name": "Will Howard",
+      "pos": "QB",
+      "nfl": "PIT",
+      "age": 24
+    },
+    {
+      "name": "Anthony Richardson Sr.",
+      "pos": "QB",
+      "nfl": "IND",
+      "age": 23
+    },
+    {
+      "name": "Drew Allar",
+      "pos": "QB",
+      "nfl": "PIT",
+      "age": 22
+    },
+    {
+      "name": "Joe Milton III",
+      "pos": "QB",
+      "nfl": "DAL",
+      "age": 25
+    },
+    {
+      "name": "Joe Flacco",
+      "pos": "QB",
+      "nfl": "CIN",
+      "age": 41
+    },
+    {
+      "name": "Jameis Winston",
+      "pos": "QB",
+      "nfl": "NYG",
+      "age": 32
+    },
+    {
+      "name": "Jalen Milroe",
+      "pos": "QB",
+      "nfl": "SEA",
+      "age": 23
+    },
+    {
+      "name": "Mason Rudolph",
+      "pos": "QB",
+      "nfl": "PIT",
+      "age": 29
+    },
+    {
+      "name": "Marcus Mariota",
+      "pos": "QB",
+      "nfl": "WAS",
+      "age": 32
+    },
+    {
+      "name": "Riley Leonard",
+      "pos": "QB",
+      "nfl": "IND",
+      "age": 23
+    },
+    {
+      "name": "Tyson Bagent",
+      "pos": "QB",
+      "nfl": "CHI",
+      "age": 25
+    },
+    {
+      "name": "Cade Klubnik",
+      "pos": "QB",
+      "nfl": "NYJ",
+      "age": 23
+    },
+    {
+      "name": "Tanner McKee",
+      "pos": "QB",
+      "nfl": "PHI",
+      "age": 25
+    },
+    {
+      "name": "Quinn Ewers",
+      "pos": "QB",
+      "nfl": "MIA",
+      "age": 23
+    },
+    {
+      "name": "Tommy DeVito",
+      "pos": "QB",
+      "nfl": "NE",
+      "age": 26
+    },
+    {
+      "name": "Taylen Green",
+      "pos": "QB",
+      "nfl": "CLE",
+      "age": 22
     }
   ]
 }
