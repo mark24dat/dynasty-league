@@ -1,0 +1,93 @@
+GOOGLE SHEET — copy this script to update your website list
+============================================================
+
+WHAT THIS DOES
+  Your sheet holds player names and each site's rank (SI, PFF, etc.).
+  The script averages those ranks and saves a file your website reads.
+
+STEP 1 — Make the sheet
+  Create a Google Sheet with columns in row 1:
+  name | pos | nfl | age | si | pff | espn | ktc | pfn | ftn | gen | ktc2 | ffc | df | rb | ffa
+
+  One row per player. Paste ranks when a site updates. Leave blank if unknown.
+
+STEP 2 — Add the script
+  1. In the sheet: Extensions → Apps Script
+  2. Delete any sample code
+  3. Paste the code from the bottom of this file
+  4. Save. Name the project "Dynasty Export"
+
+STEP 3 — Run it
+  1. Run → exportPlayersJson (first time: approve permissions)
+  2. Check your Google Drive — file dynasty-players.json appears
+  3. Download that file
+  4. Rename to players.json and put in your GitHub repo folder: data/players.json
+  5. Push to GitHub (or ask Cursor to push)
+
+STEP 4 — Daily (optional)
+  In Apps Script: Triggers (clock icon) → Add trigger
+  Function: exportPlayersJson
+  Event: Day timer, 6am–7am
+
+  You still paste new ranks into the sheet when sites publish lists.
+  The trigger re-exports the file each morning.
+
+EASIER OPTION (no script)
+  File → Download → CSV
+  Save as: data/sheet-export.csv in your project
+  In Terminal: node scripts/build-players.js
+  Push to GitHub
+
+--- CODE TO PASTE IN APPS SCRIPT ---
+
+function exportPlayersJson() {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheets()[0];
+  var data = sheet.getDataRange().getValues();
+  if (data.length < 2) throw new Error('Need header row + players');
+
+  var headers = data[0].map(function(h) { return String(h).toLowerCase().replace(/\s/g, ''); });
+  var sources = ['si','pff','espn','ktc','pfn','ftn','gen','ktc2','ffc','df','rb','ffa'];
+
+  function col(name) { return headers.indexOf(name); }
+  function num(v) {
+    if (v === '' || v == null) return null;
+    var n = Number(v);
+    return (n > 0) ? n : null;
+  }
+
+  var players = [];
+  for (var r = 1; r < data.length; r++) {
+    var row = data[r];
+    var name = row[col('name')];
+    if (!name) continue;
+    var p = {
+      name: String(name),
+      pos: row[col('pos')] || 'WR',
+      nfl: row[col('nfl')] || row[col('team')] || '',
+      age: num(row[col('age')]) || 25
+    };
+    var sum = 0, count = 0;
+    sources.forEach(function(src) {
+      var i = col(src);
+      if (i < 0) return;
+      var v = num(row[i]);
+      if (v != null) { p[src] = v; sum += v; count++; }
+    });
+    if (count > 0) {
+      p.avgRank = Math.round(sum / count * 10) / 10;
+      p.nsrc = count;
+    }
+    players.push(p);
+  }
+  players.sort(function(a, b) { return (a.avgRank || 999) - (b.avgRank || 999); });
+
+  var out = {
+    updatedAt: Utilities.formatDate(new Date(), Session.getScriptTimeZone(), 'yyyy-MM-dd'),
+    sourceNote: 'Exported from Google Sheet',
+    players: players
+  };
+
+  var json = JSON.stringify(out, null, 2);
+  var file = DriveApp.createFile('dynasty-players.json', json, MimeType.PLAIN_TEXT);
+  SpreadsheetApp.getUi().alert('Done! Download "' + file.getName() + '" from Google Drive and upload to GitHub as data/players.json');
+}

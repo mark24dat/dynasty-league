@@ -1,202 +1,58 @@
-const PLAYERS = [
-  {name:"Ja'Marr Chase",pos:"WR",nfl:"CIN",age:26,avgRank:2.3,nsrc:12,si:2,pff:3,espn:3,ktc:3,pfn:5,ftn:4,gen:2,ktc2:2,ffc:1,df:1,rb:1,ffa:1},
-  {name:"Bijan Robinson",pos:"RB",nfl:"ATL",age:24,avgRank:2.8,nsrc:12,si:3,pff:5,espn:1,ktc:1,pfn:4,ftn:1,gen:1,ktc2:3,ffc:3,df:5,rb:3,ffa:3},
-  {name:"Jahmyr Gibbs",pos:"RB",nfl:"DET",age:24,avgRank:4.6,nsrc:12,si:4,pff:4,espn:4,ktc:5,pfn:8,ftn:2,gen:3,ktc2:5,ffc:5,df:6,rb:4,ffa:5},
-  {name:"Jaxon Smith-Njigba",pos:"WR",nfl:"SEA",age:24,avgRank:5.0,nsrc:12,si:5,pff:1,espn:5,ktc:4,pfn:6,ftn:6,gen:4,ktc2:4,ffc:18,df:3,rb:2,ffa:2},
-  {name:"Puka Nacua",pos:"WR",nfl:"LAR",age:25,avgRank:5.1,nsrc:12,si:1,pff:2,espn:2,ktc:7,pfn:12,ftn:5,gen:4,ktc2:7,ffc:8,df:2,rb:5,ffa:6},
-  {name:"CeeDee Lamb",pos:"WR",nfl:"DAL",age:27,avgRank:8.6,nsrc:11,si:8,pff:11,espn:8,ktc:null,pfn:7,ftn:9,gen:7,ktc2:19,ffc:4,df:4,rb:9,ffa:9},
-  {name:"Justin Jefferson",pos:"WR",nfl:"MIN",age:27,avgRank:9.5,nsrc:11,si:7,pff:9,espn:null,ktc:13,pfn:14,ftn:21,gen:8,ktc2:13,ffc:2,df:7,rb:6,ffa:4},
-  {name:"Amon-Ra St. Brown",pos:"WR",nfl:"DET",age:26,avgRank:9.7,nsrc:12,si:6,pff:7,espn:7,ktc:12,pfn:23,ftn:11,gen:9,ktc2:11,ffc:7,df:8,rb:8,ffa:7},
-  {name:"Malik Nabers",pos:"WR",nfl:"NYG",age:23,avgRank:10.6,nsrc:11,si:9,pff:10,espn:null,ktc:10,pfn:16,ftn:15,gen:12,ktc2:10,ffc:6,df:10,rb:7,ffa:12},
-  {name:"De'Von Achane",pos:"RB",nfl:"MIA",age:24,avgRank:11.5,nsrc:12,si:12,pff:13,espn:5,ktc:11,pfn:11,ftn:7,gen:6,ktc2:22,ffc:14,df:9,rb:14,ffa:14},
-  {name:"Ashton Jeanty",pos:"RB",nfl:"LV",age:22,avgRank:12.2,nsrc:10,si:10,pff:12,espn:null,ktc:null,pfn:10,ftn:16,gen:15,ktc2:16,ffc:11,df:11,rb:10,ffa:11},
-  {name:"Jeremiyah Love",pos:"RB",nfl:"ARI",age:20,avgRank:12.6,nsrc:7,si:11,pff:15,espn:null,ktc:14,pfn:null,ftn:null,gen:null,ktc2:14,ffc:null,df:12,rb:12,ffa:10},
-  {name:"Drake London",pos:"WR",nfl:"ATL",age:25,avgRank:14.0,nsrc:8,si:14,pff:18,espn:null,ktc:null,pfn:null,ftn:null,gen:12,ktc2:21,ffc:15,df:13,rb:11,ffa:8},
-  {name:"James Cook III",pos:"RB",nfl:"BUF",age:27,avgRank:15.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:15,rb:null,ffa:null},
-  {name:"Brock Bowers",pos:"TE",nfl:"LV",age:23,avgRank:15.5,nsrc:11,si:15,pff:8,espn:null,ktc:8,pfn:13,ftn:26,gen:20,ktc2:8,ffc:13,df:31,rb:13,ffa:15},
-  {name:"Trey McBride",pos:"TE",nfl:"ARI",age:26,avgRank:16.4,nsrc:9,si:13,pff:6,espn:null,ktc:null,pfn:null,ftn:14,gen:17,ktc2:17,ffc:24,df:23,rb:15,ffa:19},
-  {name:"Jonathan Taylor",pos:"RB",nfl:"IND",age:27,avgRank:18.3,nsrc:10,si:17,pff:17,espn:null,ktc:null,pfn:20,ftn:8,gen:7,ktc2:35,ffc:26,df:16,rb:16,ffa:21},
-  {name:"Tetairoa McMillan",pos:"WR",nfl:"CAR",age:23,avgRank:19.0,nsrc:6,si:18,pff:20,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:27,ffc:null,df:18,rb:18,ffa:13},
-  {name:"Nico Collins",pos:"WR",nfl:"HOU",age:27,avgRank:20.3,nsrc:9,si:19,pff:22,espn:null,ktc:null,pfn:null,ftn:17,gen:16,ktc2:42,ffc:10,df:17,rb:20,ffa:20},
-  {name:"Drake Maye",pos:"QB",nfl:"NE",age:24,avgRank:20.6,nsrc:8,si:28,pff:21,espn:null,ktc:6,pfn:9,ftn:null,gen:null,ktc2:6,ffc:null,df:25,rb:27,ffa:43},
-  {name:"Emeka Egbuka",pos:"WR",nfl:"TB",age:23,avgRank:21.2,nsrc:6,si:20,pff:19,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:30,ffc:null,df:22,rb:19,ffa:17},
-  {name:"Josh Allen",pos:"QB",nfl:"BUF",age:30,avgRank:21.9,nsrc:9,si:22,pff:14,espn:null,ktc:null,pfn:1,ftn:30,gen:24,ktc2:null,ffc:20,df:19,rb:21,ffa:46},
-  {name:"Omarion Hampton",pos:"RB",nfl:"LAC",age:23,avgRank:21.9,nsrc:8,si:21,pff:23,espn:null,ktc:null,pfn:null,ftn:19,gen:null,ktc2:25,ffc:23,df:21,rb:25,ffa:18},
-  {name:"George Pickens",pos:"WR",nfl:"DAL",age:25,avgRank:23.7,nsrc:7,si:23,pff:25,espn:null,ktc:null,pfn:null,ftn:25,gen:null,ktc2:33,ffc:null,df:20,rb:24,ffa:16},
-  {name:"Jayden Daniels",pos:"QB",nfl:"WAS",age:25,avgRank:27.8,nsrc:9,si:41,pff:37,espn:null,ktc:11,pfn:7,ftn:null,gen:null,ktc2:12,ffc:27,df:28,rb:32,ffa:55},
-  {name:"Lamar Jackson",pos:"QB",nfl:"BAL",age:29,avgRank:27.9,nsrc:9,si:36,pff:28,espn:null,ktc:15,pfn:2,ftn:null,gen:null,ktc2:15,ffc:25,df:36,rb:31,ffa:63},
-  {name:"Garrett Wilson",pos:"WR",nfl:"NYJ",age:26,avgRank:28.1,nsrc:8,si:29,pff:30,espn:null,ktc:null,pfn:null,ftn:29,gen:null,ktc2:40,ffc:21,df:26,rb:23,ffa:27},
-  {name:"Rashee Rice",pos:"WR",nfl:"KC",age:26,avgRank:28.6,nsrc:7,si:16,pff:16,espn:null,ktc:null,pfn:null,ftn:13,gen:null,ktc2:null,ffc:70,df:14,rb:26,ffa:45},
-  {name:"Ladd McConkey",pos:"WR",nfl:"LAC",age:24,avgRank:29.0,nsrc:6,si:35,pff:36,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:17,df:27,rb:29,ffa:30},
-  {name:"Carnell Tate",pos:"WR",nfl:"TEN",age:21,avgRank:29.2,nsrc:6,si:24,pff:27,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:36,ffc:null,df:37,rb:22,ffa:29},
-  {name:"Jordyn Tyson",pos:"WR",nfl:"NO",age:21,avgRank:32.6,nsrc:5,si:37,pff:41,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:29,rb:28,ffa:28},
-  {name:"A.J. Brown",pos:"WR",nfl:"PHI",age:29,avgRank:32.7,nsrc:7,si:39,pff:40,espn:null,ktc:null,pfn:null,ftn:28,gen:null,ktc2:null,ffc:16,df:32,rb:35,ffa:39},
-  {name:"Chris Olave",pos:"WR",nfl:"NO",age:26,avgRank:34.1,nsrc:7,si:27,pff:29,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:45,ffc:52,df:30,rb:30,ffa:26},
-  {name:"Kenneth Walker III",pos:"RB",nfl:"KC",age:25,avgRank:34.7,nsrc:7,si:31,pff:31,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:48,ffc:40,df:24,rb:36,ffa:33},
-  {name:"Christian McCaffrey",pos:"RB",nfl:"SF",age:30,avgRank:35.1,nsrc:8,si:47,pff:50,espn:null,ktc:null,pfn:null,ftn:3,gen:8,ktc2:null,ffc:31,df:52,rb:34,ffa:56},
-  {name:"Colston Loveland",pos:"TE",nfl:"CHI",age:22,avgRank:35.2,nsrc:6,si:34,pff:33,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:32,ffc:null,df:44,rb:45,ffa:23},
-  {name:"Bucky Irving",pos:"RB",nfl:"TB",age:24,avgRank:35.4,nsrc:9,si:32,pff:35,espn:null,ktc:22,pfn:22,ftn:24,gen:null,ktc2:null,ffc:22,df:62,rb:52,ffa:48},
-  {name:"Luther Burden III",pos:"WR",nfl:"CHI",age:22,avgRank:35.8,nsrc:5,si:33,pff:34,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:40,rb:38,ffa:34},
-  {name:"Chase Brown",pos:"RB",nfl:"CIN",age:26,avgRank:37.4,nsrc:8,si:42,pff:43,espn:null,ktc:null,pfn:15,ftn:20,gen:null,ktc2:null,ffc:36,df:50,rb:42,ffa:51},
-  {name:"Saquon Barkley",pos:"RB",nfl:"PHI",age:29,avgRank:38.3,nsrc:9,si:56,pff:60,espn:null,ktc:21,pfn:21,ftn:23,gen:null,ktc2:null,ffc:12,df:55,rb:39,ffa:58},
-  {name:"TreVeyon Henderson",pos:"RB",nfl:"NE",age:23,avgRank:39.4,nsrc:8,si:26,pff:26,espn:null,ktc:null,pfn:null,ftn:27,gen:null,ktc2:50,ffc:42,df:65,rb:43,ffa:36},
-  {name:"Tee Higgins",pos:"WR",nfl:"CIN",age:27,avgRank:40.0,nsrc:6,si:38,pff:38,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:28,df:57,rb:44,ffa:35},
-  {name:"DeVonta Smith",pos:"WR",nfl:"PHI",age:27,avgRank:40.0,nsrc:6,si:40,pff:42,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:30,df:41,rb:50,ffa:37},
-  {name:"Caleb Williams",pos:"QB",nfl:"CHI",age:24,avgRank:40.7,nsrc:7,si:48,pff:51,espn:null,ktc:9,pfn:null,ftn:null,gen:null,ktc2:9,ffc:null,df:54,rb:55,ffa:59},
-  {name:"Zay Flowers",pos:"WR",nfl:"BAL",age:26,avgRank:41.8,nsrc:5,si:30,pff:32,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:67,rb:49,ffa:31},
-  {name:"Breece Hall",pos:"RB",nfl:"NYJ",age:25,avgRank:42.0,nsrc:7,si:45,pff:47,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:46,ffc:29,df:39,rb:47,ffa:41},
-  {name:"Kyren Williams",pos:"RB",nfl:"LAR",age:26,avgRank:42.7,nsrc:7,si:44,pff:46,espn:null,ktc:null,pfn:18,ftn:null,gen:null,ktc2:null,ffc:35,df:35,rb:53,ffa:68},
-  {name:"Jaylen Waddle",pos:"WR",nfl:"DEN",age:27,avgRank:43.1,nsrc:7,si:54,pff:59,espn:null,ktc:null,pfn:23,ftn:null,gen:null,ktc2:null,ffc:45,df:33,rb:48,ffa:40},
-  {name:"Tyler Warren",pos:"TE",nfl:"IND",age:24,avgRank:43.3,nsrc:6,si:46,pff:39,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:38,ffc:null,df:47,rb:46,ffa:44},
-  {name:"Makai Lemon",pos:"WR",nfl:"PHI",age:21,avgRank:43.6,nsrc:5,si:52,pff:57,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:34,rb:37,ffa:38},
-  {name:"Rome Odunze",pos:"WR",nfl:"CHI",age:24,avgRank:43.7,nsrc:7,si:51,pff:55,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:49,ffc:37,df:49,rb:41,ffa:24},
-  {name:"Brian Thomas Jr.",pos:"WR",nfl:"JAC",age:23,avgRank:44.3,nsrc:6,si:68,pff:73,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:9,df:43,rb:51,ffa:22},
-  {name:"Marvin Harrison Jr.",pos:"WR",nfl:"ARI",age:24,avgRank:45.0,nsrc:6,si:66,pff:65,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:19,df:38,rb:33,ffa:49},
-  {name:"Joe Burrow",pos:"QB",nfl:"CIN",age:29,avgRank:45.4,nsrc:7,si:49,pff:48,espn:null,ktc:null,pfn:15,ftn:null,gen:null,ktc2:18,ffc:null,df:42,rb:61,ffa:85},
-  {name:"Justin Herbert",pos:"QB",nfl:"LAC",age:28,avgRank:48.3,nsrc:7,si:55,pff:49,espn:null,ktc:null,pfn:19,ftn:null,gen:null,ktc2:24,ffc:null,df:46,rb:75,ffa:70},
-  {name:"Quinshon Judkins",pos:"RB",nfl:"CLE",age:22,avgRank:48.3,nsrc:7,si:43,pff:44,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:47,ffc:46,df:68,rb:40,ffa:50},
-  {name:"Jalen Hurts",pos:"QB",nfl:"PHI",age:28,avgRank:49.1,nsrc:8,si:50,pff:45,espn:null,ktc:null,pfn:17,ftn:null,gen:null,ktc2:28,ffc:53,df:45,rb:63,ffa:92},
-  {name:"Josh Jacobs",pos:"RB",nfl:"GB",age:28,avgRank:49.4,nsrc:8,si:69,pff:72,espn:null,ktc:null,pfn:23,ftn:18,gen:null,ktc2:null,ffc:38,df:64,rb:57,ffa:54},
-  {name:"Patrick Mahomes",pos:"QB",nfl:"KC",age:31,avgRank:50.8,nsrc:8,si:58,pff:53,espn:null,ktc:null,pfn:3,ftn:null,gen:null,ktc2:23,ffc:39,df:51,rb:66,ffa:113},
-  {name:"Travis Etienne Jr.",pos:"RB",nfl:"NO",age:27,avgRank:52.0,nsrc:7,si:59,pff:63,espn:null,ktc:null,pfn:19,ftn:null,gen:null,ktc2:null,ffc:34,df:66,rb:56,ffa:67},
-  {name:"Jameson Williams",pos:"WR",nfl:"DET",age:25,avgRank:54.8,nsrc:5,si:63,pff:66,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:59,rb:54,ffa:32},
-  {name:"Harold Fannin Jr.",pos:"TE",nfl:"CLE",age:22,avgRank:55.8,nsrc:5,si:57,pff:54,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:48,rb:59,ffa:61},
-  {name:"Jadarian Price",pos:"RB",nfl:"SEA",age:22,avgRank:59.2,nsrc:5,si:53,pff:56,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:80,rb:60,ffa:47},
-  {name:"Jaxson Dart",pos:"QB",nfl:"NYG",age:23,avgRank:62.2,nsrc:6,si:60,pff:64,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:26,ffc:null,df:72,rb:78,ffa:73},
-  {name:"KC Concepcion",pos:"WR",nfl:"CLE",age:21,avgRank:64.8,nsrc:5,si:67,pff:74,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:70,rb:71,ffa:42},
-  {name:"Jordan Addison",pos:"WR",nfl:"MIN",age:24,avgRank:65.0,nsrc:6,si:71,pff:78,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:41,df:71,rb:64,ffa:65},
-  {name:"Tucker Kraft",pos:"TE",nfl:"GB",age:25,avgRank:65.4,nsrc:5,si:61,pff:62,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:58,rb:70,ffa:76},
-  {name:"Cam Skattebo",pos:"RB",nfl:"NYG",age:24,avgRank:65.4,nsrc:5,si:65,pff:70,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:77,rb:58,ffa:57},
-  {name:"Sam LaPorta",pos:"TE",nfl:"DET",age:25,avgRank:66.2,nsrc:6,si:76,pff:75,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:33,df:69,rb:65,ffa:79},
-  {name:"Javonte Williams",pos:"RB",nfl:"DAL",age:25,avgRank:66.4,nsrc:5,si:62,pff:68,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:87,rb:62,ffa:53},
-  {name:"DJ Moore",pos:"WR",nfl:"BUF",age:28,avgRank:67.5,nsrc:4,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:48,df:93,rb:67,ffa:62},
-  {name:"Kyle Pitts Sr.",pos:"TE",nfl:"ATL",age:25,avgRank:68.0,nsrc:5,si:64,pff:69,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:53,rb:74,ffa:80},
-  {name:"DK Metcalf",pos:"WR",nfl:"PIT",age:28,avgRank:69.2,nsrc:6,si:82,pff:79,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:44,df:75,rb:69,ffa:66},
-  {name:"Bo Nix",pos:"QB",nfl:"DEN",age:26,avgRank:69.8,nsrc:4,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:31,ffc:null,df:56,rb:96,ffa:96},
-  {name:"Terry McLaurin",pos:"WR",nfl:"WAS",age:31,avgRank:70.3,nsrc:7,si:75,pff:82,espn:null,ktc:null,pfn:null,ftn:32,gen:null,ktc2:null,ffc:43,df:83,rb:82,ffa:95},
-  {name:"RJ Harvey",pos:"RB",nfl:"DEN",age:25,avgRank:73.8,nsrc:6,si:74,pff:77,espn:null,ktc:null,pfn:17,ftn:null,gen:null,ktc2:null,ffc:null,df:120,rb:84,ffa:71},
-  {name:"Christian Watson",pos:"WR",nfl:"GB",age:27,avgRank:74.0,nsrc:5,si:72,pff:80,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:79,rb:87,ffa:52},
-  {name:"Derrick Henry",pos:"RB",nfl:"BAL",age:32,avgRank:74.4,nsrc:7,si:89,pff:85,espn:null,ktc:null,pfn:null,ftn:29,gen:null,ktc2:null,ffc:75,df:86,rb:73,ffa:84},
-  {name:"Bhayshul Tuten",pos:"RB",nfl:"JAC",age:23,avgRank:74.7,nsrc:6,si:90,pff:88,espn:null,ktc:null,pfn:24,ftn:null,gen:null,ktc2:null,ffc:null,df:101,rb:68,ffa:77},
-  {name:"Trevor Lawrence",pos:"QB",nfl:"JAC",age:26,avgRank:77.3,nsrc:6,si:70,pff:76,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:29,ffc:null,df:60,rb:101,ffa:128},
-  {name:"Kenyon Sadiq",pos:"TE",nfl:"NYJ",age:21,avgRank:79.2,nsrc:5,si:87,pff:91,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:63,rb:81,ffa:74},
-  {name:"Xavier Worthy",pos:"WR",nfl:"KC",age:23,avgRank:80.7,nsrc:6,si:86,pff:84,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:47,df:73,rb:105,ffa:89},
-  {name:"Jayden Higgins",pos:"WR",nfl:"HOU",age:23,avgRank:80.8,nsrc:5,si:85,pff:83,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:82,rb:90,ffa:64},
-  {name:"Matthew Golden",pos:"WR",nfl:"GB",age:23,avgRank:82.6,nsrc:5,si:81,pff:71,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:100,rb:89,ffa:72},
-  {name:"Michael Pittman Jr.",pos:"WR",nfl:"PIT",age:28,avgRank:83.0,nsrc:7,si:93,pff:92,espn:null,ktc:null,pfn:null,ftn:31,gen:null,ktc2:null,ffc:63,df:92,rb:109,ffa:101},
-  {name:"Brock Purdy",pos:"QB",nfl:"SF",age:26,avgRank:83.2,nsrc:6,si:91,pff:87,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:37,ffc:null,df:61,rb:108,ffa:115},
-  {name:"Davante Adams",pos:"WR",nfl:"LAR",age:33,avgRank:84.0,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:94,rb:83,ffa:75},
-  {name:"Wan'Dale Robinson",pos:"WR",nfl:"TEN",age:25,avgRank:84.2,nsrc:6,si:94,pff:97,espn:null,ktc:null,pfn:44,ftn:null,gen:null,ktc2:null,ffc:null,df:95,rb:77,ffa:98},
-  {name:"Kyle Monangai",pos:"RB",nfl:"CHI",age:24,avgRank:85.2,nsrc:6,si:95,pff:99,espn:null,ktc:null,pfn:35,ftn:null,gen:null,ktc2:null,ffc:null,df:104,rb:88,ffa:90},
-  {name:"Omar Cooper Jr.",pos:"WR",nfl:"NYJ",age:22,avgRank:86.4,nsrc:5,si:83,pff:86,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:115,rb:79,ffa:69},
-  {name:"Courtland Sutton",pos:"WR",nfl:"DEN",age:30,avgRank:89.0,nsrc:6,si:97,pff:98,espn:null,ktc:null,pfn:30,ftn:null,gen:null,ktc2:null,ffc:null,df:113,rb:91,ffa:105},
-  {name:"Alec Pierce",pos:"WR",nfl:"IND",age:26,avgRank:89.0,nsrc:2,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:102,rb:76,ffa:null},
-  {name:"Ricky Pearsall",pos:"WR",nfl:"SF",age:26,avgRank:89.8,nsrc:5,si:108,pff:110,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:76,rb:95,ffa:60},
-  {name:"Fernando Mendoza",pos:"QB",nfl:"LV",age:22,avgRank:96.3,nsrc:6,si:103,pff:102,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:41,ffc:null,df:84,rb:125,ffa:123},
-  {name:"Jordan Love",pos:"QB",nfl:"GB",age:27,avgRank:96.5,nsrc:6,si:92,pff:89,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:44,ffc:null,df:109,rb:114,ffa:131},
-  {name:"Jaylen Warren",pos:"RB",nfl:"PIT",age:27,avgRank:96.5,nsrc:6,si:110,pff:112,espn:null,ktc:null,pfn:32,ftn:null,gen:null,ktc2:null,ffc:null,df:90,rb:103,ffa:132},
-  {name:"Jayden Reed",pos:"WR",nfl:"GB",age:26,avgRank:97.4,nsrc:7,si:125,pff:128,espn:null,ktc:null,pfn:42,ftn:null,gen:null,ktc2:null,ffc:79,df:128,rb:102,ffa:78},
-  {name:"Chris Godwin Jr.",pos:"WR",nfl:"TB",age:30,avgRank:98.7,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:105,rb:98,ffa:93},
-  {name:"David Montgomery",pos:"RB",nfl:"HOU",age:29,avgRank:99.7,nsrc:6,si:114,pff:117,espn:null,ktc:null,pfn:27,ftn:null,gen:null,ktc2:null,ffc:null,df:136,rb:97,ffa:107},
-  {name:"Jakobi Meyers",pos:"WR",nfl:"JAC",age:29,avgRank:100.0,nsrc:6,si:122,pff:125,espn:null,ktc:null,pfn:null,ftn:39,gen:null,ktc2:null,ffc:null,df:124,rb:86,ffa:104},
-  {name:"Parker Washington",pos:"WR",nfl:"JAC",age:24,avgRank:100.0,nsrc:5,si:101,pff:104,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:112,rb:100,ffa:83},
-  {name:"Rhamondre Stevenson",pos:"RB",nfl:"NE",age:28,avgRank:100.3,nsrc:7,si:112,pff:115,espn:null,ktc:null,pfn:30,ftn:null,gen:null,ktc2:null,ffc:69,df:132,rb:142,ffa:102},
-  {name:"Jake Ferguson",pos:"TE",nfl:"DAL",age:27,avgRank:100.8,nsrc:4,si:104,pff:106,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:78,rb:115,ffa:null},
-  {name:"D'Andre Swift",pos:"RB",nfl:"CHI",age:27,avgRank:101.2,nsrc:5,si:100,pff:101,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:98,rb:80,ffa:127},
-  {name:"Denzel Boston",pos:"WR",nfl:"CLE",age:22,avgRank:103.0,nsrc:5,si:99,pff:96,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:134,rb:99,ffa:87},
-  {name:"Oronde Gadsden",pos:"TE",nfl:"LAC",age:23,avgRank:103.8,nsrc:5,si:132,pff:133,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:74,rb:94,ffa:86},
-  {name:"Khalil Shakir",pos:"WR",nfl:"BUF",age:26,avgRank:104.0,nsrc:6,si:123,pff:126,espn:null,ktc:null,pfn:35,ftn:null,gen:null,ktc2:null,ffc:null,df:97,rb:122,ffa:121},
-  {name:"Dak Prescott",pos:"QB",nfl:"DAL",age:33,avgRank:104.5,nsrc:2,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:96,rb:113,ffa:null},
-  {name:"Tony Pollard",pos:"RB",nfl:"TEN",age:28,avgRank:104.7,nsrc:6,si:115,pff:118,espn:null,ktc:null,pfn:25,ftn:null,gen:null,ktc2:null,ffc:77,df:156,rb:137,ffa:null},
-  {name:"Josh Downs",pos:"WR",nfl:"IND",age:25,avgRank:104.8,nsrc:5,si:124,pff:127,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:99,rb:93,ffa:81},
-  {name:"Isaiah Likely",pos:"TE",nfl:"NYG",age:26,avgRank:105.2,nsrc:5,si:107,pff:105,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:89,rb:128,ffa:97},
-  {name:"Mike Evans",pos:"WR",nfl:"SF",age:33,avgRank:106.0,nsrc:5,si:121,pff:124,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:106,rb:85,ffa:94},
-  {name:"Dalton Kincaid",pos:"TE",nfl:"BUF",age:27,avgRank:107.6,nsrc:5,si:111,pff:113,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:81,rb:107,ffa:126},
-  {name:"Bryce Young",pos:"QB",nfl:"CAR",age:24,avgRank:111.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:111,rb:null,ffa:null},
-  {name:"Zach Charbonnet",pos:"RB",nfl:"SEA",age:25,avgRank:111.6,nsrc:5,si:96,pff:94,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:145,rb:104,ffa:119},
-  {name:"Chris Bell",pos:"WR",nfl:"MIA",age:21,avgRank:112.0,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:118,rb:119,ffa:99},
-  {name:"Chuba Hubbard",pos:"RB",nfl:"CAR",age:27,avgRank:112.4,nsrc:5,si:106,pff:108,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:108,rb:120,ffa:120},
-  {name:"Quentin Johnston",pos:"WR",nfl:"LAC",age:25,avgRank:112.6,nsrc:5,si:113,pff:116,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:122,rb:124,ffa:88},
-  {name:"Rico Dowdle",pos:"RB",nfl:"PIT",age:28,avgRank:112.8,nsrc:6,si:126,pff:129,espn:null,ktc:null,pfn:33,ftn:null,gen:null,ktc2:null,ffc:null,df:129,rb:126,ffa:134},
-  {name:"Eli Stowers",pos:"TE",nfl:"PHI",age:23,avgRank:113.0,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:117,rb:110,ffa:112},
-  {name:"De'Zhaun Stribling",pos:"WR",nfl:"SF",age:21,avgRank:115.3,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:135,rb:111,ffa:100},
-  {name:"Germie Bernard",pos:"WR",nfl:"PIT",age:22,avgRank:115.8,nsrc:4,si:109,pff:107,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:null,rb:123,ffa:124},
-  {name:"Blake Corum",pos:"RB",nfl:"LAR",age:25,avgRank:116.4,nsrc:5,si:116,pff:119,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:133,rb:106,ffa:108},
-  {name:"Travis Hunter",pos:"WR",nfl:"JAC",age:23,avgRank:119.4,nsrc:5,si:138,pff:140,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:125,rb:112,ffa:82},
-  {name:"George Kittle",pos:"TE",nfl:"SF",age:32,avgRank:120.8,nsrc:5,si:88,pff:90,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:167,rb:118,ffa:141},
-  {name:"Justin Joly",pos:"WR",nfl:"?",age:26,avgRank:121.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:121,rb:null,ffa:null},
-  {name:"J.K. Dobbins",pos:"RB",nfl:"DEN",age:27,avgRank:121.4,nsrc:5,si:141,pff:143,espn:null,ktc:null,pfn:26,ftn:null,gen:null,ktc2:null,ffc:null,df:161,rb:136,ffa:null},
-  {name:"Antonio Williams",pos:"WR",nfl:"WAS",age:21,avgRank:121.8,nsrc:5,si:146,pff:149,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:107,rb:116,ffa:91},
-  {name:"C.J. Stroud",pos:"QB",nfl:"HOU",age:24,avgRank:122.0,nsrc:6,si:133,pff:135,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:66,df:127,rb:131,ffa:140},
-  {name:"Max Klare",pos:"WR",nfl:"?",age:26,avgRank:123.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:123,rb:null,ffa:null},
-  {name:"Woody Marks",pos:"RB",nfl:"HOU",age:25,avgRank:123.8,nsrc:5,si:128,pff:131,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:88,rb:134,ffa:138},
-  {name:"Baker Mayfield",pos:"QB",nfl:"TB",age:31,avgRank:126.0,nsrc:5,si:129,pff:132,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:91,rb:132,ffa:146},
-  {name:"Rachaad White",pos:"RB",nfl:"WAS",age:27,avgRank:126.7,nsrc:6,si:147,pff:150,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:51,df:169,rb:129,ffa:114},
-  {name:"Brandon Aiyuk",pos:"WR",nfl:"SF",age:28,avgRank:126.8,nsrc:6,si:186,pff:186,espn:null,ktc:null,pfn:38,ftn:null,gen:null,ktc2:null,ffc:49,df:164,rb:138,ffa:null},
-  {name:"Tyreek Hill",pos:"WR",nfl:"FA",age:32,avgRank:127.5,nsrc:4,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:32,df:165,rb:164,ffa:149},
-  {name:"Cam Ward",pos:"QB",nfl:"TEN",age:23,avgRank:128.0,nsrc:2,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:139,rb:117,ffa:null},
-  {name:"Jared Goff",pos:"QB",nfl:"DET",age:31,avgRank:128.4,nsrc:5,si:119,pff:120,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:110,rb:148,ffa:145},
-  {name:"Aaron Jones Sr.",pos:"RB",nfl:"MIN",age:31,avgRank:129.9,nsrc:7,si:158,pff:160,espn:null,ktc:null,pfn:28,ftn:null,gen:null,ktc2:null,ffc:81,df:175,rb:165,ffa:142},
-  {name:"Michael Wilson",pos:"WR",nfl:"ARI",age:26,avgRank:130.0,nsrc:2,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:85,rb:175,ffa:null},
-  {name:"Terrance Ferguson",pos:"WR",nfl:"?",age:26,avgRank:130.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:130,rb:null,ffa:null},
-  {name:"Jonah Coleman",pos:"RB",nfl:"DEN",age:22,avgRank:130.2,nsrc:5,si:145,pff:148,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:148,rb:92,ffa:118},
-  {name:"Kyler Murray",pos:"QB",nfl:"MIN",age:29,avgRank:133.6,nsrc:5,si:134,pff:136,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:126,rb:133,ffa:139},
-  {name:"Romeo Doubs",pos:"WR",nfl:"NE",age:26,avgRank:136.2,nsrc:5,si:144,pff:147,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:166,rb:121,ffa:103},
-  {name:"Mark Andrews",pos:"TE",nfl:"BAL",age:31,avgRank:137.3,nsrc:6,si:131,pff:134,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:60,df:179,rb:168,ffa:152},
-  {name:"Jalen Coker",pos:"WR",nfl:"CAR",age:24,avgRank:137.6,nsrc:5,si:151,pff:154,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:119,rb:127,ffa:137},
-  {name:"Jonathon Brooks",pos:"RB",nfl:"CAR",age:23,avgRank:138.0,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:162,rb:130,ffa:122},
-  {name:"Jacory Croskey-Merritt",pos:"RB",nfl:"WAS",age:25,avgRank:139.5,nsrc:4,si:118,pff:121,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:174,rb:145,ffa:null},
-  {name:"Jonathan Brooks",pos:"RB",nfl:"CAR",age:23,avgRank:140.0,nsrc:2,si:139,pff:141,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:null,rb:null,ffa:null},
-  {name:"Tyler Shough",pos:"QB",nfl:"NO",age:27,avgRank:140.5,nsrc:2,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:141,rb:140,ffa:null},
-  {name:"Travis Kelce",pos:"TE",nfl:"KC",age:36,avgRank:140.8,nsrc:6,si:135,pff:137,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:72,df:178,rb:173,ffa:150},
-  {name:"Tyrone Tracy Jr.",pos:"RB",nfl:"NYG",age:26,avgRank:142.0,nsrc:5,si:140,pff:142,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:140,rb:141,ffa:147},
-  {name:"J.J. McCarthy",pos:"QB",nfl:"MIN",age:23,avgRank:142.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:142,rb:null,ffa:null},
-  {name:"Alvin Kamara",pos:"RB",nfl:"NO",age:31,avgRank:143.8,nsrc:4,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:76,df:171,rb:171,ffa:157},
-  {name:"Jalen McMillan",pos:"WR",nfl:"TB",age:24,avgRank:144.8,nsrc:5,si:127,pff:130,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:187,rb:144,ffa:136},
-  {name:"Malik Willis",pos:"QB",nfl:"MIA",age:27,avgRank:146.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:146,rb:null,ffa:null},
-  {name:"Troy Franklin",pos:"WR",nfl:"DEN",age:23,avgRank:146.7,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:144,rb:161,ffa:135},
-  {name:"Chimere Dike",pos:"WR",nfl:"TEN",age:24,avgRank:147.7,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:183,rb:149,ffa:111},
-  {name:"T.J. Hockenson",pos:"TE",nfl:"MIN",age:29,avgRank:147.8,nsrc:5,si:136,pff:138,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:151,rb:163,ffa:151},
-  {name:"Tyler Allgeier",pos:"RB",nfl:"ARI",age:26,avgRank:147.8,nsrc:5,si:149,pff:152,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:154,rb:151,ffa:133},
-  {name:"Chig Okonkwo",pos:"TE",nfl:"WAS",age:26,avgRank:148.0,nsrc:2,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:null,rb:152,ffa:144},
-  {name:"Jordan Mason",pos:"RB",nfl:"MIN",age:27,avgRank:148.8,nsrc:5,si:142,pff:144,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:170,rb:172,ffa:116},
-  {name:"Brenton Strange",pos:"TE",nfl:"JAC",age:25,avgRank:150.0,nsrc:4,si:170,pff:171,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:116,rb:143,ffa:null},
-  {name:"Nick Singleton",pos:"RB",nfl:"TEN",age:22,avgRank:152.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:152,rb:null,ffa:null},
-  {name:"Dylan Sampson",pos:"RB",nfl:"CLE",age:22,avgRank:152.7,nsrc:3,si:148,pff:151,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:159,rb:null,ffa:null},
-  {name:"Dallas Goedert",pos:"TE",nfl:"PHI",age:31,avgRank:152.8,nsrc:5,si:172,pff:173,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:114,rb:162,ffa:143},
-  {name:"Juwan Johnson",pos:"TE",nfl:"NO",age:30,avgRank:153.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:153,rb:null,ffa:null},
-  {name:"Isaiah Bond",pos:"WR",nfl:"?",age:26,avgRank:153.5,nsrc:2,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:131,rb:176,ffa:null},
-  {name:"Kayshon Boutte",pos:"WR",nfl:"NE",age:24,avgRank:154.3,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:186,rb:147,ffa:130},
-  {name:"Kenneth Gainwell",pos:"RB",nfl:"TB",age:27,avgRank:154.5,nsrc:2,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:163,rb:146,ffa:null},
-  {name:"Tank Dell",pos:"WR",nfl:"HOU",age:26,avgRank:156.7,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:177,rb:135,ffa:158},
-  {name:"Sam Darnold",pos:"QB",nfl:"SEA",age:29,avgRank:157.5,nsrc:4,si:166,pff:167,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:137,rb:160,ffa:null},
-  {name:"Dalton Schultz",pos:"TE",nfl:"HOU",age:29,avgRank:158.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:158,rb:null,ffa:null},
-  {name:"Jerry Jeudy",pos:"WR",nfl:"CLE",age:27,avgRank:160.0,nsrc:5,si:165,pff:168,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:147,rb:167,ffa:153},
-  {name:"Kaytron Allen",pos:"WR",nfl:"?",age:26,avgRank:160.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:160,rb:null,ffa:null},
-  {name:"Stefon Diggs",pos:"WR",nfl:"FA",age:32,avgRank:160.0,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:185,rb:170,ffa:125},
-  {name:"Rashid Shaheed",pos:"WR",nfl:"SEA",age:28,avgRank:161.4,nsrc:5,si:187,pff:188,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:150,rb:153,ffa:129},
-  {name:"Braelon Allen",pos:"RB",nfl:"NYJ",age:22,avgRank:162.0,nsrc:4,si:160,pff:161,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:172,rb:null,ffa:155},
-  {name:"Tyjae Spears",pos:"RB",nfl:"TEN",age:25,avgRank:162.0,nsrc:3,si:163,pff:166,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:157,rb:null,ffa:null},
-  {name:"Deebo Samuel",pos:"WR",nfl:"FA",age:30,avgRank:162.0,nsrc:2,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:155,rb:169,ffa:null},
-  {name:"Chris Rodriguez Jr.",pos:"RB",nfl:"JAC",age:26,avgRank:167.5,nsrc:2,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:181,rb:154,ffa:null},
-  {name:"AJ Barner",pos:"TE",nfl:"SEA",age:24,avgRank:171.0,nsrc:2,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:168,rb:174,ffa:null},
-  {name:"Brian Robinson Jr.",pos:"RB",nfl:"ATL",age:27,avgRank:173.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:173,rb:null,ffa:null},
-  {name:"Cooper Kupp",pos:"WR",nfl:"SEA",age:32,avgRank:173.0,nsrc:2,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:180,rb:166,ffa:null},
-  {name:"Tank Bigsby",pos:"RB",nfl:"PHI",age:25,avgRank:173.5,nsrc:2,si:173,pff:174,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:null,rb:null,ffa:null},
-  {name:"Calvin Ridley",pos:"WR",nfl:"TEN",age:31,avgRank:176.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:176,rb:null,ffa:null},
-  {name:"Hunter Henry",pos:"TE",nfl:"NE",age:31,avgRank:182.3,nsrc:3,si:196,pff:195,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:null,rb:null,ffa:156},
-  {name:"Daniel Jones",pos:"QB",nfl:"IND",age:29,avgRank:183.0,nsrc:3,si:183,pff:184,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:182,rb:null,ffa:null},
-  {name:"Emanuel Wilson",pos:"RB",nfl:"SEA",age:26,avgRank:184.0,nsrc:1,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:184,rb:null,ffa:null},
-];
+let PLAYERS = [];
 
-// Score + metadata
-PLAYERS.forEach((p,i)=>{
-  p.rank=i+1;
-  p.score=Math.max(10,Math.round(99-((p.avgRank-1)/149)*89));
-  p.trend=Math.round(Math.sin(p.rank*2.3+1.1)*6);
-  const base=p.score;
-  p.history=Array.from({length:8},(_,j)=>Math.max(10,Math.min(99,Math.round(base+Math.sin((p.rank+j)*1.7)*5))));
-});
+const RANK_SOURCES = ["si","pff","espn","ktc","pfn","ftn","gen","ktc2","ffc","df","rb","ffa"];
+
+function computeAvgRank(p){
+  const vals=RANK_SOURCES.map(k=>p[k]).filter(v=>v!=null&&v>0);
+  if(!vals.length)return typeof p.avgRank==="number"?p.avgRank:150;
+  p.nsrc=vals.length;
+  return Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*10)/10;
+}
+
+function processPlayers(raw){
+  const list=raw.map(p=>({...p}));
+  list.forEach(p=>{
+    if(p.avgRank==null||p.avgRank<=0)p.avgRank=computeAvgRank(p);
+    else if(!p.nsrc){p.nsrc=RANK_SOURCES.map(k=>p[k]).filter(x=>x!=null&&x>0).length;}
+  });
+  list.sort((a,b)=>a.avgRank-b.avgRank);
+  list.forEach((p,i)=>{
+    p.rank=i+1;
+    p.score=Math.max(10,Math.round(99-((p.avgRank-1)/149)*89));
+    p.trend=Math.round(Math.sin(p.rank*2.3+1.1)*6);
+    const base=p.score;
+    p.history=Array.from({length:8},(_,j)=>Math.max(10,Math.min(99,Math.round(base+Math.sin((p.rank+j)*1.7)*5))));
+  });
+  return list;
+}
+
+async function loadPlayers(){
+  const res=await fetch("data/players.json?cb="+Date.now());
+  if(!res.ok)throw new Error("Could not load player list ("+res.status+")");
+  const data=await res.json();
+  PLAYERS=processPlayers(data.players||[]);
+  const label=document.getElementById("update-label");
+  if(label){
+    const n=data.players?.length||0;
+    label.textContent=data.updatedAt?n+" players · updated "+data.updatedAt:n+" players";
+  }
+  return data;
+}
+
+async function bootApp(){
+  try{
+    await loadPlayers();
+    initHome();
+    renderRankings();
+    document.body.classList.remove("loading-players");
+    const el=document.getElementById("load-status");
+    if(el)el.remove();
+  }catch(err){
+    console.error(err);
+    const el=document.getElementById("load-status");
+    if(el)el.innerHTML='<div style="padding:24px;text-align:center;color:var(--red)">Could not load player list. If you opened the file directly on your computer, use the GitHub Pages link instead.</div>';
+  }
+}
 
 const TEAMS = {
   naur:{name:'Naur',roster:[
@@ -1471,5 +1327,4 @@ window.addEventListener("load",()=>{if(localStorage.getItem("dc_api_key"))docume
 // ═══════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════
-initHome();
-renderRankings();
+bootApp();
