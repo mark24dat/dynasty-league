@@ -815,7 +815,12 @@ PLAYERS.forEach(p=>{if(!seen2[p.name]){seen2[p.name]=true;p.rank=ri++;}});
 
 // ── Owner map ──
 const OWNER={};
-Object.entries(TEAMS).forEach(([k,t])=>t.roster.forEach(r=>{OWNER[r.name.toLowerCase()]=t.name;}));
+const OWNER_FUZZY={};
+function fuzzyName(n){return n.toLowerCase().replace(/[.\'\-]/g,"").replace(/\s+/g," ").trim();}
+Object.entries(TEAMS).forEach(([k,t])=>t.roster.forEach(r=>{
+  OWNER[r.name.toLowerCase()]=t.name;
+  OWNER_FUZZY[fuzzyName(r.name)]=t.name;
+}));
 
 function getP(name){const n=name.toLowerCase().replace(/[.\']/g,"");return PLAYERS.find(p=>p.name.toLowerCase().replace(/[.\']/g,"")==n)||null;}
 function ps(name){const p=getP(name);return p?p.score:42;}
@@ -1016,9 +1021,8 @@ function setWaiver(pos,btn){
 }
 function initWaiver(){renderWaiver();}
 function renderWaiver(){
-  const owned=new Set(Object.keys(OWNER));
   const list=PLAYERS.filter(p=>{
-    if(owned.has(p.name.toLowerCase()))return false;
+    if(OWNER[p.name.toLowerCase()]||OWNER_FUZZY[fuzzyName(p.name)])return false;
     if(waiverPos!=="ALL"&&p.pos!==waiverPos)return false;
     return p.rank>0;
   }).slice(0,40);
