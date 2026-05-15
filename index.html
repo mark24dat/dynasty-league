@@ -396,16 +396,29 @@ select.inp{cursor:pointer;-webkit-appearance:none;appearance:none}
   </div>
   <div class="g2 mb">
     <div class="card">
-      <div class="section-title">Team Positional Breakdown</div>
+      <div class="section-title">Positional Depth by Team</div>
       <div class="chart-box-lg"><canvas id="pos-breakdown-chart"></canvas></div>
     </div>
     <div class="card">
-      <div class="section-title">Elite Player Distribution</div>
+      <div class="section-title">Roster Tier Breakdown</div>
       <div class="chart-box-lg"><canvas id="elite-dist-chart"></canvas></div>
     </div>
   </div>
+  <div class="g2 mb">
+    <div class="card">
+      <div class="section-title">🧒 Youth Index</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">Avg age of each team's top 5 players — lower = more upside</div>
+      <div class="chart-box-lg"><canvas id="youth-chart"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="section-title">💎 Value Concentration</div>
+      <div style="font-size:12px;color:var(--text3);margin-bottom:8px">How top-heavy is each roster? High % = star-dependent, low % = balanced depth</div>
+      <div class="chart-box-lg"><canvas id="concentration-chart"></canvas></div>
+    </div>
+  </div>
   <div class="card mb">
-    <div class="section-title">Team Needs Matrix</div>
+    <div class="section-title">Team Analytics Matrix</div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:12px">Positional averages · overall score · youth index · elite player count — <span style="color:var(--green)">green = strong</span> · <span style="color:var(--gold)">gold = average</span> · <span style="color:var(--red)">red = weak</span></div>
     <div id="needs-matrix"></div>
   </div>
 </div>
@@ -1085,7 +1098,41 @@ function initRosters(){
       <div style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-top:4px">${t.roster.length} players · ${teamScore(k)} pts</div>
     </div>`).join("");
 }
-function selectRoster(key){rosterSel=key;initRosters();selectPower(key);document.getElementById("roster-detail").innerHTML=document.getElementById("power-detail").innerHTML;}
+function selectRoster(key){
+  rosterSel=key;
+  initRosters();
+  const team=TEAMS[key];
+  const byPos={QB:[],RB:[],WR:[],TE:[],K:[],DEF:[]};
+  team.roster.forEach(r=>{const pos=r.pos.replace("/ST","");if(!byPos[pos])byPos[pos]=[];byPos[pos].push(r);});
+  const posOrder=["QB","RB","WR","TE","K","DEF"];
+  let html=`<div class="card mb">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:700">${team.name}</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--text2)">Roster value: <strong style="color:var(--accent)">${teamScore(key)}</strong></div>
+    </div>
+    <div class="tbl-wrap"><table>
+    <thead><tr><th>Pos</th><th>Player</th><th>NFL</th><th>Age</th><th>Rank</th><th>Score</th><th>Tier</th><th>Trend</th></tr></thead>
+    <tbody>`;
+  posOrder.forEach(pos=>{
+    if(!byPos[pos]||!byPos[pos].length)return;
+    byPos[pos].forEach(r=>{
+      const p=getP(r.name);
+      html+=`<tr onclick="showPlayer('${r.name.replace(/'/g,"\'")}')">
+        <td>${pb(r.pos)}</td>
+        <td style="font-weight:500;cursor:pointer">${r.name}</td>
+        <td class="mono" style="font-size:11px;color:var(--text2)">${p?p.nfl:"—"}</td>
+        <td class="mono" style="font-size:11px;color:var(--text2)">${p?p.age:"—"}</td>
+        <td class="mono" style="color:var(--text3)">${p?"#"+p.rank:"—"}</td>
+        <td><div style="display:flex;align-items:center;gap:6px"><span class="mono" style="font-weight:600">${p?p.score:"—"}</span>${p?`<div class="sbar" style="width:50px"><div class="sbar-fill ${barColor(p.score)}" style="width:${p.score}%"></div></div>`:""}</div></td>
+        <td>${p?tier(p.score):"<span class='badge b-depth'>—</span>"}</td>
+        <td>${p?spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d"):""} ${p?`<span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span>`:""}</td>
+      </tr>`;
+    });
+  });
+  html+=`</tbody></table></div></div>`;
+  document.getElementById("roster-detail").innerHTML=html;
+  document.getElementById("roster-detail").scrollIntoView({behavior:"smooth"});
+}
 
 // ═══════════════════════════════════════════════
 // WAIVER WIRE
@@ -1173,23 +1220,27 @@ function initTrends(){
 // METRICS
 // ═══════════════════════════════════════════════
 function initMetrics(){
-  // Age distribution by position
+  // ── 1. Age Distribution by Position (box-style via bar) ──
   const posAges={QB:[],RB:[],WR:[],TE:[]};
   Object.values(TEAMS).forEach(t=>t.roster.forEach(r=>{const p=getP(r.name);if(p&&posAges[p.pos])posAges[p.pos].push(p.age);}));
   const avgAge=pos=>posAges[pos].length?Math.round(posAges[pos].reduce((a,b)=>a+b,0)/posAges[pos].length*10)/10:0;
   const actx=document.getElementById("age-chart").getContext("2d");
-  new Chart(actx,{type:"bar",data:{labels:["QB","RB","WR","TE"],datasets:[{label:"Avg Age",data:["QB","RB","WR","TE"].map(avgAge),backgroundColor:["rgba(192,132,252,.7)","rgba(74,222,128,.7)","rgba(56,189,248,.7)","rgba(251,146,60,.7)"],borderRadius:4,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#8890b0"},grid:{color:"#24262e"}},y:{ticks:{color:"#4a5070"},grid:{color:"#24262e"},min:22,suggestedMax:35}}}});
+  new Chart(actx,{type:"bar",data:{labels:["QB","RB","WR","TE"],datasets:[
+    {label:"Avg Age",data:["QB","RB","WR","TE"].map(avgAge),backgroundColor:["rgba(192,132,252,.7)","rgba(74,222,128,.7)","rgba(56,189,248,.7)","rgba(251,146,60,.7)"],borderRadius:4,borderWidth:0}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Avg age: ${ctx.parsed.y}`}}},scales:{x:{ticks:{color:"#8890b0"},grid:{color:"#24262e"}},y:{ticks:{color:"#4a5070"},grid:{color:"#24262e"},min:22,suggestedMax:34}}}});
 
-  // Positional scarcity (avg score of top 12 at each pos)
-  const posScores={QB:[],RB:[],WR:[],TE:[]};
-  PLAYERS.forEach(p=>{if(posScores[p.pos])posScores[p.pos].push(p.score);});
-  const top12avg=pos=>{const s=posScores[pos].sort((a,b)=>b-a).slice(0,12);return s.length?Math.round(s.reduce((a,b)=>a+b,0)/s.length):0;};
+  // ── 2. Score Density — histogram of all player scores across league ──
+  const allScores=[];
+  Object.values(TEAMS).forEach(t=>t.roster.forEach(r=>{const p=getP(r.name);if(p)allScores.push(p.score);}));
+  const buckets=Array(10).fill(0);
+  allScores.forEach(s=>{const b=Math.min(9,Math.floor((s-10)/9));buckets[b]++;});
+  const bucketLabels=["10-18","19-27","28-36","37-45","46-54","55-63","64-72","73-81","82-90","91-99"];
   const sctx=document.getElementById("scarcity-chart").getContext("2d");
-  new Chart(sctx,{type:"polarArea",data:{labels:["QB","RB","WR","TE"],datasets:[{data:["QB","RB","WR","TE"].map(top12avg),backgroundColor:["rgba(192,132,252,.5)","rgba(74,222,128,.5)","rgba(56,189,248,.5)","rgba(251,146,60,.5)"],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right",labels:{color:"#8890b0",font:{size:11}}}},scales:{r:{ticks:{display:false},grid:{color:"#24262e"}}}}});
+  new Chart(sctx,{type:"bar",data:{labels:bucketLabels,datasets:[{label:"Players",data:buckets,backgroundColor:bucketLabels.map((_,i)=>`hsla(${160+i*18},80%,55%,0.75)`),borderRadius:4,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:"Player Score Distribution (Dynasty Value)",color:"#8890b0",font:{size:11}}},scales:{x:{ticks:{color:"#4a5070",font:{size:9}},grid:{color:"#24262e"}},y:{ticks:{color:"#4a5070"},grid:{color:"#24262e"},title:{display:true,text:"# Players",color:"#4a5070",font:{size:10}}}}}});
 
-  // Team positional breakdown stacked bar
+  // ── 3. Team Positional Depth — stacked bar by position ──
   const teams=Object.entries(TEAMS);
-  const posColors={QB:"rgba(192,132,252,.7)",RB:"rgba(74,222,128,.7)",WR:"rgba(56,189,248,.7)",TE:"rgba(251,146,60,.7)"};
+  const posColors={QB:"rgba(192,132,252,.8)",RB:"rgba(74,222,128,.8)",WR:"rgba(56,189,248,.8)",TE:"rgba(251,146,60,.8)"};
   const pctx=document.getElementById("pos-breakdown-chart").getContext("2d");
   new Chart(pctx,{type:"bar",data:{
     labels:teams.map(([k,t])=>t.name.split(" ")[0]),
@@ -1198,39 +1249,71 @@ function initMetrics(){
       data:teams.map(([k,t])=>{const pl=t.roster.filter(r=>r.pos===pos);return pl.length?Math.round(pl.map(r=>ps(r.name)).reduce((a,b)=>a+b,0)/pl.length):0;}),
       backgroundColor:posColors[pos],borderWidth:0,borderRadius:2
     }))
-  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#8890b0",font:{size:10},boxWidth:10}}},scales:{x:{stacked:true,ticks:{color:"#4a5070",font:{size:9}},grid:{display:false}},y:{stacked:true,ticks:{color:"#4a5070"},grid:{color:"#24262e"}}}}});
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#8890b0",font:{size:10},boxWidth:10}},title:{display:true,text:"Avg Positional Score Per Team",color:"#8890b0",font:{size:11}}},scales:{x:{stacked:true,ticks:{color:"#4a5070",font:{size:9}},grid:{display:false}},y:{stacked:true,ticks:{color:"#4a5070"},grid:{color:"#24262e"}}}}});
 
-  // Elite players per team (score >= 80)
+  // ── 4. Elite vs Depth breakdown per team ──
   const ectx=document.getElementById("elite-dist-chart").getContext("2d");
   new Chart(ectx,{type:"bar",data:{
     labels:teams.map(([k,t])=>t.name.split(" ")[0]),
     datasets:[
-      {label:"Elite (80+)",data:teams.map(([k,t])=>t.roster.filter(r=>ps(r.name)>=80).length),backgroundColor:"rgba(0,229,255,.6)",borderRadius:3,borderWidth:0},
-      {label:"Top Tier (65-79)",data:teams.map(([k,t])=>t.roster.filter(r=>{const s=ps(r.name);return s>=65&&s<80;}).length),backgroundColor:"rgba(176,108,255,.5)",borderRadius:3,borderWidth:0},
+      {label:"Elite (80+)",data:teams.map(([k,t])=>t.roster.filter(r=>ps(r.name)>=80).length),backgroundColor:"rgba(0,229,255,.7)",borderRadius:3,borderWidth:0},
+      {label:"Top Tier (65-79)",data:teams.map(([k,t])=>t.roster.filter(r=>{const s=ps(r.name);return s>=65&&s<80;}).length),backgroundColor:"rgba(0,255,157,.6)",borderRadius:3,borderWidth:0},
+      {label:"Solid (50-64)",data:teams.map(([k,t])=>t.roster.filter(r=>{const s=ps(r.name);return s>=50&&s<65;}).length),backgroundColor:"rgba(255,215,0,.5)",borderRadius:3,borderWidth:0},
+      {label:"Depth (<50)",data:teams.map(([k,t])=>t.roster.filter(r=>ps(r.name)<50).length),backgroundColor:"rgba(255,77,109,.4)",borderRadius:3,borderWidth:0},
     ]
-  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#8890b0",font:{size:10},boxWidth:10}}},scales:{x:{ticks:{color:"#4a5070",font:{size:9}},grid:{display:false}},y:{ticks:{color:"#4a5070"},grid:{color:"#24262e"}}}}});
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#8890b0",font:{size:10},boxWidth:10}},title:{display:true,text:"Roster Tier Breakdown Per Team",color:"#8890b0",font:{size:11}}},scales:{x:{stacked:true,ticks:{color:"#4a5070",font:{size:9}},grid:{display:false}},y:{stacked:true,ticks:{color:"#4a5070"},grid:{color:"#24262e"}}}}});
 
-  // Needs matrix
-  const posOrder=["QB","RB","WR","TE"];
-  let matrix=`<div style="overflow-x:auto"><table><thead><tr><th>Team</th>${posOrder.map(p=>`<th>${p}</th>`).join("")}<th>Overall</th></tr></thead><tbody>`;
-  Object.entries(TEAMS).forEach(([k,t])=>{
+  // ── 5. Youth Index — avg age of top 5 players per team (younger = more upside) ──
+  const yctx=document.getElementById("youth-chart").getContext("2d");
+  const youthData=teams.map(([k,t])=>{
+    const top5=t.roster.map(r=>getP(r.name)).filter(Boolean).sort((a,b)=>b.score-a.score).slice(0,5);
+    return top5.length?Math.round(top5.reduce((s,p)=>s+p.age,0)/top5.length*10)/10:0;
+  });
+  const youthSorted=[...youthData].sort((a,b)=>a-b);
+  new Chart(yctx,{type:"bar",data:{
+    labels:teams.map(([k,t])=>t.name.split(" ")[0]),
+    datasets:[{label:"Avg age of top 5 players",data:youthData,backgroundColor:youthData.map(v=>`hsla(${200-Math.round((v-24)/10*80)},80%,55%,0.75)`),borderRadius:4,borderWidth:0}]
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:"Youth Index — Avg Age of Top 5 Players (lower = younger roster)",color:"#8890b0",font:{size:11}},tooltip:{callbacks:{label:ctx=>`Avg age: ${ctx.parsed.y} yrs`}}},scales:{x:{ticks:{color:"#4a5070",font:{size:9}},grid:{display:false}},y:{ticks:{color:"#4a5070"},grid:{color:"#24262e"},min:22,suggestedMax:34}}}});
+
+  // ── 6. Trade Value Concentration — how top-heavy is each roster ──
+  const tctx=document.getElementById("concentration-chart").getContext("2d");
+  const concData=teams.map(([k,t])=>{
+    const scores=t.roster.map(r=>ps(r.name)).sort((a,b)=>b-a);
+    const top3=scores.slice(0,3).reduce((a,b)=>a+b,0);
+    const total=scores.reduce((a,b)=>a+b,0);
+    return total>0?Math.round((top3/total)*100):0;
+  });
+  new Chart(tctx,{type:"bar",data:{
+    labels:teams.map(([k,t])=>t.name.split(" ")[0]),
+    datasets:[{label:"% of total value in top 3 players",data:concData,backgroundColor:concData.map(v=>v>60?"rgba(255,77,109,.7)":v>50?"rgba(255,215,0,.7)":"rgba(0,229,255,.7)"),borderRadius:4,borderWidth:0}]
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:"Value Concentration — % of Roster Value in Top 3 Players",color:"#8890b0",font:{size:11}},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}% of value in top 3`}}},scales:{x:{ticks:{color:"#4a5070",font:{size:9}},grid:{display:false}},y:{ticks:{color:"#4a5070",callback:v=>v+"%"},grid:{color:"#24262e"},max:100}}}});
+
+  // ── Needs matrix ──
+  const posOrder2=["QB","RB","WR","TE"];
+  let matrix=`<div style="overflow-x:auto"><table><thead><tr><th>Team</th>${posOrder2.map(p=>`<th>${p} Avg</th>`).join("")}<th>Overall</th><th>Youth Index</th><th>Elite Players</th></tr></thead><tbody>`;
+  teams.forEach(([k,t],idx)=>{
     const byPos={};
     t.roster.forEach(r=>{if(!byPos[r.pos])byPos[r.pos]=[];byPos[r.pos].push(ps(r.name));});
-    matrix+=`<tr><td style="font-weight:500;font-size:12px">${t.name}</td>`;
-    posOrder.forEach(pos=>{
+    matrix+=`<tr>`;
+    matrix+=`<td style="font-weight:500;font-size:12px;white-space:nowrap">${t.name}</td>`;
+    posOrder2.forEach(pos=>{
       const sc=byPos[pos]||[];
-      sc.sort((a,b)=>b-a);
-      const top=pos==="WR"||pos==="RB"?2:1;
-      const avg=sc.slice(0,top).length?Math.round(sc.slice(0,top).reduce((a,b)=>a+b,0)/top):0;
-      const col=avg>=75?"#00ff9d":avg>=60?"#ffd700":"#ff4d6d";
-      matrix+=`<td><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${col};font-weight:500">${avg||"—"}</span></td>`;
+      const avg=sc.length?Math.round(sc.reduce((a,b)=>a+b,0)/sc.length):0;
+      const col=avg>=72?"var(--green)":avg>=60?"var(--gold)":"var(--red)";
+      matrix+=`<td><div style="display:flex;align-items:center;gap:4px"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${col};font-weight:500">${avg||"—"}</span></div></td>`;
     });
-    matrix+=`<td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);font-weight:600">${teamScore(k)}</td></tr>`;
+    matrix+=`<td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);font-weight:600">${teamScore(k)}</td>`;
+    const top5=t.roster.map(r=>getP(r.name)).filter(Boolean).sort((a,b)=>b.score-a.score).slice(0,5);
+    const avgAge=top5.length?Math.round(top5.reduce((s,p)=>s+p.age,0)/top5.length*10)/10:0;
+    const ageCol=avgAge<=26?"var(--green)":avgAge<=29?"var(--gold)":"var(--red)";
+    matrix+=`<td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:${ageCol};font-weight:500">${avgAge}</td>`;
+    const eliteCount=t.roster.filter(r=>ps(r.name)>=80).length;
+    matrix+=`<td style="font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent);font-weight:600">${eliteCount}</td>`;
+    matrix+=`</tr>`;
   });
   matrix+=`</tbody></table></div>`;
   document.getElementById("needs-matrix").innerHTML=matrix;
 }
-
 // ═══════════════════════════════════════════════
 // TRADE ANALYZER
 // ═══════════════════════════════════════════════
