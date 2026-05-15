@@ -27,7 +27,6 @@
 
     <div class="nav-section">Players</div>
     <div class="nav-item" onclick="go('rankings')"><span class="nav-icon">📊</span><span>Rankings</span></div>
-    <div class="nav-item" onclick="go('waiver')"><span class="nav-icon">🪪</span><span>Waivers</span></div>
     <div class="nav-item" onclick="go('trends')"><span class="nav-icon">📈</span><span>Trends & Value</span></div>
     <div class="nav-item" onclick="go('metrics')"><span class="nav-icon">🔬</span><span>League Metrics</span></div>
     <div class="nav-section">Trades</div>
@@ -165,35 +164,10 @@
   <div class="tbl-wrap"><table>
     <thead><tr>
       <th>#</th><th>Player</th><th>Pos</th><th>NFL</th><th>Age</th>
-      <th>SI</th><th>PFF</th><th>Score</th><th>Tier</th><th>7-day</th><th>Owned By</th>
+      <th>SI</th><th>PFF</th><th>ESPN</th><th>KTC</th><th>PFN</th><th>FTN</th><th>GEN</th><th>KTC2</th><th>FFC</th><th>DF</th><th>RB</th><th>FFA</th>
+      <th>Avg</th><th>Score</th><th>Tier</th><th>7-day</th><th>Owned By</th>
     </tr></thead>
     <tbody id="rank-tbody"></tbody>
-  </table></div>
-</div>
-
-<!-- WAIVERS -->
-<div id="page-waiver" class="page">
-  <div class="page-title">Waivers</div>
-  <div class="page-sub">Best players in the top-500 pool who are not on any league roster · sorted by dynasty score</div>
-  <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center">
-    <div class="pills" style="margin:0" id="waiver-pills">
-      <button class="pill active" onclick="setWaiverPos('ALL',this)">All</button>
-      <button class="pill" onclick="setWaiverPos('QB',this)">QB</button>
-      <button class="pill" onclick="setWaiverPos('RB',this)">RB</button>
-      <button class="pill" onclick="setWaiverPos('WR',this)">WR</button>
-      <button class="pill" onclick="setWaiverPos('TE',this)">TE</button>
-      <button class="pill" onclick="setWaiverPos('K',this)">K</button>
-      <button class="pill" onclick="setWaiverPos('DEF',this)">DEF</button>
-    </div>
-    <input class="inp" style="width:200px;margin:0" id="waiver-search" placeholder="Search player…" oninput="renderWaiver()">
-    <span class="mono" style="font-size:12px;color:var(--text3)" id="waiver-count"></span>
-  </div>
-  <div class="tbl-wrap"><table>
-    <thead><tr>
-      <th>#</th><th>Player</th><th>Pos</th><th>NFL</th><th>Age</th>
-      <th>Pool</th><th>Avg</th><th>Score</th><th>Tier</th><th>7-day</th>
-    </tr></thead>
-    <tbody id="waiver-tbody"></tbody>
   </table></div>
 </div>
 

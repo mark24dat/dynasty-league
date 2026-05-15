@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Rebuilds data/players.json: Sleeper top 500 + manual ranks from CSV where names match.
+ * Rebuilds data/players.json from the Google Sheet CSV export (manual ranks only).
  *
  * Usage:
  *   node scripts/build-players.js
@@ -8,8 +8,7 @@
  */
 const fs = require("fs");
 const path = require("path");
-const { RANK_SOURCES, recomputeAverages, normalizeName, MANUAL_RANK_KEYS } = require("./rank-sources");
-const { fetchTopSleeperPlayers, TOP_N_DEFAULT } = require("./sleeper-top500");
+const { RANK_SOURCES, recomputeAverages } = require("./rank-sources");
 
 const ROOT = path.join(__dirname, "..");
 const defaultCsv = path.join(ROOT, "data", "sheet-export.csv");
@@ -52,51 +51,39 @@ function num(v) {
   return Number.isFinite(n) && n > 0 ? n : null;
 }
 
-function csvToOverlayMap(rows) {
+function csvRowsToPlayers(rows) {
   const headers = rows[0].map((h) => h.toLowerCase().replace(/\s+/g, ""));
   const idx = (name) => headers.indexOf(name);
-  const m = new Map();
+  const players = [];
   for (let r = 1; r < rows.length; r++) {
     const cols = rows[r];
     const name = cols[idx("name")];
     if (!name) continue;
-    const o = {};
-    for (const k of MANUAL_RANK_KEYS) {
-      const i = idx(k);
-      if (i >= 0) {
-        const v = num(cols[i]);
-        if (v != null) o[k] = v;
-      }
-    }
+    const p = { name: name.trim() };
     const pi = idx("pos");
-    if (pi >= 0 && cols[pi]) o._pos = cols[pi];
+    if (pi >= 0 && cols[pi]) p.pos = cols[pi];
     const ni = idx("nfl");
-    if (ni >= 0 && cols[ni]) o._nfl = cols[ni];
+    if (ni >= 0 && cols[ni]) p.nfl = cols[ni];
     const ti = idx("team");
-    if (ti >= 0 && cols[ti] && !o._nfl) o._nfl = cols[ti];
+    if (ti >= 0 && cols[ti] && !p.nfl) p.nfl = cols[ti];
     const ai = idx("age");
     if (ai >= 0) {
       const a = num(cols[ai]);
-      if (a != null) o._age = a;
+      if (a != null) p.age = a;
     }
-    if (Object.keys(o).filter((k) => !k.startsWith("_")).length || o._pos || o._nfl || o._age)
-      m.set(normalizeName(name), o);
+    for (const k of RANK_SOURCES) {
+      const i = idx(k);
+      if (i >= 0) {
+        const v = num(cols[i]);
+        if (v != null) p[k] = v;
+      }
+    }
+    players.push(p);
   }
-  return m;
+  return players;
 }
 
-function applyOverlay(player, overlayMap) {
-  const o = overlayMap.get(normalizeName(player.name));
-  if (!o) return;
-  for (const k of MANUAL_RANK_KEYS) {
-    if (o[k] != null) player[k] = o[k];
-  }
-  if (o._pos) player.pos = o._pos;
-  if (o._nfl) player.nfl = o._nfl;
-  if (o._age != null) player.age = o._age;
-}
-
-async function main() {
+function main() {
   const csvPath = process.argv[2] || defaultCsv;
   if (!fs.existsSync(csvPath)) {
     console.error("CSV not found:", csvPath);
@@ -107,22 +94,16 @@ async function main() {
     console.error("CSV needs a header row.");
     process.exit(1);
   }
-  const overlay = csvToOverlayMap(rows);
-  const players = await fetchTopSleeperPlayers(TOP_N_DEFAULT);
-  for (const p of players) applyOverlay(p, overlay);
-
+  const players = csvRowsToPlayers(rows);
   recomputeAverages(players);
 
   const out = {
     updatedAt: new Date().toISOString().slice(0, 10),
-    sourceNote: `Top ${TOP_N_DEFAULT} from Sleeper + CSV manual ranks (scripts/build-players.js)`,
+    sourceNote: "Google Sheet export (manual ranks) via scripts/build-players.js",
     players,
   };
   fs.writeFileSync(outFile, JSON.stringify(out, null, 2));
-  console.log("Wrote", players.length, "players · CSV overlay rows:", overlay.size);
+  console.log("Wrote", players.length, "players from", csvPath);
 }
 
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});
+main();

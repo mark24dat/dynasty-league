@@ -1,16 +1,6 @@
 /**
- * Single list of rank columns (manual from sheet + auto Sleeper).
- * Used by build-players.js, daily-sleeper-merge.js, and keep in sync with js/app.js
+ * Rank columns from the Google Sheet export (scripts/build-players.js, js/app.js).
  */
-function normalizeName(s) {
-  return String(s || "")
-    .toLowerCase()
-    .replace(/['.]/g, "")
-    .replace(/\b(jr|sr|ii|iii|iv|v)\b/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 const RANK_SOURCES = [
   "si",
   "pff",
@@ -24,10 +14,7 @@ const RANK_SOURCES = [
   "df",
   "rb",
   "ffa",
-  "sleeper",
 ];
-
-const MANUAL_RANK_KEYS = RANK_SOURCES.filter((k) => k !== "sleeper");
 
 function recomputeAverages(players) {
   for (const p of players) {
@@ -43,4 +30,4 @@ function recomputeAverages(players) {
   players.sort((a, b) => (a.avgRank ?? 999) - (b.avgRank ?? 999));
 }
 
-module.exports = { RANK_SOURCES, MANUAL_RANK_KEYS, recomputeAverages, normalizeName };
+module.exports = { RANK_SOURCES, recomputeAverages };
