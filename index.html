@@ -852,7 +852,7 @@ function go(page){
   const pageMap={home:0,power:1,rosters:2,rankings:3,trends:4,metrics:5,trade:6,finder:7};
   document.querySelectorAll(".nav-item")[pageMap[page]]?.classList.add("active");
   currentPage=page;
-  const inits={power:initPower,rosters:initRosters,waiver:initWaiver,rankings:renderRankings,trends:initTrends,metrics:initMetrics,trade:initTrade,finder:initFinder};
+  const inits={power:initPower,rosters:initRosters,rankings:renderRankings,trends:initTrends,metrics:initMetrics,trade:initTrade,finder:initFinder};
   if(inits[page])inits[page]();
 }
 
