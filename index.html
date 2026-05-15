@@ -234,6 +234,7 @@ select.inp{cursor:pointer;-webkit-appearance:none;appearance:none}
     <div class="nav-section">Trades</div>
     <div class="nav-item" onclick="go('trade')"><span class="nav-icon">⚡</span><span>Trade Analyzer</span></div>
     <div class="nav-item" onclick="go('finder')"><span class="nav-icon">🎯</span><span>Trade Finder</span></div>
+    <div class="nav-item" onclick="go('editor')"><span class="nav-icon">✏️</span><span>Roster Editor</span></div>
   </nav>
   <div class="sidebar-footer">
     <button class="api-btn" id="api-btn" onclick="openApiModal()">
@@ -450,13 +451,50 @@ select.inp{cursor:pointer;-webkit-appearance:none;appearance:none}
 <!-- TRADE FINDER -->
 <div id="page-finder" class="page">
   <div class="page-title">Trade Finder</div>
-  <div class="page-sub">Select your team · AI scans all rosters for winning deals</div>
+  <div class="page-sub">AI finds balanced trades within ±5 pts — based on team needs</div>
   <div class="card mb">
     <div class="section-title" style="margin-bottom:12px">Select your team</div>
     <div class="team-grid" id="finder-team-grid"></div>
-    <button class="btn btn-primary" id="finder-btn" onclick="runFinder()" disabled>🎯 Find Winning Trades</button>
+    <button class="btn btn-primary" id="finder-btn" onclick="runFinder()" disabled>🎯 Find Balanced Trades</button>
   </div>
   <div id="finder-result"></div>
+</div>
+
+<!-- ROSTER EDITOR -->
+<div id="page-editor" class="page">
+  <div class="page-title">Roster Editor</div>
+  <div class="page-sub">Update trades, add/drop players, keep rosters current without asking Claude</div>
+  <div class="g2 mb">
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px">📋 Record a Trade</div>
+      <label style="font-size:12px;color:var(--text2);margin-bottom:4px;display:block">Team giving players</label>
+      <select class="inp mb10" id="trade-team-give"><option value="">— select team —</option></select>
+      <div id="trade-give-players" style="margin-bottom:10px"></div>
+      <label style="font-size:12px;color:var(--text2);margin-bottom:4px;display:block">Team receiving players</label>
+      <select class="inp mb10" id="trade-team-recv"><option value="">— select team —</option></select>
+      <div id="trade-recv-players" style="margin-bottom:10px"></div>
+      <button class="btn btn-primary btn-full" onclick="executeTrade()">⚡ Execute Trade</button>
+      <div id="trade-exec-status" style="margin-top:10px;font-size:13px"></div>
+    </div>
+    <div class="card">
+      <div class="section-title" style="margin-bottom:12px">➕ Add / ➖ Drop Player</div>
+      <label style="font-size:12px;color:var(--text2);margin-bottom:4px;display:block">Team</label>
+      <select class="inp mb10" id="adddrop-team"><option value="">— select team —</option></select>
+      <label style="font-size:12px;color:var(--text2);margin-bottom:4px;display:block">Add player (name, position e.g. "Tyreek Hill, WR")</label>
+      <input class="inp mb10" id="add-player-input" placeholder="Player Name, POS" />
+      <button class="btn btn-primary btn-full" style="margin-bottom:10px" onclick="addPlayer()">➕ Add to Roster</button>
+      <hr style="border-color:var(--border);margin:12px 0">
+      <label style="font-size:12px;color:var(--text2);margin-bottom:4px;display:block">Drop player from roster</label>
+      <select class="inp mb10" id="drop-player-select"><option value="">— pick player to drop —</option></select>
+      <button class="btn btn-ghost btn-full" onclick="dropPlayer()">➖ Drop Player</button>
+      <div id="adddrop-status" style="margin-top:10px;font-size:13px"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="section-title" style="margin-bottom:12px">📂 Current Rosters — click to expand</div>
+    <div class="team-grid" id="editor-team-grid"></div>
+    <div id="editor-roster-view"></div>
+  </div>
 </div>
 
 </main>
@@ -490,7 +528,7 @@ select.inp{cursor:pointer;-webkit-appearance:none;appearance:none}
 
 <script>
 const PLAYERS = [
-  {name:"Ja\'Marr Chase",pos:"WR",nfl:"CIN",age:26,avgRank:2.3,nsrc:12,si:2,pff:3,espn:3,ktc:3,pfn:5,ftn:4,gen:2,ktc2:2,ffc:1,df:1,rb:1,ffa:1},
+  {name:"Ja'Marr Chase",pos:"WR",nfl:"CIN",age:26,avgRank:2.3,nsrc:12,si:2,pff:3,espn:3,ktc:3,pfn:5,ftn:4,gen:2,ktc2:2,ffc:1,df:1,rb:1,ffa:1},
   {name:"Bijan Robinson",pos:"RB",nfl:"ATL",age:24,avgRank:2.8,nsrc:12,si:3,pff:5,espn:1,ktc:1,pfn:4,ftn:1,gen:1,ktc2:3,ffc:3,df:5,rb:3,ffa:3},
   {name:"Jahmyr Gibbs",pos:"RB",nfl:"DET",age:24,avgRank:4.6,nsrc:12,si:4,pff:4,espn:4,ktc:5,pfn:8,ftn:2,gen:3,ktc2:5,ffc:5,df:6,rb:4,ffa:5},
   {name:"Jaxon Smith-Njigba",pos:"WR",nfl:"SEA",age:24,avgRank:5.0,nsrc:12,si:5,pff:1,espn:5,ktc:4,pfn:6,ftn:6,gen:4,ktc2:4,ffc:18,df:3,rb:2,ffa:2},
@@ -499,7 +537,7 @@ const PLAYERS = [
   {name:"Justin Jefferson",pos:"WR",nfl:"MIN",age:27,avgRank:9.5,nsrc:11,si:7,pff:9,espn:null,ktc:13,pfn:14,ftn:21,gen:8,ktc2:13,ffc:2,df:7,rb:6,ffa:4},
   {name:"Amon-Ra St. Brown",pos:"WR",nfl:"DET",age:26,avgRank:9.7,nsrc:12,si:6,pff:7,espn:7,ktc:12,pfn:23,ftn:11,gen:9,ktc2:11,ffc:7,df:8,rb:8,ffa:7},
   {name:"Malik Nabers",pos:"WR",nfl:"NYG",age:23,avgRank:10.6,nsrc:11,si:9,pff:10,espn:null,ktc:10,pfn:16,ftn:15,gen:12,ktc2:10,ffc:6,df:10,rb:7,ffa:12},
-  {name:"De\'Von Achane",pos:"RB",nfl:"MIA",age:24,avgRank:11.5,nsrc:12,si:12,pff:13,espn:5,ktc:11,pfn:11,ftn:7,gen:6,ktc2:22,ffc:14,df:9,rb:14,ffa:14},
+  {name:"De'Von Achane",pos:"RB",nfl:"MIA",age:24,avgRank:11.5,nsrc:12,si:12,pff:13,espn:5,ktc:11,pfn:11,ftn:7,gen:6,ktc2:22,ffc:14,df:9,rb:14,ffa:14},
   {name:"Ashton Jeanty",pos:"RB",nfl:"LV",age:22,avgRank:12.2,nsrc:10,si:10,pff:12,espn:null,ktc:null,pfn:10,ftn:16,gen:15,ktc2:16,ffc:11,df:11,rb:10,ffa:11},
   {name:"Jeremiyah Love",pos:"RB",nfl:"ARI",age:20,avgRank:12.6,nsrc:7,si:11,pff:15,espn:null,ktc:14,pfn:null,ftn:null,gen:null,ktc2:14,ffc:null,df:12,rb:12,ffa:10},
   {name:"Drake London",pos:"WR",nfl:"ATL",age:25,avgRank:14.0,nsrc:8,si:14,pff:18,espn:null,ktc:null,pfn:null,ftn:null,gen:12,ktc2:21,ffc:15,df:13,rb:11,ffa:8},
@@ -577,7 +615,7 @@ const PLAYERS = [
   {name:"Michael Pittman Jr.",pos:"WR",nfl:"PIT",age:28,avgRank:83.0,nsrc:7,si:93,pff:92,espn:null,ktc:null,pfn:null,ftn:31,gen:null,ktc2:null,ffc:63,df:92,rb:109,ffa:101},
   {name:"Brock Purdy",pos:"QB",nfl:"SF",age:26,avgRank:83.2,nsrc:6,si:91,pff:87,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:37,ffc:null,df:61,rb:108,ffa:115},
   {name:"Davante Adams",pos:"WR",nfl:"LAR",age:33,avgRank:84.0,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:94,rb:83,ffa:75},
-  {name:"Wan\'Dale Robinson",pos:"WR",nfl:"TEN",age:25,avgRank:84.2,nsrc:6,si:94,pff:97,espn:null,ktc:null,pfn:44,ftn:null,gen:null,ktc2:null,ffc:null,df:95,rb:77,ffa:98},
+  {name:"Wan'Dale Robinson",pos:"WR",nfl:"TEN",age:25,avgRank:84.2,nsrc:6,si:94,pff:97,espn:null,ktc:null,pfn:44,ftn:null,gen:null,ktc2:null,ffc:null,df:95,rb:77,ffa:98},
   {name:"Kyle Monangai",pos:"RB",nfl:"CHI",age:24,avgRank:85.2,nsrc:6,si:95,pff:99,espn:null,ktc:null,pfn:35,ftn:null,gen:null,ktc2:null,ffc:null,df:104,rb:88,ffa:90},
   {name:"Omar Cooper Jr.",pos:"WR",nfl:"NYJ",age:22,avgRank:86.4,nsrc:5,si:83,pff:86,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:115,rb:79,ffa:69},
   {name:"Courtland Sutton",pos:"WR",nfl:"DEN",age:30,avgRank:89.0,nsrc:6,si:97,pff:98,espn:null,ktc:null,pfn:30,ftn:null,gen:null,ktc2:null,ffc:null,df:113,rb:91,ffa:105},
@@ -593,7 +631,7 @@ const PLAYERS = [
   {name:"Parker Washington",pos:"WR",nfl:"JAC",age:24,avgRank:100.0,nsrc:5,si:101,pff:104,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:112,rb:100,ffa:83},
   {name:"Rhamondre Stevenson",pos:"RB",nfl:"NE",age:28,avgRank:100.3,nsrc:7,si:112,pff:115,espn:null,ktc:null,pfn:30,ftn:null,gen:null,ktc2:null,ffc:69,df:132,rb:142,ffa:102},
   {name:"Jake Ferguson",pos:"TE",nfl:"DAL",age:27,avgRank:100.8,nsrc:4,si:104,pff:106,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:78,rb:115,ffa:null},
-  {name:"D\'Andre Swift",pos:"RB",nfl:"CHI",age:27,avgRank:101.2,nsrc:5,si:100,pff:101,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:98,rb:80,ffa:127},
+  {name:"D'Andre Swift",pos:"RB",nfl:"CHI",age:27,avgRank:101.2,nsrc:5,si:100,pff:101,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:98,rb:80,ffa:127},
   {name:"Denzel Boston",pos:"WR",nfl:"CLE",age:22,avgRank:103.0,nsrc:5,si:99,pff:96,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:134,rb:99,ffa:87},
   {name:"Oronde Gadsden",pos:"TE",nfl:"LAC",age:23,avgRank:103.8,nsrc:5,si:132,pff:133,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:74,rb:94,ffa:86},
   {name:"Khalil Shakir",pos:"WR",nfl:"BUF",age:26,avgRank:104.0,nsrc:6,si:123,pff:126,espn:null,ktc:null,pfn:35,ftn:null,gen:null,ktc2:null,ffc:null,df:97,rb:122,ffa:121},
@@ -610,7 +648,7 @@ const PLAYERS = [
   {name:"Quentin Johnston",pos:"WR",nfl:"LAC",age:25,avgRank:112.6,nsrc:5,si:113,pff:116,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:122,rb:124,ffa:88},
   {name:"Rico Dowdle",pos:"RB",nfl:"PIT",age:28,avgRank:112.8,nsrc:6,si:126,pff:129,espn:null,ktc:null,pfn:33,ftn:null,gen:null,ktc2:null,ffc:null,df:129,rb:126,ffa:134},
   {name:"Eli Stowers",pos:"TE",nfl:"PHI",age:23,avgRank:113.0,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:117,rb:110,ffa:112},
-  {name:"De\'Zhaun Stribling",pos:"WR",nfl:"SF",age:21,avgRank:115.3,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:135,rb:111,ffa:100},
+  {name:"De'Zhaun Stribling",pos:"WR",nfl:"SF",age:21,avgRank:115.3,nsrc:3,si:null,pff:null,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:135,rb:111,ffa:100},
   {name:"Germie Bernard",pos:"WR",nfl:"PIT",age:22,avgRank:115.8,nsrc:4,si:109,pff:107,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:null,rb:123,ffa:124},
   {name:"Blake Corum",pos:"RB",nfl:"LAR",age:25,avgRank:116.4,nsrc:5,si:116,pff:119,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:133,rb:106,ffa:108},
   {name:"Travis Hunter",pos:"WR",nfl:"JAC",age:23,avgRank:119.4,nsrc:5,si:138,pff:140,espn:null,ktc:null,pfn:null,ftn:null,gen:null,ktc2:null,ffc:null,df:125,rb:112,ffa:82},
@@ -834,10 +872,10 @@ function go(page){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
   document.getElementById("page-"+page).classList.add("active");
-  const pageMap={home:0,power:1,rosters:2,rankings:3,trends:4,metrics:5,trade:6,finder:7};
+  const pageMap={home:0,power:1,rosters:2,rankings:3,trends:4,metrics:5,trade:6,finder:7,editor:8};
   document.querySelectorAll(".nav-item")[pageMap[page]]?.classList.add("active");
   currentPage=page;
-  const inits={power:initPower,rosters:initRosters,rankings:renderRankings,trends:initTrends,metrics:initMetrics,trade:initTrade,finder:initFinder};
+  const inits={power:initPower,rosters:initRosters,rankings:renderRankings,trends:initTrends,metrics:initMetrics,trade:initTrade,finder:initFinder,editor:initEditor};
   if(inits[page])inits[page]();
 }
 
@@ -1086,7 +1124,7 @@ function selectPower(key){
       const lof = r.leagueRankOf;
       const lrkColor = lrk&&lof ? rankColor(lrk,lof) : "var(--text3)";
       const lrkLabel = lrk&&lof ? `<span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:${lrkColor}">#${lrk}</span><span style="font-size:10px;color:var(--text3)"> of ${lof}</span>` : "—";
-      html+=`<tr onclick="showPlayer('${r.name.replace(/'/g,"\\'")}')">
+      html+=`<tr onclick="showPlayer(this.dataset.pn)" data-pn="${r.name}">
         <td>${pb(r.pos)}</td>
         <td style="font-weight:500">${r.name}</td>
         <td class="mono" style="font-size:11px;color:var(--text2)">${r.p?r.p.nfl:"—"}</td>
@@ -1134,7 +1172,7 @@ function selectRoster(key){
     if(!byPos[pos]||!byPos[pos].length)return;
     byPos[pos].forEach(r=>{
       const p=getP(r.name);
-      html+=`<tr onclick="showPlayer('${r.name.replace(/'/g,"\'")}')">
+      html+=`<tr onclick="showPlayer(this.dataset.pn)" data-pn="${r.name}">
         <td>${pb(r.pos)}</td>
         <td style="font-weight:500;cursor:pointer">${r.name}</td>
         <td class="mono" style="font-size:11px;color:var(--text2)">${p?p.nfl:"—"}</td>
@@ -1172,7 +1210,7 @@ function renderRankings(){
     return p.rank>0;
   }).slice(0,150);
   document.getElementById("rank-tbody").innerHTML=list.map((p,i)=>`
-    <tr onclick="showPlayer('${p.name.replace(/'/g,"\\'")}')">
+    <tr onclick="showPlayer(this.dataset.pn)" data-pn="${p.name}">
       <td class="mono" style="color:var(--text3)">${i+1}</td>
       <td style="font-weight:500;cursor:pointer">${p.name}</td>
       <td>${pb(p.pos)}</td>
@@ -1379,7 +1417,7 @@ function renderTASides(){
     const arr=s==="a"?taA:taB;
     const el=document.getElementById("ta-side-"+s);
     if(!arr.length){el.innerHTML="<span style='font-size:12px;color:var(--text3)'>No players added</span>";return;}
-    el.innerHTML=arr.map(p=>`<div class="tpl-row">${pb(p.pos)}<span style="flex:1;font-size:13px;font-weight:500">${p.name}</span><span class="mono" style="font-size:12px;color:var(--text2)">${ps(p.name)}</span><button class="trm" onclick="rmTA('${s}','${p.name.replace(/'/g,"\\'")}')">×</button></div>`).join("");
+arr.map(p=>`<div class="tpl-row">${pb(p.pos||"WR")}<span style="flex:1;font-size:13px;font-weight:500">${p.name}</span><span class="mono" style="font-size:12px;color:var(--text2)">${ps(p.name)}</span><button class="trm" onclick="rmTA('${side}',this.dataset.n)" data-n="${p.name}">×</button></div>`).join("")
   });
 }
 async function runTradeAnalysis(){
@@ -1421,75 +1459,270 @@ function initFinder(){
     </div>`).join("");
 }
 function selFinder(k){finderKey=k;initFinder();document.getElementById("finder-btn").disabled=false;document.getElementById("finder-result").innerHTML="";}
+
+function getTeamNeeds(key){
+  const byPos={QB:[],RB:[],WR:[],TE:[]};
+  TEAMS[key].roster.forEach(r=>{const pos=r.pos.replace("/ST","");if(byPos[pos])byPos[pos].push(ps(r.name));});
+  const needs=[],strengths=[];
+  const thresholds={QB:65,RB:62,WR:62,TE:60};
+  const minCounts={QB:1,RB:3,WR:4,TE:1};
+  Object.entries(byPos).forEach(([pos,scores])=>{
+    scores.sort((a,b)=>b-a);
+    const topScores=scores.slice(0,minCounts[pos]);
+    const avg=topScores.length?Math.round(topScores.reduce((a,b)=>a+b,0)/topScores.length):0;
+    if(avg<thresholds[pos]||topScores.length<minCounts[pos]) needs.push({pos,avg,count:scores.length});
+    else if(avg>=thresholds[pos]+12) strengths.push({pos,avg,count:scores.length});
+  });
+  return{needs,strengths};
+}
+
 async function runFinder(){
   if(!finderKey)return;
-  const btn=document.getElementById("finder-btn");btn.disabled=true;btn.innerHTML='<span class="spin"></span> Scanning all 11 rosters…';
-  document.getElementById("finder-result").innerHTML='<div class="ai-out"><span class="loading">⏳ AI is analyzing every roster for winning trade opportunities…</span></div>';
+  const btn=document.getElementById("finder-btn");
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Scanning all rosters…';
+  document.getElementById("finder-result").innerHTML='<div class="ai-out"><span class="loading">⏳ Analyzing team needs and finding balanced trades (±5 pts)…</span></div>';
   const key=localStorage.getItem("dc_api_key");
-  if(!key){document.getElementById("finder-result").innerHTML='<div class="ai-out"><span style="color:var(--gold)">⚠ No Groq API key — click 🔑 in the sidebar for free setup.</span></div>';btn.disabled=false;btn.innerHTML="🎯 Find Winning Trades";return;}
+  if(!key){document.getElementById("finder-result").innerHTML='<div class="ai-out"><span style="color:var(--gold)">⚠ No Groq API key — click 🔑 in the sidebar.</span></div>';btn.disabled=false;btn.innerHTML="🎯 Find Balanced Trades";return;}
+
   const my=TEAMS[finderKey];
-  const myR=my.roster.map(r=>({...r,score:ps(r.name)})).sort((a,b)=>b.score-a.score);
-  const opps=Object.entries(TEAMS).filter(([k])=>k!==finderKey).map(([k,t])=>({k,name:t.name,roster:t.roster.map(r=>({...r,score:ps(r.name)})).sort((a,b)=>b.score-a.score)}));
-  const prompt=`12-team PPR dynasty league (May 2026). Generate 5 trade proposals that SLIGHTLY favor MY team (value gap 5-20 pts in my favor).
+  const myNeeds=getTeamNeeds(finderKey);
+  const myRoster=my.roster.map(r=>({...r,score:ps(r.name)})).sort((a,b)=>b.score-a.score);
+  
+  const opps=Object.entries(TEAMS).filter(([k])=>k!==finderKey).map(([k,t])=>({
+    k,name:t.name,
+    roster:t.roster.map(r=>({...r,score:ps(r.name)})).sort((a,b)=>b.score-a.score),
+    needs:getTeamNeeds(k)
+  }));
+
+  const myNeedsStr=myNeeds.needs.map(n=>`${n.pos}(avg ${n.avg})`).join(", ")||"balanced";
+  const myStrStr=myNeeds.strengths.map(s=>`${s.pos}(avg ${s.avg})`).join(", ")||"none standout";
+
+  const prompt=`You are a dynasty fantasy football trade expert. Find 5 BALANCED trades (±5 pts of equal value) that help address team needs.
+
+STRICT RULES:
+- Each trade must have a value gap of NO MORE THAN 5 points between sides
+- Trades must address the requesting team's positional needs
+- Only use players from the exact rosters listed
+- Make trades realistic — opponents must benefit too
 
 MY TEAM: ${my.name}
-${myR.slice(0,15).map(r=>`- ${r.name} (${r.pos}, ${r.score})`).join("\n")}
+My needs: ${myNeedsStr}
+My strengths: ${myStrStr}
+My roster (score):
+${myRoster.slice(0,16).map(r=>r.name+"("+r.pos+","+r.score+")").join(", ")}
 
 OPPONENTS:
-${opps.map(o=>`${o.name}:\n${o.roster.slice(0,10).map(r=>`  - ${r.name} (${r.pos}, ${r.score})`).join("\n")}`).join("\n\n")}
+${opps.map(o=>o.name+" | needs:"+(o.needs.needs.map(n=>n.pos).join("/")||"balanced")+" | strengths:"+(o.needs.strengths.map(s=>s.pos).join("/")||"none")+" | roster:"+o.roster.slice(0,10).map(r=>r.name+"("+r.pos+","+r.score+")").join(", ")).join("\n")}
 
-Format EXACTLY (no extra text):
+
+Format EXACTLY — no extra text before or after:
 TRADE_START
-TITLE: [catchy title]
-OPPONENT: [exact name]
+TITLE: [title]
+OPPONENT: [exact team name]
 IGIVE: [name]|[pos]|[score]||[name]|[pos]|[score]
 IGET: [name]|[pos]|[score]||[name]|[pos]|[score]
-MY_VAL: [number]
-THEIR_VAL: [number]
-WHY: [one sentence why opponent does this]
-WHY_ME: [2 sentences why this slightly favors me]
-TRADE_END
+MY_VAL: [total I give]
+THEIR_VAL: [total I get]
+NEED_FILLED: [which of my needs this addresses]
+WHY: [why opponent does this — one sentence]
+WHY_ME: [2 sentences on why this is good for me, focusing on need filled]
+TRADE_END`;
 
-Only use players from the rosters above. Make trades realistic.`;
   try{
-    const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},body:JSON.stringify({model:"llama-3.3-70b-versatile",max_tokens:1200,messages:[{role:"user",content:prompt}]})});
+    const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{
+      method:"POST",
+      headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
+      body:JSON.stringify({model:"llama-3.3-70b-versatile",max_tokens:1400,messages:[{role:"user",content:prompt}]})
+    });
     const d=await r.json();
-    if(d.error){document.getElementById("finder-result").innerHTML=`<div class="ai-out">API error: ${d.error.message}</div>`;btn.disabled=false;btn.innerHTML="🎯 Find Winning Trades";return;}
-    renderFinderResults(d.choices?.[0]?.message?.content||"",my.name);
-  }catch(e){document.getElementById("finder-result").innerHTML='<div class="ai-out">Network error — check your API key.</div>';}
-  btn.disabled=false;btn.innerHTML="🎯 Find Winning Trades";
+    if(d.error){document.getElementById("finder-result").innerHTML=`<div class="ai-out">API error: ${d.error.message}</div>`;btn.disabled=false;btn.innerHTML="🎯 Find Balanced Trades";return;}
+    renderFinderResults(d.choices?.[0]?.message?.content||"",my.name,myNeeds);
+  }catch(e){
+    document.getElementById("finder-result").innerHTML='<div class="ai-out">Network error — check your API key.</div>';
+  }
+  btn.disabled=false;btn.innerHTML="🎯 Find Balanced Trades";
 }
-function renderFinderResults(text,myName){
+
+function renderFinderResults(text,myName,myNeeds){
   const blocks=text.split("TRADE_START").slice(1);
   if(!blocks.length){document.getElementById("finder-result").innerHTML=`<div class="ai-out" style="white-space:pre-wrap">${text}</div>`;return;}
   const g=(lines,key)=>{const l=lines.find(x=>x.startsWith(key+":"));return l?l.slice(key.length+1).trim():"";};
-  const pp=str=>str.split("||").map(s=>{const p=s.split("|");return{name:p[0]?.trim(),pos:p[1]?.trim(),score:parseInt(p[2])||0};}).filter(p=>p.name);
-  const trades=blocks.map(b=>{const ls=b.split("\n").map(l=>l.trim()).filter(Boolean);return{title:g(ls,"TITLE"),opp:g(ls,"OPPONENT"),give:pp(g(ls,"IGIVE")),get:pp(g(ls,"IGET")),myVal:parseInt(g(ls,"MY_VAL"))||0,theirVal:parseInt(g(ls,"THEIR_VAL"))||0,why:g(ls,"WHY"),whyMe:g(ls,"WHY_ME")};});
+  const pp=str=>str.split("||").map(s=>{const p=s.split("|");return{name:(p[0]||"").trim(),pos:(p[1]||"WR").trim(),score:parseInt(p[2])||0};}).filter(p=>p.name);
+  const trades=blocks.map(b=>{const ls=b.split("\n").map(l=>l.trim()).filter(Boolean);return{
+    title:g(ls,"TITLE"),opp:g(ls,"OPPONENT"),
+    title:g(ls,"TITLE"),opp:g(ls,"OPPONENT"),
+    give:pp(g(ls,"IGIVE")),get:pp(g(ls,"IGET")),
+    myVal:parseInt(g(ls,"MY_VAL"))||0,theirVal:parseInt(g(ls,"THEIR_VAL"))||0,
+    need:g(ls,"NEED_FILLED"),why:g(ls,"WHY"),whyMe:g(ls,"WHY_ME")
+  };});
+
+  // Need summary
+  const needsHtml = myNeeds.needs.length
+    ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">${myNeeds.needs.map(n=>`<span style="background:var(--red-dim);color:var(--red);border:1px solid rgba(255,77,109,.25);border-radius:6px;padding:3px 10px;font-size:12px;font-family:'JetBrains Mono',monospace">⚠ Need ${n.pos} (avg ${n.avg})</span>`).join("")}${myNeeds.strengths.map(s=>`<span style="background:var(--green-dim);color:var(--green);border:1px solid rgba(0,255,157,.2);border-radius:6px;padding:3px 10px;font-size:12px;font-family:'JetBrains Mono',monospace">✓ Strong ${s.pos} (avg ${s.avg})</span>`).join("")}</div>`
+    : `<div style="margin-bottom:16px;font-size:13px;color:var(--green)">✓ Balanced roster — all positions solid</div>`;
+
   document.getElementById("finder-result").innerHTML=
-    `<div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:16px;color:var(--text2)">${trades.length} WINNING TRADES FOUND FOR ${myName.toUpperCase()}</div>`+
+    `<div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px">${trades.length} BALANCED TRADES FOR ${myName.toUpperCase()}</div>
+    ${needsHtml}`+
     trades.map((t,i)=>{
-      const gap=(t.theirVal||0)-(t.myVal||0);
+      const gap=Math.abs((t.theirVal||0)-(t.myVal||0));
+      const gapLabel=gap<=5?`⚖ Even (${gap} pt gap)`:gap<=10?`≈ Close (${gap} pt gap)`:`⚠ ${gap} pt gap`;
+      const gapColor=gap<=5?"var(--green)":gap<=10?"var(--gold)":"var(--red)";
       return `<div class="prop-card">
-        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap">
           <div><div class="prop-title">${t.title||"Trade "+(i+1)}</div><div class="prop-opp">vs. ${t.opp}</div></div>
-          <span class="win-pill ${gap>=0?"wp-win":"wp-slight"}">${gap>=0?"YOU +"+gap:"OPP +"+ Math.abs(gap)}</span>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+            ${t.need?`<span style="background:rgba(0,229,255,.1);color:var(--accent);border:1px solid rgba(0,229,255,.2);border-radius:5px;padding:2px 8px;font-size:11px;font-family:'JetBrains Mono',monospace">Fills: ${t.need}</span>`:""}
+            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:${gapColor};background:rgba(0,0,0,.3);padding:3px 10px;border-radius:999px;border:1px solid ${gapColor}">${gapLabel}</span>
+          </div>
         </div>
-        <div class="g2" style="margin-bottom:12px">
-          <div style="background:rgba(255,77,109,.05);border:1px solid rgba(255,77,109,.15);border-radius:8px;padding:12px">
-            <div style="font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--red);margin-bottom:8px">You give</div>
+        <div class="g2" style="margin-bottom:10px">
+          <div style="background:rgba(255,77,109,.05);border:1px solid rgba(255,77,109,.15);border-radius:8px;padding:10px">
+            <div style="font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--red);margin-bottom:6px">You give</div>
             ${(t.give||[]).map(p=>`<div class="tpl-row">${pb(p.pos||"WR")}<span style="flex:1;font-size:13px;font-weight:500">${p.name}</span><span class="mono" style="font-size:12px;color:var(--text2)">${p.score}</span></div>`).join("")}
             <div class="mono" style="font-size:11px;color:var(--text3);margin-top:6px">Total: ${t.myVal}</div>
           </div>
-          <div style="background:rgba(0,255,157,.05);border:1px solid rgba(0,255,157,.15);border-radius:8px;padding:12px">
-            <div style="font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:8px">You get</div>
+          <div style="background:rgba(0,255,157,.05);border:1px solid rgba(0,255,157,.15);border-radius:8px;padding:10px">
+            <div style="font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:6px">You get</div>
             ${(t.get||[]).map(p=>`<div class="tpl-row">${pb(p.pos||"WR")}<span style="flex:1;font-size:13px;font-weight:500">${p.name}</span><span class="mono" style="font-size:12px;color:var(--text2)">${p.score}</span></div>`).join("")}
             <div class="mono" style="font-size:11px;color:var(--text3);margin-top:6px">Total: ${t.theirVal}</div>
           </div>
         </div>
         ${t.why?`<div class="mono" style="font-size:11px;color:var(--text3);margin-bottom:8px">WHY THEY DO IT: ${t.why}</div>`:""}
         ${t.whyMe?`<div style="font-size:13px;color:var(--text2);line-height:1.65;border-left:2px solid var(--accent);padding-left:10px">${t.whyMe}</div>`:""}
-      </div>`;}).join("");
+      </div>`;
+    }).join("");
 }
+
+// ═══ ROSTER EDITOR ═══
+function initEditor(){
+  const opts=Object.entries(TEAMS).map(([k,t])=>`<option value="${k}">${t.name}</option>`).join("");
+  ["trade-team-give","trade-team-recv","adddrop-team"].forEach(id=>{
+    document.getElementById(id).innerHTML="<option value=''>— select team —</option>"+opts;
+  });
+  document.getElementById("editor-team-grid").innerHTML=Object.entries(TEAMS).map(([k,t])=>`
+    <div class="team-tile" onclick="editorViewTeam('${k}')">
+      <div style="font-size:13px;font-weight:600;font-family:'Syne',sans-serif">${t.name}</div>
+      <div style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace;margin-top:4px">${t.roster.length} players</div>
+    </div>`).join("");
+
+  // Wire up team select → player dropdowns
+  document.getElementById("trade-team-give").onchange=function(){loadTradeGivePlayers();};
+  document.getElementById("trade-team-recv").onchange=function(){loadTradeRecvPlayers();};
+  document.getElementById("adddrop-team").onchange=function(){loadDropSelect();};
+}
+
+function loadTradeGivePlayers(){
+  const k=document.getElementById("trade-team-give").value;
+  const el=document.getElementById("trade-give-players");
+  if(!k){el.innerHTML="";return;}
+  el.innerHTML=`<div style="font-size:12px;color:var(--text2);margin-bottom:6px">Select players being sent:</div>`+
+    TEAMS[k].roster.map(r=>`<label style="display:flex;align-items:center;gap:8px;padding:4px 0;cursor:pointer;font-size:13px">
+      <input type="checkbox" value="${r.name}" style="width:auto;margin:0"> ${r.name} ${pb(r.pos)} <span class="mono" style="font-size:11px;color:var(--text3)">${ps(r.name)}</span>
+    </label>`).join("");
+}
+
+function loadTradeRecvPlayers(){
+  const k=document.getElementById("trade-team-recv").value;
+  const el=document.getElementById("trade-recv-players");
+  if(!k){el.innerHTML="";return;}
+  el.innerHTML=`<div style="font-size:12px;color:var(--text2);margin-bottom:6px">Select players coming back:</div>`+
+    TEAMS[k].roster.map(r=>`<label style="display:flex;align-items:center;gap:8px;padding:4px 0;cursor:pointer;font-size:13px">
+      <input type="checkbox" value="${r.name}" style="width:auto;margin:0"> ${r.name} ${pb(r.pos)} <span class="mono" style="font-size:11px;color:var(--text3)">${ps(r.name)}</span>
+    </label>`).join("");
+}
+
+function loadDropSelect(){
+  const k=document.getElementById("adddrop-team").value;
+  const sel=document.getElementById("drop-player-select");
+  if(!k){sel.innerHTML="<option value=''>— pick player to drop —</option>";return;}
+  sel.innerHTML="<option value=''>— pick player to drop —</option>"+
+    TEAMS[k].roster.map(r=>`<option value="${r.name}">${r.name} (${r.pos})</option>`).join("");
+}
+
+function executeTrade(){
+  const giveKey=document.getElementById("trade-team-give").value;
+  const recvKey=document.getElementById("trade-team-recv").value;
+  if(!giveKey||!recvKey){document.getElementById("trade-exec-status").innerHTML='<span style="color:var(--red)">Select both teams first.</span>';return;}
+  
+  const givePlayers=[...document.querySelectorAll("#trade-give-players input:checked")].map(i=>i.value);
+  const recvPlayers=[...document.querySelectorAll("#trade-recv-players input:checked")].map(i=>i.value);
+  
+  if(!givePlayers.length&&!recvPlayers.length){document.getElementById("trade-exec-status").innerHTML='<span style="color:var(--red)">Select at least one player to move.</span>';return;}
+
+  // Move give players from giveTeam to recvTeam
+  givePlayers.forEach(name=>{
+    const idx=TEAMS[giveKey].roster.findIndex(r=>r.name===name);
+    if(idx>-1){
+      const player=TEAMS[giveKey].roster.splice(idx,1)[0];
+      TEAMS[recvKey].roster.push(player);
+    }
+  });
+  // Move recv players from recvTeam to giveTeam
+  recvPlayers.forEach(name=>{
+    const idx=TEAMS[recvKey].roster.findIndex(r=>r.name===name);
+    if(idx>-1){
+      const player=TEAMS[recvKey].roster.splice(idx,1)[0];
+      TEAMS[giveKey].roster.push(player);
+    }
+  });
+
+  const giveNames=givePlayers.join(", ")||"—";
+  const recvNames=recvPlayers.join(", ")||"—";
+  document.getElementById("trade-exec-status").innerHTML=`<span style="color:var(--green)">✓ Trade executed! ${TEAMS[giveKey].name} gave ${giveNames} · received ${recvNames}</span>`;
+  
+  // Reload the checkboxes
+  loadTradeGivePlayers();
+  loadTradeRecvPlayers();
+  initEditor();
+}
+
+function addPlayer(){
+  const k=document.getElementById("adddrop-team").value;
+  const val=document.getElementById("add-player-input").value.trim();
+  if(!k||!val){document.getElementById("adddrop-status").innerHTML='<span style="color:var(--red)">Select a team and enter a player name.</span>';return;}
+  
+  const parts=val.split(",").map(s=>s.trim());
+  const name=parts[0];
+  const pos=(parts[1]||"WR").toUpperCase().replace("/ST","");
+  const validPos=["QB","RB","WR","TE","K","DEF"].includes(pos)?pos:"WR";
+  
+  TEAMS[k].roster.push({name,pos:validPos});
+  document.getElementById("add-player-input").value="";
+  document.getElementById("adddrop-status").innerHTML=`<span style="color:var(--green)">✓ Added ${name} (${validPos}) to ${TEAMS[k].name}</span>`;
+  loadDropSelect();
+  initEditor();
+}
+
+function dropPlayer(){
+  const k=document.getElementById("adddrop-team").value;
+  const name=document.getElementById("drop-player-select").value;
+  if(!k||!name){document.getElementById("adddrop-status").innerHTML='<span style="color:var(--red)">Select a team and player.</span>';return;}
+  
+  const idx=TEAMS[k].roster.findIndex(r=>r.name===name);
+  if(idx>-1){
+    TEAMS[k].roster.splice(idx,1);
+    document.getElementById("adddrop-status").innerHTML=`<span style="color:var(--gold)">✓ Dropped ${name} from ${TEAMS[k].name}</span>`;
+    loadDropSelect();
+    initEditor();
+  }
+}
+
+function editorViewTeam(k){
+  const team=TEAMS[k];
+  const byPos={QB:[],RB:[],WR:[],TE:[],K:[],DEF:[]};
+  team.roster.forEach(r=>{const pos=r.pos.replace("/ST","");if(!byPos[pos])byPos[pos]=[];byPos[pos].push(r);});
+  let html=`<div class="card" style="margin-top:12px">
+    <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;margin-bottom:12px">${team.name} — ${team.roster.length} players</div>`;
+  ["QB","RB","WR","TE","K","DEF"].forEach(pos=>{
+    if(!byPos[pos]||!byPos[pos].length)return;
+    html+=`<div style="font-size:10px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);padding:6px 0 3px;border-top:1px solid var(--border);margin-top:4px">${pos}</div>`;
+    html+=byPos[pos].map(r=>`<div style="display:flex;align-items:center;gap:8px;padding:4px 0">${pb(r.pos)}<span style="flex:1;font-size:13px">${r.name}</span><span class="mono" style="font-size:12px;color:var(--text3)">${ps(r.name)}</span></div>`).join("");
+  });
+  html+=`</div>`;
+  document.getElementById("editor-roster-view").innerHTML=html;
+}
+
 
 // ═══════════════════════════════════════════════
 // PLAYER MODAL
