@@ -102,7 +102,7 @@ function main() {
   players.sort((a, b) => (a.avgRank || 999) - (b.avgRank || 999));
 
   const out = {
-    updatedAt: new Date().ISOString().slice(0, 10),
+    updatedAt: new Date().toISOString().slice(0, 10),
     sourceNote: "Built from spreadsheet CSV via scripts/build-players.js",
     players,
   };
