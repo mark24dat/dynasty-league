@@ -226,7 +226,7 @@ select.inp{cursor:pointer;-webkit-appearance:none;appearance:none}
     <div class="nav-item active" onclick="go('home')"><span class="nav-icon">🏠</span><span>Home</span></div>
     <div class="nav-item" onclick="go('power')"><span class="nav-icon">🏆</span><span>Power Rankings</span></div>
     <div class="nav-item" onclick="go('rosters')"><span class="nav-icon">👥</span><span>Rosters</span></div>
-    <div class="nav-item" onclick="go('waiver')"><span class="nav-icon">🔍</span><span>Waiver Wire</span></div>
+
     <div class="nav-section">Players</div>
     <div class="nav-item" onclick="go('rankings')"><span class="nav-icon">📊</span><span>Rankings</span></div>
     <div class="nav-item" onclick="go('trends')"><span class="nav-icon">📈</span><span>Trends & Value</span></div>
@@ -338,20 +338,6 @@ select.inp{cursor:pointer;-webkit-appearance:none;appearance:none}
   <div class="page-sub">All 12 teams · click any team to expand</div>
   <div class="team-grid" id="roster-team-grid"></div>
   <div id="roster-detail"></div>
-</div>
-
-<!-- WAIVER WIRE -->
-<div id="page-waiver" class="page">
-  <div class="page-title">Waiver Wire</div>
-  <div class="page-sub">Top unowned players by dynasty value</div>
-  <div class="pills" id="waiver-pills">
-    <button class="pill active" onclick="setWaiver('ALL',this)">All</button>
-    <button class="pill" onclick="setWaiver('QB',this)">QB</button>
-    <button class="pill" onclick="setWaiver('RB',this)">RB</button>
-    <button class="pill" onclick="setWaiver('WR',this)">WR</button>
-    <button class="pill" onclick="setWaiver('TE',this)">TE</button>
-  </div>
-  <div class="card"><div id="waiver-list"></div></div>
 </div>
 
 <!-- RANKINGS -->
@@ -863,7 +849,7 @@ function go(page){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
   document.getElementById("page-"+page).classList.add("active");
-  const pageMap={home:0,power:1,rosters:2,waiver:3,rankings:4,trends:5,metrics:6,trade:7,finder:8};
+  const pageMap={home:0,power:1,rosters:2,rankings:3,trends:4,metrics:5,trade:6,finder:7};
   document.querySelectorAll(".nav-item")[pageMap[page]]?.classList.add("active");
   currentPage=page;
   const inits={power:initPower,rosters:initRosters,waiver:initWaiver,rankings:renderRankings,trends:initTrends,metrics:initMetrics,trade:initTrade,finder:initFinder};
@@ -1012,33 +998,8 @@ function selectRoster(key){rosterSel=key;initRosters();selectPower(key);document
 // ═══════════════════════════════════════════════
 // WAIVER WIRE
 // ═══════════════════════════════════════════════
-let waiverPos="ALL";
-function setWaiver(pos,btn){
-  waiverPos=pos;
-  document.querySelectorAll("#waiver-pills .pill").forEach(b=>b.classList.remove("active"));
-  btn.classList.add("active");
-  renderWaiver();
-}
-function initWaiver(){renderWaiver();}
-function renderWaiver(){
-  const list=PLAYERS.filter(p=>{
-    if(OWNER[p.name.toLowerCase()]||OWNER_FUZZY[fuzzyName(p.name)])return false;
-    if(waiverPos!=="ALL"&&p.pos!==waiverPos)return false;
-    return p.rank>0;
-  }).slice(0,40);
-  document.getElementById("waiver-list").innerHTML=list.map((p,i)=>`
-    <div class="waiver-row" onclick="showPlayer('${p.name.replace(/'/g,"\\'")}')">
-      <div class="mono" style="font-size:12px;color:var(--text3);min-width:28px">#${p.rank}</div>
-      ${pb(p.pos)}
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:500">${p.name}</div>
-        <div style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace">${p.nfl} · Age ${p.age}</div>
-      </div>
-      ${spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d")}
-      ${tier(p.score)}
-      <span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span>
-    </div>`).join("");
-}
+
+
 
 // ═══════════════════════════════════════════════
 // RANKINGS TABLE
