@@ -39,9 +39,28 @@ async function loadPlayers(){
   return data;
 }
 
+async function loadLeagueFromEspn(){
+  try{
+    const res=await fetch("data/league-espn.json?cb="+Date.now());
+    if(!res.ok)return;
+    const data=await res.json();
+    if(!data.teams||typeof data.teams!=="object")return;
+    const keys=Object.keys(data.teams);
+    if(keys.length<2)return;
+    TEAMS=data.teams;
+    buildOwnerMaps();
+    const label=document.getElementById("update-label");
+    if(label&&data.updatedAt){
+      const cur=label.textContent;
+      label.textContent=cur+(cur?" · ":"")+"ESPN rosters "+data.updatedAt;
+    }
+  }catch(e){console.warn("ESPN league file not used:",e);}
+}
+
 async function bootApp(){
   try{
     await loadPlayers();
+    await loadLeagueFromEspn();
     initHome();
     renderRankings();
     document.body.classList.remove("loading-players");
@@ -54,7 +73,7 @@ async function bootApp(){
   }
 }
 
-const TEAMS = {
+const FALLBACK_TEAMS = {
   naur:{name:'Naur',roster:[
     {name:'Jaxson Dart',pos:'QB'},{name:'Chase Brown',pos:'RB'},{name:'Jahmyr Gibbs',pos:'RB'},
     {name:'Justin Jefferson',pos:'WR'},{name:'Tetairoa McMillan',pos:'WR'},{name:'Brock Bowers',pos:'TE'},
@@ -149,14 +168,20 @@ const TEAMS = {
   ]},
 };
 
+let TEAMS = JSON.parse(JSON.stringify(FALLBACK_TEAMS));
 
 const OWNER={};
 const OWNER_FUZZY={};
 function fuzzyName(n){return n.toLowerCase().replace(/[.\'\-]/g,"").replace(/\s+/g," ").trim();}
-Object.entries(TEAMS).forEach(([k,t])=>t.roster.forEach(r=>{
-  OWNER[r.name.toLowerCase()]=t.name;
-  OWNER_FUZZY[fuzzyName(r.name)]=t.name;
-}));
+function buildOwnerMaps(){
+  Object.keys(OWNER).forEach(k=>delete OWNER[k]);
+  Object.keys(OWNER_FUZZY).forEach(k=>delete OWNER_FUZZY[k]);
+  Object.entries(TEAMS).forEach(([k,t])=>t.roster.forEach(r=>{
+    OWNER[r.name.toLowerCase()]=t.name;
+    OWNER_FUZZY[fuzzyName(r.name)]=t.name;
+  }));
+}
+buildOwnerMaps();
 
 function getP(name){const n=name.toLowerCase().replace(/[.\']/g,"");return PLAYERS.find(p=>p.name.toLowerCase().replace(/[.\']/g,"")==n)||null;}
 function ps(name){const p=getP(name);return p?p.score:42;}
