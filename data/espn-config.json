@@ -1,6 +1,6 @@
 {
-  "enabled": false,
-  "leagueId": null,
-  "season": 2025,
-  "note": "1) Open your ESPN league in the browser — the URL contains leagueId=… 2) Put that number in leagueId and set enabled to true. 3) Push to GitHub. 4) Actions → ESPN league sync → Run workflow (or wait for daily run). Private league: in Chrome DevTools → Application → Cookies → fantasy.espn.com, copy espn_s2 and SWID into GitHub repo Settings → Secrets → Actions as ESPN_S2 and SWID."
+  "enabled": true,
+  "leagueId": 1292432399,
+  "season": 2026,
+  "note": "Private 2025 view may need GitHub secrets ESPN_S2 + SWID. Season 2026 works without cookies for this league. Actions → ESPN league sync to refresh rosters."
 }
