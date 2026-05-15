@@ -690,6 +690,8 @@ const PLAYERS = [
 ].reduce((acc,p) => {
   // deduplicate
   if(!acc.find(x=>x.name===p.name)) acc.push(p);
+  return acc;
+},[]);
 
 const TEAMS = {
   naur:{name:'Naur',roster:[
