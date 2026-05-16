@@ -168,6 +168,17 @@ select.inp{cursor:pointer;-webkit-appearance:none;appearance:none}
 /* ── WAIVER CARD ── */
 .waiver-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
 .waiver-row:last-child{border-bottom:none}
+.waiver-stat{position:relative;overflow:hidden}
+.waiver-stat:after{content:"";position:absolute;right:-30px;top:-30px;width:90px;height:90px;background:radial-gradient(circle,rgba(0,229,255,.18),transparent 65%)}
+.waiver-board{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:10px}
+.waiver-card{display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,rgba(22,24,32,.95),rgba(14,16,24,.95));border:1px solid var(--border);border-radius:12px;padding:12px;cursor:pointer;transition:border-color .15s,transform .15s,box-shadow .15s}
+.waiver-card:hover{border-color:rgba(0,229,255,.45);transform:translateY(-1px);box-shadow:0 8px 24px rgba(0,0,0,.22)}
+.waiver-rank{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--accent);min-width:54px}
+.waiver-name{font-size:14px;font-weight:700;font-family:'Syne',sans-serif;margin-bottom:4px}
+.waiver-meta{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace}
+.waiver-chip{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--text3);border:1px solid var(--border);background:var(--bg3);border-radius:999px;padding:4px 8px;white-space:nowrap}
+.waiver-chip.hot{color:var(--green);border-color:rgba(0,255,157,.25);background:var(--green-dim)}
+.waiver-add{padding:7px 12px}
 
 /* ── PROPOSAL CARD ── */
 .prop-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px;margin-bottom:14px;transition:border-color .2s}

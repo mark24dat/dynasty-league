@@ -27,6 +27,7 @@
 
     <div class="nav-section">Players</div>
     <div class="nav-item" onclick="go('rankings')"><span class="nav-icon">📊</span><span>Rankings</span></div>
+    <div class="nav-item" onclick="go('waivers')"><span class="nav-icon">🧲</span><span>Waiver Wire</span></div>
     <div class="nav-item" onclick="go('trends')"><span class="nav-icon">📈</span><span>Trends & Value</span></div>
     <div class="nav-item" onclick="go('metrics')"><span class="nav-icon">🔬</span><span>League Metrics</span></div>
     <div class="nav-section">Trades</div>
@@ -168,6 +169,38 @@
     </tr></thead>
     <tbody id="rank-tbody"></tbody>
   </table></div>
+</div>
+
+<!-- WAIVER WIRE -->
+<div id="page-waivers" class="page">
+  <div class="page-title">Waiver Wire</div>
+  <div class="page-sub">Best available ranked players · add to any team, drop from a roster, updates live</div>
+  <div class="g4 mb" id="waiver-summary"></div>
+  <div class="card mb">
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px">
+      <div class="pills" style="margin:0" id="waiver-pills">
+        <button class="pill active" onclick="setWaiverPos('ALL',this)">All</button>
+        <button class="pill" onclick="setWaiverPos('QB',this)">QB</button>
+        <button class="pill" onclick="setWaiverPos('RB',this)">RB</button>
+        <button class="pill" onclick="setWaiverPos('WR',this)">WR</button>
+        <button class="pill" onclick="setWaiverPos('TE',this)">TE</button>
+      </div>
+      <input class="inp" style="width:220px;margin:0" id="waiver-search" placeholder="Search waivers…" oninput="renderWaivers()">
+      <select class="inp" style="width:230px;margin:0" id="waiver-team-select" onchange="renderWaivers()">
+        <option value="">Add to team…</option>
+      </select>
+    </div>
+    <div class="waiver-board" id="waiver-board"></div>
+  </div>
+  <div class="card">
+    <div class="section-title">Quick Drop From Roster</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
+      <select class="inp" style="max-width:260px" id="waiver-drop-team" onchange="loadWaiverDropSelect()"><option value="">— select team —</option></select>
+      <select class="inp" style="max-width:320px" id="waiver-drop-player"><option value="">— pick player to drop —</option></select>
+      <button class="btn btn-ghost" onclick="dropPlayerToWaivers()">Drop to Waivers</button>
+    </div>
+    <div id="waiver-status" style="margin-top:10px;font-size:13px"></div>
+  </div>
 </div>
 
 <!-- TRENDS -->

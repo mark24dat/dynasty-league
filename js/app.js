@@ -154,6 +154,17 @@ const TEAMS = {
   ]},
 };
 
+function applySavedRosters(){
+  try{
+    const saved=JSON.parse(localStorage.getItem("dc_rosters_v1")||"null");
+    if(!saved||typeof saved!=="object")return;
+    Object.entries(saved).forEach(([k,roster])=>{
+      if(TEAMS[k]&&Array.isArray(roster)){
+        TEAMS[k].roster=roster.filter(p=>p&&p.name).map(p=>({name:p.name,pos:(p.pos||"WR").toUpperCase().replace("/ST","")}));
+      }
+    });
+  }catch(e){console.warn("Could not load saved rosters",e);}
+}
 
 const OWNER={};
 const OWNER_FUZZY={};
@@ -172,10 +183,38 @@ function syncOwnerMaps(){
     OWNER_FUZZY[fuzzyName(r.name)]=t.name;
   }));
 }
+applySavedRosters();
 syncOwnerMaps();
 
 function getP(name){const n=fuzzyName(name);return PLAYERS.find(p=>fuzzyName(p.name)===n)||null;}
 function ps(name){const p=getP(name);return p?p.score:42;}
+function escHtml(s){return String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
+function escAttr(s){return escHtml(s);}
+function ownerOfPlayer(p){return OWNER_FUZZY[fuzzyName(p.name)]||OWNER[p.name.toLowerCase()]||"";}
+function saveRosterState(){
+  const out={};
+  Object.entries(TEAMS).forEach(([k,t])=>{out[k]=t.roster.map(p=>({name:p.name,pos:p.pos}));});
+  localStorage.setItem("dc_rosters_v1",JSON.stringify(out));
+}
+function refreshRosterViews(){
+  syncOwnerMaps();
+  saveRosterState();
+  if(currentPage==="rankings")renderRankings();
+  if(currentPage==="waivers")renderWaivers();
+  if(currentPage==="rosters")initRosters();
+  if(currentPage==="editor")initEditor();
+  if(currentPage==="power")initPower();
+  if(currentPage==="improve")initImprove();
+}
+function removePlayerFromAllRosters(name){
+  let removed=null;
+  Object.values(TEAMS).forEach(t=>{
+    const idx=t.roster.findIndex(r=>fuzzyName(r.name)===fuzzyName(name));
+    if(idx>-1)removed=t.roster.splice(idx,1)[0];
+  });
+  return removed;
+}
+function rosterPlayerFromRanked(p){return{name:p.name,pos:(p.pos||"WR").replace("/ST","")};}
 
 // ── Team scoring ──
 function teamScore(key){
@@ -215,10 +254,10 @@ function go(page){
   document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
   document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
   document.getElementById("page-"+page).classList.add("active");
-  const pageMap={home:0,power:1,rosters:2,improve:3,rankings:4,trends:5,metrics:6,trade:7,finder:8,editor:9};
+  const pageMap={home:0,power:1,rosters:2,improve:3,rankings:4,waivers:5,trends:6,metrics:7,trade:8,finder:9,editor:10};
   document.querySelectorAll(".nav-item")[pageMap[page]]?.classList.add("active");
   currentPage=page;
-  const inits={power:initPower,rosters:initRosters,improve:initImprove,rankings:renderRankings,trends:initTrends,metrics:initMetrics,trade:initTrade,finder:initFinder,editor:initEditor};
+  const inits={power:initPower,rosters:initRosters,improve:initImprove,rankings:renderRankings,waivers:initWaivers,trends:initTrends,metrics:initMetrics,trade:initTrade,finder:initFinder,editor:initEditor};
   if(inits[page])inits[page]();
 }
 
@@ -774,9 +813,102 @@ function renderRankings(){
       <td><div style="display:flex;align-items:center;gap:6px"><span class="mono" style="font-weight:600">${p.score}</span><div class="sbar" style="width:60px"><div class="sbar-fill ${barColor(p.score)}" style="width:${p.score}%"></div></div></div></td>
       <td>${tier(p.score)}</td>
       <td>${spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d")} <span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span></td>
-      <td style="font-size:11px;color:var(--accent)">${OWNER_FUZZY[fuzzyName(p.name)]||OWNER[p.name.toLowerCase()]||""}</td>
+      <td style="font-size:11px;color:var(--accent)">${ownerOfPlayer(p)}</td>
     </tr>`;
   }).join("");
+}
+
+// ═══════════════════════════════════════════════
+// WAIVER WIRE
+// ═══════════════════════════════════════════════
+let waiverPos="ALL";
+function getWaiverPlayers(){
+  return PLAYERS.filter(p=>p.rank>0&&!ownerOfPlayer(p)).sort((a,b)=>a.rank-b.rank);
+}
+function setWaiverPos(pos,btn){
+  waiverPos=pos;
+  document.querySelectorAll("#waiver-pills .pill").forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+  renderWaivers();
+}
+function initWaivers(){
+  const opts=Object.entries(TEAMS).map(([k,t])=>`<option value="${k}">${escHtml(t.name)}</option>`).join("");
+  const addSel=document.getElementById("waiver-team-select");
+  const dropTeam=document.getElementById("waiver-drop-team");
+  if(addSel&&!addSel.dataset.loaded){
+    addSel.innerHTML="<option value=''>Add to team…</option>"+opts;
+    addSel.dataset.loaded="1";
+  }
+  if(dropTeam){
+    dropTeam.innerHTML="<option value=''>— select team —</option>"+opts;
+  }
+  loadWaiverDropSelect();
+  renderWaivers();
+}
+function renderWaivers(){
+  const all=getWaiverPlayers();
+  const q=(document.getElementById("waiver-search")||{value:""}).value.toLowerCase();
+  const list=all.filter(p=>{
+    if(waiverPos!=="ALL"&&p.pos!==waiverPos)return false;
+    if(q&&!p.name.toLowerCase().includes(q)&&!(p.nfl&&p.nfl.toLowerCase().includes(q)))return false;
+    return true;
+  });
+  const byPos=pos=>all.filter(p=>p.pos===pos).length;
+  const best=all[0];
+  const upside=all.filter(p=>Number(p.age)&&p.age<=24).slice(0,3);
+  document.getElementById("waiver-summary").innerHTML=`
+    <div class="card-sm waiver-stat"><div class="stat-label">Available</div><div class="stat-val">${all.length}</div><div class="stat-sub">ranked free agents</div></div>
+    <div class="card-sm waiver-stat"><div class="stat-label">Best Player</div><div class="stat-val" style="font-size:17px">${best?escHtml(best.name):"—"}</div><div class="stat-sub">${best?`${best.nfl||"FA"} · #${best.rank} · ${best.score}`:"No waivers"}</div></div>
+    <div class="card-sm waiver-stat"><div class="stat-label">Top Youth</div><div class="stat-val" style="font-size:15px">${upside.length?upside.map(p=>escHtml(p.name.split(" ").slice(-1)[0])).join(" · "):"—"}</div><div class="stat-sub">age 24 or younger</div></div>
+    <div class="card-sm waiver-stat"><div class="stat-label">By Position</div><div class="stat-sub">QB ${byPos("QB")} · RB ${byPos("RB")} · WR ${byPos("WR")} · TE ${byPos("TE")}</div></div>`;
+  const board=document.getElementById("waiver-board");
+  if(!list.length){
+    board.innerHTML=`<div style="padding:24px;text-align:center;color:var(--text3)">No matching waiver players.</div>`;
+    return;
+  }
+  board.innerHTML=list.slice(0,120).map((p,i)=>`
+    <div class="waiver-card" onclick="showPlayer(this.dataset.pn)" data-pn="${escAttr(p.name)}">
+      <div class="waiver-rank">#${p.rank}</div>
+      <div style="flex:1;min-width:180px">
+        <div class="waiver-name">${escHtml(p.name)}</div>
+        <div class="waiver-meta">${pb(p.pos)} <span>${escHtml(p.nfl||"FA")} · Age ${p.age??"—"} · Score ${p.score}</span></div>
+        <div class="sbar"><div class="sbar-fill ${barColor(p.score)}" style="width:${p.score}%"></div></div>
+      </div>
+      <div class="waiver-chip ${i<12?"hot":""}">${i<12?"Priority Add":"Depth Watch"}</div>
+      <button class="btn btn-primary waiver-add" onclick="addWaiverToTeam(event,this.dataset.name)" data-name="${escAttr(p.name)}">Add</button>
+    </div>`).join("");
+}
+function addWaiverToTeam(event,name){
+  event.stopPropagation();
+  const teamKey=document.getElementById("waiver-team-select").value;
+  const status=document.getElementById("waiver-status");
+  if(!teamKey){status.innerHTML='<span style="color:var(--red)">Pick a team first.</span>';return;}
+  const p=getP(name);
+  if(!p){status.innerHTML='<span style="color:var(--red)">Could not find that player.</span>';return;}
+  removePlayerFromAllRosters(p.name);
+  TEAMS[teamKey].roster.push(rosterPlayerFromRanked(p));
+  status.innerHTML=`<span style="color:var(--green)">✓ Added ${escHtml(p.name)} to ${escHtml(TEAMS[teamKey].name)}. Waivers updated.</span>`;
+  refreshRosterViews();
+}
+function loadWaiverDropSelect(){
+  const teamKey=document.getElementById("waiver-drop-team")?.value;
+  const sel=document.getElementById("waiver-drop-player");
+  if(!sel)return;
+  if(!teamKey){sel.innerHTML="<option value=''>— pick player to drop —</option>";return;}
+  sel.innerHTML="<option value=''>— pick player to drop —</option>"+
+    TEAMS[teamKey].roster.map(r=>`<option value="${escAttr(r.name)}">${escHtml(r.name)} (${escHtml(r.pos)}) — ${ps(r.name)}</option>`).join("");
+}
+function dropPlayerToWaivers(){
+  const teamKey=document.getElementById("waiver-drop-team").value;
+  const name=document.getElementById("waiver-drop-player").value;
+  const status=document.getElementById("waiver-status");
+  if(!teamKey||!name){status.innerHTML='<span style="color:var(--red)">Select a team and player to drop.</span>';return;}
+  const idx=TEAMS[teamKey].roster.findIndex(r=>r.name===name);
+  if(idx<0){status.innerHTML='<span style="color:var(--red)">Player was not found on that roster.</span>';return;}
+  const dropped=TEAMS[teamKey].roster.splice(idx,1)[0];
+  status.innerHTML=`<span style="color:var(--gold)">✓ Dropped ${escHtml(dropped.name)} from ${escHtml(TEAMS[teamKey].name)}. They are now on waivers.</span>`;
+  refreshRosterViews();
+  loadWaiverDropSelect();
 }
 
 // ═══════════════════════════════════════════════
@@ -958,7 +1090,7 @@ function renderTASides(){
     const arr=s==="a"?taA:taB;
     const el=document.getElementById("ta-side-"+s);
     if(!arr.length){el.innerHTML="<span style='font-size:12px;color:var(--text3)'>No players added</span>";return;}
-arr.map(p=>`<div class="tpl-row">${pb(p.pos||"WR")}<span style="flex:1;font-size:13px;font-weight:500">${p.name}</span><span class="mono" style="font-size:12px;color:var(--text2)">${ps(p.name)}</span><button class="trm" onclick="rmTA('${side}',this.dataset.n)" data-n="${p.name}">×</button></div>`).join("")
+    el.innerHTML=arr.map(p=>`<div class="tpl-row">${pb(p.pos||"WR")}<span style="flex:1;font-size:13px;font-weight:500">${escHtml(p.name)}</span><span class="mono" style="font-size:12px;color:var(--text2)">${ps(p.name)}</span><button class="trm" onclick="rmTA('${s}',this.dataset.n)" data-n="${escAttr(p.name)}">×</button></div>`).join("");
   });
 }
 async function runTradeAnalysis(){
@@ -1212,13 +1344,11 @@ function executeTrade(){
   const giveNames=givePlayers.join(", ")||"—";
   const recvNames=recvPlayers.join(", ")||"—";
   document.getElementById("trade-exec-status").innerHTML=`<span style="color:var(--green)">✓ Trade executed! ${TEAMS[giveKey].name} gave ${giveNames} · received ${recvNames}</span>`;
-  syncOwnerMaps();
-  if(currentPage==="rankings")renderRankings();
+  refreshRosterViews();
   
   // Reload the checkboxes
   loadTradeGivePlayers();
   loadTradeRecvPlayers();
-  initEditor();
 }
 
 function addPlayer(){
@@ -1231,13 +1361,13 @@ function addPlayer(){
   const pos=(parts[1]||"WR").toUpperCase().replace("/ST","");
   const validPos=["QB","RB","WR","TE","K","DEF"].includes(pos)?pos:"WR";
   
-  TEAMS[k].roster.push({name,pos:validPos});
-  syncOwnerMaps();
-  if(currentPage==="rankings")renderRankings();
+  const ranked=getP(name);
+  removePlayerFromAllRosters(name);
+  TEAMS[k].roster.push(ranked?rosterPlayerFromRanked(ranked):{name,pos:validPos});
+  refreshRosterViews();
   document.getElementById("add-player-input").value="";
-  document.getElementById("adddrop-status").innerHTML=`<span style="color:var(--green)">✓ Added ${name} (${validPos}) to ${TEAMS[k].name}</span>`;
+  document.getElementById("adddrop-status").innerHTML=`<span style="color:var(--green)">✓ Added ${escHtml(ranked?ranked.name:name)} (${ranked?ranked.pos:validPos}) to ${escHtml(TEAMS[k].name)}</span>`;
   loadDropSelect();
-  initEditor();
 }
 
 function dropPlayer(){
@@ -1248,11 +1378,9 @@ function dropPlayer(){
   const idx=TEAMS[k].roster.findIndex(r=>r.name===name);
   if(idx>-1){
     TEAMS[k].roster.splice(idx,1);
-    syncOwnerMaps();
-    if(currentPage==="rankings")renderRankings();
-    document.getElementById("adddrop-status").innerHTML=`<span style="color:var(--gold)">✓ Dropped ${name} from ${TEAMS[k].name}</span>`;
+    refreshRosterViews();
+    document.getElementById("adddrop-status").innerHTML=`<span style="color:var(--gold)">✓ Dropped ${escHtml(name)} from ${escHtml(TEAMS[k].name)}. Player is now on waivers.</span>`;
     loadDropSelect();
-    initEditor();
   }
 }
 
@@ -1278,7 +1406,7 @@ function editorViewTeam(k){
 function showPlayer(name){
   const p=getP(name);
   if(!p)return;
-  const owner=OWNER[name.toLowerCase()]||"Unowned (Free Agent)";
+  const owner=ownerOfPlayer(p)||"Unowned (Free Agent)";
   document.getElementById("player-modal-content").innerHTML=`
     <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
       <div>
