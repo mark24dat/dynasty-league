@@ -803,17 +803,25 @@ function renderRankings(){
     return p.rank>0;
   });
   document.getElementById("rank-tbody").innerHTML=list.map((p,i)=>{
-    return `<tr onclick="showPlayer(this.dataset.pn)" data-pn="${p.name}">
-      <td class="mono" style="color:var(--text3)">${i+1}</td>
-      <td style="font-weight:500;cursor:pointer">${p.name}</td>
-      <td>${pb(p.pos)}</td>
-      <td class="mono" style="font-size:11px;color:var(--text2)">${p.nfl!=null?p.nfl:"—"}</td>
-      <td class="mono" style="font-size:11px;color:var(--text2)">${p.age!=null?p.age:"—"}</td>
-      <td class="mono" style="font-weight:600;color:var(--accent)">${p.manualRank?"#"+p.manualRank:"—"}</td>
-      <td><div style="display:flex;align-items:center;gap:6px"><span class="mono" style="font-weight:600">${p.score}</span><div class="sbar" style="width:60px"><div class="sbar-fill ${barColor(p.score)}" style="width:${p.score}%"></div></div></div></td>
-      <td>${tier(p.score)}</td>
-      <td>${spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d")} <span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span></td>
-      <td style="font-size:11px;color:var(--accent)">${ownerOfPlayer(p)}</td>
+    const owner=ownerOfPlayer(p);
+    return `<tr class="rank-row" onclick="showPlayer(this.dataset.pn)" data-pn="${escAttr(p.name)}">
+      <td class="rank-overall"><span>${i+1}</span></td>
+      <td class="rank-player-cell">
+        <div class="rank-player-main">
+          ${pb(p.pos)}
+          <div class="rank-player-copy">
+            <div class="rank-player-name">${escHtml(p.name)}</div>
+            <div class="rank-player-meta">${escHtml(p.nfl||"FA")} · Age ${p.age??"—"} · ${tier(p.score)}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="rank-pill">${p.manualRank?"#"+p.manualRank:"—"}</span></td>
+      <td class="rank-value-cell">
+        <div class="rank-score-line"><span class="rank-score">${p.score}</span><span class="rank-score-label">score</span></div>
+        <div class="sbar rank-score-bar"><div class="sbar-fill ${barColor(p.score)}" style="width:${p.score}%"></div></div>
+      </td>
+      <td class="rank-trend-cell">${spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d")} <span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span></td>
+      <td class="rank-owner-cell">${owner?`<span>${escHtml(owner)}</span>`:`<span class="rank-free-agent">Waivers</span>`}</td>
     </tr>`;
   }).join("");
 }

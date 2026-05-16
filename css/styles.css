@@ -85,6 +85,32 @@ tr:last-child td{border-bottom:none}
 tr:hover td{background:var(--bg3)}
 .mono{font-family:'JetBrains Mono',monospace}
 
+/* ── RANKINGS TABLE ── */
+.rankings-wrap{border-color:rgba(0,229,255,.18);box-shadow:0 18px 50px rgba(0,0,0,.18)}
+.rankings-table{min-width:760px;table-layout:fixed}
+.rankings-table th:nth-child(1){width:82px}
+.rankings-table th:nth-child(2){width:36%}
+.rankings-table th:nth-child(3){width:112px}
+.rankings-table th:nth-child(4){width:150px}
+.rankings-table th:nth-child(5){width:150px}
+.rankings-table th:nth-child(6){width:170px}
+.rank-row{cursor:pointer}
+.rank-row td{padding:14px 14px}
+.rank-overall span{display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,rgba(0,229,255,.16),rgba(176,108,255,.12));border:1px solid rgba(0,229,255,.18);font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:var(--accent)}
+.rank-player-main{display:flex;align-items:center;gap:12px;min-width:0}
+.rank-player-copy{min-width:0}
+.rank-player-name{font-family:'Syne',sans-serif;font-size:16px;font-weight:750;letter-spacing:-.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rank-player-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:5px;font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace}
+.rank-pill{display:inline-flex;align-items:center;justify-content:center;min-width:58px;padding:7px 10px;border-radius:999px;background:var(--accent-dim);border:1px solid rgba(0,229,255,.25);font-family:'JetBrains Mono',monospace;color:var(--accent);font-weight:700}
+.rank-score-line{display:flex;align-items:baseline;gap:6px}
+.rank-score{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:var(--text)}
+.rank-score-label{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.08em}
+.rank-score-bar{width:110px;max-width:100%;height:5px;margin-top:7px}
+.rank-score-bar .sbar-fill{height:5px}
+.rank-trend-cell{white-space:nowrap}
+.rank-owner-cell span{display:inline-flex;max-width:145px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--accent);font-size:12px}
+.rank-owner-cell .rank-free-agent{color:var(--text3);border:1px solid var(--border);background:var(--bg3);border-radius:999px;padding:3px 8px}
+
 /* ── SCORE BAR ── */
 .sbar{height:3px;background:var(--bg4);border-radius:2px;margin-top:5px}
 .sbar-fill{height:3px;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--purple))}
