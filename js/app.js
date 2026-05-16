@@ -75,7 +75,7 @@ const TEAMS = {
     {name:'Terry McLaurin',pos:'WR'},{name:'Jacory Croskey-Merritt',pos:'RB'},{name:'Emeka Egbuka',pos:'WR'},
     {name:'Woody Marks',pos:'RB'},{name:'George Kittle',pos:'TE'},{name:'Chris Rodriguez Jr.',pos:'RB'},
     {name:'Rachaad White',pos:'RB'},{name:'Antonio Williams',pos:'WR'},{name:'Malik Willis',pos:'QB'},
-    {name:"De'Zhaun Stribling",pos:'WR'},{name:'Darnell Mooney',pos:'WR'},
+    {name:"De'Zhaun Stribling",pos:'WR'},{name:'Darnell Mooney',pos:'WR'},{name:'Eli Stowers',pos:'TE'},
   ]},
   kyles:{name:"Kyle's Oedipus Complex",roster:[
     {name:'Sam Darnold',pos:'QB'},{name:'James Cook',pos:'RB'},{name:'Kyren Williams',pos:'RB'},
