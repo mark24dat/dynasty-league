@@ -876,8 +876,7 @@ function renderWaivers(){
   }
   board.innerHTML=list.slice(0,120).map((p,i)=>`
     <div class="waiver-card" onclick="showPlayer(this.dataset.pn)" data-pn="${escAttr(p.name)}">
-      <div class="waiver-rank">#${p.rank}</div>
-      <div style="flex:1;min-width:180px">
+      <div class="waiver-player-body">
         <div class="waiver-name">${escHtml(p.name)}</div>
         <div class="waiver-meta">${pb(p.pos)} <span>${escHtml(p.nfl||"FA")} · Age ${p.age??"—"} · Score ${p.score}</span></div>
         <div class="sbar"><div class="sbar-fill ${barColor(p.score)}" style="width:${p.score}%"></div></div>
