@@ -1,25 +1,29 @@
 let PLAYERS = [];
 
-const RANK_SOURCES = ["si","pff","espn","ktc","pfn","ftn","gen","ktc2","ffc","df","rb","ffa"];
-
 function computeAvgRank(p){
-  const vals=RANK_SOURCES.map(k=>p[k]).filter(v=>v!=null&&v>0);
-  if(!vals.length)return typeof p.avgRank==="number"?p.avgRank:150;
-  p.nsrc=vals.length;
-  return Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*10)/10;
+  const rank=Number(p.manualRank ?? p.avgRank ?? p.rank);
+  return Number.isFinite(rank)&&rank>0?rank:null;
 }
 
 function processPlayers(raw){
   const list=raw.map(p=>({...p}));
   list.forEach(p=>{
-    if(p.avgRank==null||p.avgRank<=0)p.avgRank=computeAvgRank(p);
-    else if(!p.nsrc){p.nsrc=RANK_SOURCES.map(k=>p[k]).filter(x=>x!=null&&x>0).length;}
+    const manualRank=computeAvgRank(p);
+    if(manualRank!=null){
+      p.avgRank=manualRank;
+      p.manualRank=manualRank;
+      p.nsrc=1;
+    }else{
+      p.avgRank=999;
+      delete p.manualRank;
+      delete p.nsrc;
+    }
   });
   list.sort((a,b)=>a.avgRank-b.avgRank);
-  const maxAR=Math.max(149,...list.map(p=>Number(p.avgRank)||0));
+  const maxAR=Math.max(149,...list.map(p=>Number(p.manualRank)||0));
   list.forEach((p,i)=>{
     p.rank=i+1;
-    p.score=Math.max(10,Math.round(99-((p.avgRank-1)/maxAR)*89));
+    p.score=p.manualRank?Math.max(10,Math.round(99-((p.manualRank-1)/maxAR)*89)):10;
     p.trend=Math.round(Math.sin(p.rank*2.3+1.1)*6);
     const base=p.score;
     p.history=Array.from({length:8},(_,j)=>Math.max(10,Math.min(99,Math.round(base+Math.sin((p.rank+j)*1.7)*5))));
@@ -153,7 +157,13 @@ const TEAMS = {
 
 const OWNER={};
 const OWNER_FUZZY={};
-function fuzzyName(n){return n.toLowerCase().replace(/[.\'\-]/g,"").replace(/\s+/g," ").trim();}
+function fuzzyName(n){
+  return n.toLowerCase()
+    .replace(/[.'\-]/g,"")
+    .replace(/\b(jr|sr|ii|iii|iv|v)\b/g,"")
+    .replace(/\s+/g," ")
+    .trim();
+}
 function syncOwnerMaps(){
   Object.keys(OWNER).forEach(k=>delete OWNER[k]);
   Object.keys(OWNER_FUZZY).forEach(k=>delete OWNER_FUZZY[k]);
@@ -164,7 +174,7 @@ function syncOwnerMaps(){
 }
 syncOwnerMaps();
 
-function getP(name){const n=name.toLowerCase().replace(/[.\']/g,"");return PLAYERS.find(p=>p.name.toLowerCase().replace(/[.\']/g,"")==n)||null;}
+function getP(name){const n=fuzzyName(name);return PLAYERS.find(p=>fuzzyName(p.name)===n)||null;}
 function ps(name){const p=getP(name);return p?p.score:42;}
 
 // ── Team scoring ──
@@ -754,15 +764,13 @@ function renderRankings(){
     return p.rank>0;
   });
   document.getElementById("rank-tbody").innerHTML=list.map((p,i)=>{
-    const srcCells=RANK_SOURCES.map(k=>`<td class="mono" style="font-size:11px;color:var(--text3)">${p[k]!=null&&p[k]>0?"#"+p[k]:"—"}</td>`).join("");
     return `<tr onclick="showPlayer(this.dataset.pn)" data-pn="${p.name}">
       <td class="mono" style="color:var(--text3)">${i+1}</td>
       <td style="font-weight:500;cursor:pointer">${p.name}</td>
       <td>${pb(p.pos)}</td>
       <td class="mono" style="font-size:11px;color:var(--text2)">${p.nfl!=null?p.nfl:"—"}</td>
       <td class="mono" style="font-size:11px;color:var(--text2)">${p.age!=null?p.age:"—"}</td>
-      ${srcCells}
-      <td class="mono" style="font-weight:600;color:var(--accent)">${p.avgRank}<span style="font-size:9px;color:var(--text3);margin-left:3px">(${p.nsrc||0})</span></td>
+      <td class="mono" style="font-weight:600;color:var(--accent)">${p.manualRank?"#"+p.manualRank:"—"}</td>
       <td><div style="display:flex;align-items:center;gap:6px"><span class="mono" style="font-weight:600">${p.score}</span><div class="sbar" style="width:60px"><div class="sbar-fill ${barColor(p.score)}" style="width:${p.score}%"></div></div></div></td>
       <td>${tier(p.score)}</td>
       <td>${spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d")} <span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span></td>
@@ -1282,8 +1290,8 @@ function showPlayer(name){
     <div class="g4 mb" style="gap:8px">
       <div class="card-sm"><div class="stat-label">Score</div><div class="stat-val" style="color:var(--accent)">${p.score}</div></div>
       <div class="card-sm"><div class="stat-label">Overall Rank</div><div class="stat-val">#${p.rank}</div></div>
-      <div class="card-sm"><div class="stat-label">SI Rank</div><div class="stat-val">${p.si?"#"+p.si:"—"}</div></div>
-      <div class="card-sm"><div class="stat-label">PFF Rank</div><div class="stat-val">${p.pff?"#"+p.pff:"—"}</div></div>
+      <div class="card-sm"><div class="stat-label">Manual Rank</div><div class="stat-val">${p.manualRank?"#"+p.manualRank:"—"}</div></div>
+      <div class="card-sm"><div class="stat-label">NFL Team</div><div class="stat-val">${p.nfl||"—"}</div></div>
     </div>
     <div class="card-sm mb" style="background:${p.trend>0?"rgba(0,255,157,.06)":"rgba(255,77,109,.06)"}">
       <div style="display:flex;align-items:center;justify-content:space-between">

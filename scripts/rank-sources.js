@@ -1,28 +1,17 @@
 /**
- * Rank columns from the Google Sheet export (scripts/build-players.js, js/app.js).
+ * Single manual ranking column from the Google Sheet export.
  */
-const RANK_SOURCES = [
-  "si",
-  "pff",
-  "espn",
-  "ktc",
-  "pfn",
-  "ftn",
-  "gen",
-  "ktc2",
-  "ffc",
-  "df",
-  "rb",
-  "ffa",
-];
+const RANK_COLUMN = "rank";
 
-function recomputeAverages(players) {
+function recomputeRanks(players) {
   for (const p of players) {
-    const vals = RANK_SOURCES.map((k) => p[k]).filter((v) => v != null && Number(v) > 0);
-    if (vals.length) {
-      p.nsrc = vals.length;
-      p.avgRank = Math.round((vals.reduce((a, b) => a + Number(b), 0) / vals.length) * 10) / 10;
+    const rank = p.manualRank ?? p.rank ?? p.avgRank;
+    if (rank != null && Number(rank) > 0) {
+      p.manualRank = Number(rank);
+      p.avgRank = Number(rank);
+      p.nsrc = 1;
     } else {
+      delete p.manualRank;
       delete p.nsrc;
       delete p.avgRank;
     }
@@ -30,4 +19,4 @@ function recomputeAverages(players) {
   players.sort((a, b) => (a.avgRank ?? 999) - (b.avgRank ?? 999));
 }
 
-module.exports = { RANK_SOURCES, recomputeAverages };
+module.exports = { RANK_COLUMN, recomputeRanks };

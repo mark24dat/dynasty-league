@@ -2,14 +2,14 @@ GOOGLE SHEET — copy this script to update your website list
 ============================================================
 
 WHAT THIS DOES
-  Your sheet holds player names and each site's rank (SI, PFF, etc.).
-  The script averages those ranks and saves a file your website reads.
+  Your sheet holds player names and one manually entered rank.
+  The script saves a file your website reads.
 
 STEP 1 — Make the sheet
   Create a Google Sheet with columns in row 1:
-  name | pos | nfl | age | si | pff | espn | ktc | pfn | ftn | gen | ktc2 | ffc | df | rb | ffa
+  name | pos | nfl | age | rank
 
-  One row per player. Paste ranks when a site updates. Leave blank if unknown.
+  One row per player. Update the rank column when your website updates.
 
 STEP 2 — Add the script
   1. In the sheet: Extensions → Apps Script
@@ -29,7 +29,7 @@ STEP 4 — Daily (optional)
   Function: exportPlayersJson
   Event: Day timer, 6am–7am
 
-  You still paste new ranks into the sheet when sites publish lists.
+  You still update the rank column when your website publishes a new list.
   The trigger re-exports the file each morning.
 
 EASIER OPTION (no script)
@@ -46,7 +46,6 @@ function exportPlayersJson() {
   if (data.length < 2) throw new Error('Need header row + players');
 
   var headers = data[0].map(function(h) { return String(h).toLowerCase().replace(/\s/g, ''); });
-  var sources = ['si','pff','espn','ktc','pfn','ftn','gen','ktc2','ffc','df','rb','ffa'];
 
   function col(name) { return headers.indexOf(name); }
   function num(v) {
@@ -66,16 +65,11 @@ function exportPlayersJson() {
       nfl: row[col('nfl')] || row[col('team')] || '',
       age: num(row[col('age')]) || 25
     };
-    var sum = 0, count = 0;
-    sources.forEach(function(src) {
-      var i = col(src);
-      if (i < 0) return;
-      var v = num(row[i]);
-      if (v != null) { p[src] = v; sum += v; count++; }
-    });
-    if (count > 0) {
-      p.avgRank = Math.round(sum / count * 10) / 10;
-      p.nsrc = count;
+    var rank = num(row[col('rank')]);
+    if (rank != null) {
+      p.manualRank = rank;
+      p.avgRank = rank;
+      p.nsrc = 1;
     }
     players.push(p);
   }

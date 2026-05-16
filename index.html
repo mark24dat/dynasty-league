@@ -38,7 +38,7 @@
     <button class="api-btn" id="api-btn" onclick="openApiModal()">
       <span>🔑</span><span>Groq AI Key</span>
     </button>
-    <div class="last-update" id="update-label">12 sources · May 15, 2026</div>
+    <div class="last-update" id="update-label">Manual rankings · May 15, 2026</div>
   </div>
 </aside>
 
@@ -48,7 +48,7 @@
 <!-- HOME -->
 <div id="page-home" class="page active">
   <div class="page-title">Dynasty Central</div>
-  <div class="page-sub">Your 2026 dynasty league command center · SI + PFF averaged rankings</div>
+  <div class="page-sub">Your 2026 dynasty league command center · manually entered rankings</div>
 
   <!-- Hero stats -->
   <div class="g4 mb">
@@ -150,7 +150,7 @@
 <!-- RANKINGS -->
 <div id="page-rankings" class="page">
   <div class="page-title">Dynasty Rankings</div>
-  <div class="page-sub">SI Fabiano (May 14) + PFF Jahnke (May 4) averaged · 1QB PPR</div>
+  <div class="page-sub">Single manual ranking column · 1QB PPR</div>
   <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center">
     <div class="pills" style="margin:0" id="rank-pills">
       <button class="pill active" onclick="setRankPos('ALL',this)">All</button>
@@ -164,8 +164,7 @@
   <div class="tbl-wrap"><table>
     <thead><tr>
       <th>#</th><th>Player</th><th>Pos</th><th>NFL</th><th>Age</th>
-      <th>SI</th><th>PFF</th><th>ESPN</th><th>KTC</th><th>PFN</th><th>FTN</th><th>GEN</th><th>KTC2</th><th>FFC</th><th>DF</th><th>RB</th><th>FFA</th>
-      <th>Avg</th><th>Score</th><th>Tier</th><th>7-day</th><th>Owned By</th>
+      <th>Rank</th><th>Score</th><th>Tier</th><th>7-day</th><th>Owned By</th>
     </tr></thead>
     <tbody id="rank-tbody"></tbody>
   </table></div>

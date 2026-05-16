@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /**
- * Rebuilds data/players.json from the Google Sheet CSV export (manual ranks only).
+ * Rebuilds data/players.json from the Google Sheet CSV export.
+ * Expected columns: name,pos,nfl,age,rank
  *
  * Usage:
  *   node scripts/build-players.js
@@ -8,7 +9,7 @@
  */
 const fs = require("fs");
 const path = require("path");
-const { RANK_SOURCES, recomputeAverages } = require("./rank-sources");
+const { RANK_COLUMN, recomputeRanks } = require("./rank-sources");
 
 const ROOT = path.join(__dirname, "..");
 const defaultCsv = path.join(ROOT, "data", "sheet-export.csv");
@@ -54,6 +55,9 @@ function num(v) {
 function csvRowsToPlayers(rows) {
   const headers = rows[0].map((h) => h.toLowerCase().replace(/\s+/g, ""));
   const idx = (name) => headers.indexOf(name);
+  const rankIdx = [RANK_COLUMN, "ranking", "overall", "avgRank", "si"]
+    .map((h) => idx(h.toLowerCase()))
+    .find((i) => i >= 0);
   const players = [];
   for (let r = 1; r < rows.length; r++) {
     const cols = rows[r];
@@ -71,12 +75,9 @@ function csvRowsToPlayers(rows) {
       const a = num(cols[ai]);
       if (a != null) p.age = a;
     }
-    for (const k of RANK_SOURCES) {
-      const i = idx(k);
-      if (i >= 0) {
-        const v = num(cols[i]);
-        if (v != null) p[k] = v;
-      }
+    if (rankIdx >= 0) {
+      const rank = num(cols[rankIdx]);
+      if (rank != null) p.manualRank = rank;
     }
     players.push(p);
   }
@@ -95,11 +96,11 @@ function main() {
     process.exit(1);
   }
   const players = csvRowsToPlayers(rows);
-  recomputeAverages(players);
+  recomputeRanks(players);
 
   const out = {
     updatedAt: new Date().toISOString().slice(0, 10),
-    sourceNote: "Google Sheet export (manual ranks) via scripts/build-players.js",
+    sourceNote: "Google Sheet export (single manual rank) via scripts/build-players.js",
     players,
   };
   fs.writeFileSync(outFile, JSON.stringify(out, null, 2));
