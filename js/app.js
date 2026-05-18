@@ -239,8 +239,35 @@ function tier(s){
 // ── Bar color ──
 function barColor(s){return s>=74?"sg-high":s>=55?"sg-mid":"sg-low";}
 
+function cssVar(name){return getComputedStyle(document.documentElement).getPropertyValue(name).trim();}
+function chartText(){return cssVar("--text2")||"#526071";}
+function chartMuted(){return cssVar("--text3")||"#8793a5";}
+function chartGrid(){return "rgba(15,23,42,.09)";}
+function resetChart(id){
+  const el=document.getElementById(id);
+  const existing=el&&Chart.getChart?Chart.getChart(el):null;
+  if(existing)existing.destroy();
+}
+function windowBucket(profile, scoreRank){
+  if(scoreRank<=4&&profile.avgAge<=27.4)return{label:"Young Contender",cls:"window-young",color:"rgba(37,99,235,.72)"};
+  if(scoreRank<=4)return{label:"Win-Now Contender",cls:"window-contender",color:"rgba(5,150,105,.72)"};
+  if(profile.avgAge>=29)return{label:"Aging Core",cls:"window-aging",color:"rgba(202,138,4,.72)"};
+  if(profile.avgAge<=26.5)return{label:"Rebuild / Ascending",cls:"window-rebuild",color:"rgba(220,38,38,.62)"};
+  return{label:"Balanced Middle",cls:"",color:"rgba(124,58,237,.62)"};
+}
+function dynastyWindowProfiles(){
+  const base=Object.entries(TEAMS).map(([k,t])=>{
+    const scored=t.roster.map(r=>({roster:r,p:getP(r.name),score:ps(r.name)})).sort((a,b)=>b.score-a.score);
+    const core=scored.filter(x=>x.p&&Number(x.p.age)).slice(0,8);
+    const avgAge=core.length?Math.round(core.reduce((s,x)=>s+Number(x.p.age),0)/core.length*10)/10:0;
+    const top75=scored.filter(x=>x.p&&x.p.rank<=75).length;
+    return{k,name:t.name,score:teamScore(k),avgAge,top75,coreCount:core.length};
+  }).sort((a,b)=>b.score-a.score);
+  return base.map((p,i)=>({...p,scoreRank:i+1,window:windowBucket(p,i+1)}));
+}
+
 // ── Sparkline ──
-function spark(history,color="#00e5ff"){
+function spark(history,color="#2563eb"){
   const w=60,h=22,mn=Math.min(...history),mx=Math.max(...history),rng=mx-mn||1;
   const pts=history.map((v,i)=>`${Math.round(i*(w/(history.length-1)))},${Math.round(h-((v-mn)/rng)*(h-2)-1)}`).join(" ");
   return `<svg class="spark" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
@@ -287,7 +314,7 @@ function initHome(){
         <div style="font-size:13px;font-weight:500">${p.name}</div>
         <div style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace">${p.nfl} · #${p.rank}</div>
       </div>
-      ${spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d")}
+      ${spark(p.history,p.trend>0?"#059669":"#dc2626")}
       <span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span>
     </div>`).join("");
 
@@ -296,18 +323,18 @@ function initHome(){
   const posVal={QB:0,RB:0,WR:0,TE:0};
   Object.values(TEAMS).forEach(t=>t.roster.forEach(r=>{const p=getP(r.name);if(p&&posCounts[p.pos]!==undefined){posCounts[p.pos]++;posVal[p.pos]+=p.score;}}));
   const ctx1=document.getElementById("pos-dist-chart").getContext("2d");
-  new Chart(ctx1,{type:"doughnut",data:{labels:["QB","RB","WR","TE"],datasets:[{data:[posVal.QB,posVal.RB,posVal.WR,posVal.TE],backgroundColor:["rgba(192,132,252,.7)","rgba(74,222,128,.7)","rgba(56,189,248,.7)","rgba(251,146,60,.7)"],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right",labels:{color:"#8890b0",font:{size:11}}}}}});
+  new Chart(ctx1,{type:"doughnut",data:{labels:["QB","RB","WR","TE"],datasets:[{data:[posVal.QB,posVal.RB,posVal.WR,posVal.TE],backgroundColor:["rgba(192,132,252,.7)","rgba(74,222,128,.7)","rgba(56,189,248,.7)","rgba(251,146,60,.7)"],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"right",labels:{color:"#475569",font:{size:11}}}}}});
 
   // Team value bar chart
   const ctx2=document.getElementById("team-val-chart").getContext("2d");
   const tscores=sorted.map(t=>t.score);
   const tnames=sorted.map(t=>t.name.split(" ").slice(0,2).join(" "));
-  new Chart(ctx2,{type:"bar",data:{labels:tnames,datasets:[{data:tscores,backgroundColor:tscores.map((_,i)=>`hsla(${180+i*15},80%,60%,0.7)`),borderRadius:4,borderWidth:0}]},options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#4a5070"},grid:{color:"#24262e"}},y:{ticks:{color:"#8890b0",font:{size:10}},grid:{display:false}}}}});
+  new Chart(ctx2,{type:"bar",data:{labels:tnames,datasets:[{data:tscores,backgroundColor:tscores.map((_,i)=>`hsla(${180+i*15},80%,60%,0.7)`),borderRadius:4,borderWidth:0}]},options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{color:"#64748b"},grid:{color:"rgba(15,23,42,.08)"}},y:{ticks:{color:"#475569",font:{size:10}},grid:{display:false}}}}});
 
   // Activity feed
   const acts=[
-    {dot:"#00ff9d",text:"NO RAGRETS selected as top dynasty team by consensus AI analysis",time:"2h ago"},
-    {dot:"#00e5ff",text:"HamSal — Bijan Robinson leads all RBs with dynasty score of 97",time:"5h ago"},
+    {dot:"#059669",text:"NO RAGRETS selected as top dynasty team by consensus AI analysis",time:"2h ago"},
+    {dot:"#2563eb",text:"HamSal — Bijan Robinson leads all RBs with dynasty score of 97",time:"5h ago"},
     {dot:"#ffd700",text:"Puka Nacua crowned #1 overall after 96.3 PFF receiving grade over 2 seasons",time:"1d ago"},
     {dot:"#b06cff",text:"Jeremiyah Love rises to #11 overall — youngest elite RB in the pool at age 20",time:"1d ago"},
     {dot:"#ff9a3c",text:"Rankings updated: SI Fabiano post-draft top 200 published (May 14)",time:"2d ago"},
@@ -357,7 +384,7 @@ function initPower(){
     });
   });
   const rctx=document.getElementById("radar-chart").getContext("2d");
-  new Chart(rctx,{type:"radar",data:{labels:["QB","RB","WR","TE"],datasets:top6.map((t,i)=>({label:t.name.split(" ")[0],data:radarData[i],borderColor:`hsl(${180+i*40},80%,60%)`,backgroundColor:`hsla(${180+i*40},80%,60%,0.05)`,borderWidth:1.5,pointRadius:3}))},options:{responsive:true,maintainAspectRatio:false,scales:{r:{ticks:{color:"#4a5070",font:{size:9},backdropColor:"transparent"},grid:{color:"#24262e"},angleLines:{color:"#24262e"},pointLabels:{color:"#8890b0",font:{size:11}}}},plugins:{legend:{labels:{color:"#8890b0",font:{size:10},boxWidth:10}}}}});
+  new Chart(rctx,{type:"radar",data:{labels:["QB","RB","WR","TE"],datasets:top6.map((t,i)=>({label:t.name.split(" ")[0],data:radarData[i],borderColor:`hsl(${180+i*40},80%,60%)`,backgroundColor:`hsla(${180+i*40},80%,60%,0.05)`,borderWidth:1.5,pointRadius:3}))},options:{responsive:true,maintainAspectRatio:false,scales:{r:{ticks:{color:"#64748b",font:{size:9},backdropColor:"transparent"},grid:{color:"rgba(15,23,42,.08)"},angleLines:{color:"rgba(15,23,42,.08)"},pointLabels:{color:"#475569",font:{size:11}}}},plugins:{legend:{labels:{color:"#475569",font:{size:10},boxWidth:10}}}}});
 }
 
 function selectPower(key){
@@ -515,7 +542,7 @@ function selectPower(key){
         <td><div style="display:flex;align-items:center;gap:6px"><span class="mono" style="font-weight:600">${r.score}</span><div class="sbar" style="width:50px"><div class="sbar-fill ${barColor(r.score)}" style="width:${r.score}%"></div></div></div></td>
         <td>${lrkLabel}</td>
         <td>${r.p?tier(r.score):"<span class='badge b-depth'>—</span>"}</td>
-        <td>${r.p?spark(r.p.history,r.p.trend>0?"#00ff9d":"#ff4d6d"):""} ${r.p?`<span class="badge ${r.p.trend>0?"b-up":"b-down"}">${r.p.trend>0?"+":""}${r.p.trend}</span>`:""}</td>
+        <td>${r.p?spark(r.p.history,r.p.trend>0?"#059669":"#dc2626"):""} ${r.p?`<span class="badge ${r.p.trend>0?"b-up":"b-down"}">${r.p.trend>0?"+":""}${r.p.trend}</span>`:""}</td>
       </tr>`;
     });
   });
@@ -562,7 +589,7 @@ function selectRoster(key){
         <td class="mono" style="color:var(--text3)">${p?"#"+p.rank:"—"}</td>
         <td><div style="display:flex;align-items:center;gap:6px"><span class="mono" style="font-weight:600">${p?p.score:"—"}</span>${p?`<div class="sbar" style="width:50px"><div class="sbar-fill ${barColor(p.score)}" style="width:${p.score}%"></div></div>`:""}</div></td>
         <td>${p?tier(p.score):"<span class='badge b-depth'>—</span>"}</td>
-        <td>${p?spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d"):""} ${p?`<span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span>`:""}</td>
+        <td>${p?spark(p.history,p.trend>0?"#059669":"#dc2626"):""} ${p?`<span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span>`:""}</td>
       </tr>`;
     });
   });
@@ -820,7 +847,7 @@ function renderRankings(){
         <div class="rank-score-line"><span class="rank-score">${p.score}</span><span class="rank-score-label">score</span></div>
         <div class="sbar rank-score-bar"><div class="sbar-fill ${barColor(p.score)}" style="width:${p.score}%"></div></div>
       </td>
-      <td class="rank-trend-cell">${spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d")} <span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span></td>
+      <td class="rank-trend-cell">${spark(p.history,p.trend>0?"#059669":"#dc2626")} <span class="badge ${p.trend>0?"b-up":"b-down"}">${p.trend>0?"+":""}${p.trend}</span></td>
       <td class="rank-owner-cell">${owner?`<span>${escHtml(owner)}</span>`:`<span class="rank-free-agent">Waivers</span>`}</td>
     </tr>`;
   }).join("");
@@ -931,7 +958,7 @@ function initTrends(){
       </div>
       <div class="trend-name">${p.name}</div>
       <div class="trend-meta">${p.nfl} · #${p.rank} · Score ${p.score}</div>
-      ${spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d")}
+      ${spark(p.history,p.trend>0?"#059669":"#dc2626")}
       <span class="badge ${p.trend>0?"b-up":"b-down"}" style="margin-left:6px">${p.trend>0?"+":""}${p.trend} this week</span>
       <div class="sbar" style="margin-top:8px"><div class="sbar-fill ${barColor(p.score)}" style="width:${p.score}%"></div></div>
     </div>`).join("");
@@ -943,7 +970,7 @@ function initTrends(){
       ${pb(p.pos)}
       <div style="flex:1"><div style="font-size:13px;font-weight:500">${p.name}</div>
       <div style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace">${p.nfl} · #${p.rank} · Age ${p.age}</div></div>
-      ${spark(p.history,"#00ff9d")}
+      ${spark(p.history,"#059669")}
       <span class="badge b-up">+${p.trend}</span>
     </div>`).join("");
 
@@ -954,7 +981,7 @@ function initTrends(){
       ${pb(p.pos)}
       <div style="flex:1"><div style="font-size:13px;font-weight:500">${p.name}</div>
       <div style="font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace">${p.nfl} · #${p.rank} · Age ${p.age}</div></div>
-      ${spark(p.history,"#ff4d6d")}
+      ${spark(p.history,"#dc2626")}
       <span class="badge b-down">${p.trend}</span>
     </div>`).join("");
 }
@@ -963,6 +990,23 @@ function initTrends(){
 // METRICS
 // ═══════════════════════════════════════════════
 function initMetrics(){
+  ["dynasty-window-chart","age-chart","scarcity-chart","pos-breakdown-chart","elite-dist-chart","youth-chart","concentration-chart"].forEach(resetChart);
+  const windowProfiles=dynastyWindowProfiles();
+  const wctx=document.getElementById("dynasty-window-chart").getContext("2d");
+  new Chart(wctx,{type:"bubble",data:{datasets:[{
+    label:"Dynasty Window",
+    data:windowProfiles.map(p=>({x:p.avgAge,y:p.score,r:Math.max(9,Math.min(28,8+p.top75*4)),team:p.name,top75:p.top75,window:p.window.label,rank:p.scoreRank})),
+    backgroundColor:windowProfiles.map(p=>p.window.color),
+    borderColor:windowProfiles.map(p=>p.window.color.replace(".72",".95").replace(".62",".9")),
+    borderWidth:2,
+    hoverBorderWidth:3
+  }]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const p=ctx.raw;return`${p.team}: ${p.window} · score ${p.y} · core age ${p.x} · top-75 ${p.top75}`;}}}},scales:{x:{title:{display:true,text:"Average age of top 8 core",color:chartMuted(),font:{size:11}},ticks:{color:chartText()},grid:{color:chartGrid()},suggestedMin:24,suggestedMax:31},y:{title:{display:true,text:"Roster value score",color:chartMuted(),font:{size:11}},ticks:{color:chartText()},grid:{color:chartGrid()},suggestedMin:250}}}});
+  document.getElementById("dynasty-window-legend").innerHTML=windowProfiles.map(p=>`
+    <div class="window-chip ${p.window.cls}">
+      <div class="window-chip-title">${p.name}</div>
+      <div class="window-chip-meta">${p.window.label} · score ${p.score} · age ${p.avgAge} · ${p.top75} top-75</div>
+    </div>`).join("");
+
   // ── 1. Age Distribution by Position (box-style via bar) ──
   const posAges={QB:[],RB:[],WR:[],TE:[]};
   Object.values(TEAMS).forEach(t=>t.roster.forEach(r=>{
@@ -976,7 +1020,7 @@ function initMetrics(){
   const actx=document.getElementById("age-chart").getContext("2d");
   new Chart(actx,{type:"bar",data:{labels:["QB","RB","WR","TE"],datasets:[
     {label:"Avg Age",data:["QB","RB","WR","TE"].map(avgAge),backgroundColor:["rgba(192,132,252,.7)","rgba(74,222,128,.7)","rgba(56,189,248,.7)","rgba(251,146,60,.7)"],borderRadius:4,borderWidth:0}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Avg age: ${ctx.parsed.y}`}}},scales:{x:{ticks:{color:"#8890b0"},grid:{color:"#24262e"}},y:{ticks:{color:"#4a5070"},grid:{color:"#24262e"},min:22,suggestedMax:34}}}});
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`Avg age: ${ctx.parsed.y}`}}},scales:{x:{ticks:{color:"#475569"},grid:{color:"rgba(15,23,42,.08)"}},y:{ticks:{color:"#64748b"},grid:{color:"rgba(15,23,42,.08)"},min:22,suggestedMax:34}}}});
 
   // ── 2. Score Density — histogram of all player scores across league ──
   const allScores=[];
@@ -985,7 +1029,7 @@ function initMetrics(){
   allScores.forEach(s=>{const b=Math.min(9,Math.floor((s-10)/9));buckets[b]++;});
   const bucketLabels=["10-18","19-27","28-36","37-45","46-54","55-63","64-72","73-81","82-90","91-99"];
   const sctx=document.getElementById("scarcity-chart").getContext("2d");
-  new Chart(sctx,{type:"bar",data:{labels:bucketLabels,datasets:[{label:"Players",data:buckets,backgroundColor:bucketLabels.map((_,i)=>`hsla(${160+i*18},80%,55%,0.75)`),borderRadius:4,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:"Player Score Distribution (Dynasty Value)",color:"#8890b0",font:{size:11}}},scales:{x:{ticks:{color:"#4a5070",font:{size:9}},grid:{color:"#24262e"}},y:{ticks:{color:"#4a5070"},grid:{color:"#24262e"},title:{display:true,text:"# Players",color:"#4a5070",font:{size:10}}}}}});
+  new Chart(sctx,{type:"bar",data:{labels:bucketLabels,datasets:[{label:"Players",data:buckets,backgroundColor:bucketLabels.map((_,i)=>`hsla(${160+i*18},80%,55%,0.75)`),borderRadius:4,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:"Player Score Distribution (Dynasty Value)",color:"#475569",font:{size:11}}},scales:{x:{ticks:{color:"#64748b",font:{size:9}},grid:{color:"rgba(15,23,42,.08)"}},y:{ticks:{color:"#64748b"},grid:{color:"rgba(15,23,42,.08)"},title:{display:true,text:"# Players",color:"#64748b",font:{size:10}}}}}});
 
   // ── 3. Team Positional Depth — stacked bar by position ──
   const teams=Object.entries(TEAMS);
@@ -998,7 +1042,7 @@ function initMetrics(){
       data:teams.map(([k,t])=>{const pl=t.roster.filter(r=>r.pos===pos||r.pos===pos+"/ST");return pl.length?Math.round(pl.map(r=>ps(r.name)).reduce((a,b)=>a+b,0)/pl.length):0;}),
       backgroundColor:posColors[pos],borderWidth:0,borderRadius:2
     }))
-  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#8890b0",font:{size:10},boxWidth:10}},title:{display:true,text:"Avg Positional Score Per Team",color:"#8890b0",font:{size:11}}},scales:{x:{stacked:true,ticks:{color:"#4a5070",font:{size:9}},grid:{display:false}},y:{stacked:true,ticks:{color:"#4a5070"},grid:{color:"#24262e"}}}}});
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#475569",font:{size:10},boxWidth:10}},title:{display:true,text:"Avg Positional Score Per Team",color:"#475569",font:{size:11}}},scales:{x:{stacked:true,ticks:{color:"#64748b",font:{size:9}},grid:{display:false}},y:{stacked:true,ticks:{color:"#64748b"},grid:{color:"rgba(15,23,42,.08)"}}}}});
 
   // ── 4. Elite vs Depth breakdown per team ──
   const ectx=document.getElementById("elite-dist-chart").getContext("2d");
@@ -1010,7 +1054,7 @@ function initMetrics(){
       {label:"Solid (50-64)",data:teams.map(([k,t])=>t.roster.filter(r=>{const s=ps(r.name);return s>=50&&s<65;}).length),backgroundColor:"rgba(255,215,0,.5)",borderRadius:3,borderWidth:0},
       {label:"Depth (<50)",data:teams.map(([k,t])=>t.roster.filter(r=>ps(r.name)<50).length),backgroundColor:"rgba(255,77,109,.4)",borderRadius:3,borderWidth:0},
     ]
-  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#8890b0",font:{size:10},boxWidth:10}},title:{display:true,text:"Roster Tier Breakdown Per Team",color:"#8890b0",font:{size:11}}},scales:{x:{stacked:true,ticks:{color:"#4a5070",font:{size:9}},grid:{display:false}},y:{stacked:true,ticks:{color:"#4a5070"},grid:{color:"#24262e"}}}}});
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#475569",font:{size:10},boxWidth:10}},title:{display:true,text:"Roster Tier Breakdown Per Team",color:"#475569",font:{size:11}}},scales:{x:{stacked:true,ticks:{color:"#64748b",font:{size:9}},grid:{display:false}},y:{stacked:true,ticks:{color:"#64748b"},grid:{color:"rgba(15,23,42,.08)"}}}}});
 
   // ── 5. Youth Index — avg age of top 5 players per team (younger = more upside) ──
   const yctx=document.getElementById("youth-chart").getContext("2d");
@@ -1022,7 +1066,7 @@ function initMetrics(){
   new Chart(yctx,{type:"bar",data:{
     labels:teams.map(([k,t])=>t.name.split(" ")[0]),
     datasets:[{label:"Avg age of top 5 players",data:youthData,backgroundColor:youthData.map(v=>`hsla(${200-Math.round((v-24)/10*80)},80%,55%,0.75)`),borderRadius:4,borderWidth:0}]
-  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:"Youth Index — Avg Age of Top 5 Players (lower = younger roster)",color:"#8890b0",font:{size:11}},tooltip:{callbacks:{label:ctx=>`Avg age: ${ctx.parsed.y} yrs`}}},scales:{x:{ticks:{color:"#4a5070",font:{size:9}},grid:{display:false}},y:{ticks:{color:"#4a5070"},grid:{color:"#24262e"},min:22,suggestedMax:34}}}});
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:"Youth Index — Avg Age of Top 5 Players (lower = younger roster)",color:"#475569",font:{size:11}},tooltip:{callbacks:{label:ctx=>`Avg age: ${ctx.parsed.y} yrs`}}},scales:{x:{ticks:{color:"#64748b",font:{size:9}},grid:{display:false}},y:{ticks:{color:"#64748b"},grid:{color:"rgba(15,23,42,.08)"},min:22,suggestedMax:34}}}});
 
   // ── 6. Trade Value Concentration — how top-heavy is each roster ──
   const tctx=document.getElementById("concentration-chart").getContext("2d");
@@ -1035,7 +1079,7 @@ function initMetrics(){
   new Chart(tctx,{type:"bar",data:{
     labels:teams.map(([k,t])=>t.name.split(" ")[0]),
     datasets:[{label:"% of total value in top 3 players",data:concData,backgroundColor:concData.map(v=>v>60?"rgba(255,77,109,.7)":v>50?"rgba(255,215,0,.7)":"rgba(0,229,255,.7)"),borderRadius:4,borderWidth:0}]
-  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:"Value Concentration — % of Roster Value in Top 3 Players",color:"#8890b0",font:{size:11}},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}% of value in top 3`}}},scales:{x:{ticks:{color:"#4a5070",font:{size:9}},grid:{display:false}},y:{ticks:{color:"#4a5070",callback:v=>v+"%"},grid:{color:"#24262e"},max:100}}}});
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},title:{display:true,text:"Value Concentration — % of Roster Value in Top 3 Players",color:"#475569",font:{size:11}},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y}% of value in top 3`}}},scales:{x:{ticks:{color:"#64748b",font:{size:9}},grid:{display:false}},y:{ticks:{color:"#64748b",callback:v=>v+"%"},grid:{color:"rgba(15,23,42,.08)"},max:100}}}});
 
   // ── Needs matrix ──
   const posOrder2=["QB","RB","WR","TE"];
@@ -1431,7 +1475,7 @@ function showPlayer(name){
     <div class="card-sm mb" style="background:${p.trend>0?"rgba(0,255,157,.06)":"rgba(255,77,109,.06)"}">
       <div style="display:flex;align-items:center;justify-content:space-between">
         <div><div class="stat-label">7-day trend</div><span class="badge ${p.trend>0?"b-up":"b-down"}" style="font-size:13px;padding:4px 12px">${p.trend>0?"+":""}${p.trend} pts</span></div>
-        <div>${spark(p.history,p.trend>0?"#00ff9d":"#ff4d6d")}</div>
+        <div>${spark(p.history,p.trend>0?"#059669":"#dc2626")}</div>
       </div>
     </div>
     <div class="card-sm mb">
