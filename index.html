@@ -299,6 +299,13 @@
   <div class="card mb">
     <div class="section-title" style="margin-bottom:12px">Select your team</div>
     <div class="team-grid" id="finder-team-grid"></div>
+    <div class="finder-mode-card" id="finder-mode-card">
+      <div class="finder-mode-tabs">
+        <button class="pill active" id="finder-mode-any" onclick="setFinderMode('any')">Find Any Trade</button>
+        <button class="pill" id="finder-mode-shop" onclick="setFinderMode('shop')">Shop Selected Player(s)</button>
+      </div>
+      <div id="finder-player-picker"></div>
+    </div>
     <button class="btn btn-primary" id="finder-btn" onclick="runFinder()" disabled>🎯 Find Balanced Trades</button>
   </div>
   <div id="finder-result"></div>

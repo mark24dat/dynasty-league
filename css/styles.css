@@ -223,6 +223,13 @@ select.inp{cursor:pointer;-webkit-appearance:none;appearance:none}
 .win-pill{font-size:11px;font-family:'JetBrains Mono',monospace;padding:3px 10px;border-radius:999px}
 .wp-win{background:var(--green-dim);color:var(--green);border:1px solid rgba(0,255,157,.25)}
 .wp-slight{background:var(--gold-dim);color:var(--gold);border:1px solid rgba(255,215,0,.25)}
+.finder-mode-card{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:14px}
+.finder-mode-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.finder-player-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.finder-player-chip{display:flex;align-items:center;gap:8px;text-align:left;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:9px 10px;cursor:pointer;color:var(--text);font-family:'Outfit',sans-serif;transition:border-color .15s,background .15s,transform .15s}
+.finder-player-chip:hover,.finder-player-chip.sel{border-color:var(--accent);background:var(--accent-dim);transform:translateY(-1px)}
+.finder-player-chip .chip-name{font-size:13px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.finder-player-chip .chip-score{font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace}
 
 /* ── INBOX / ACTIVITY ── */
 .activity-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
