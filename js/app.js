@@ -1201,71 +1201,95 @@ function getTeamNeeds(key){
   return{needs,strengths};
 }
 
-async function runFinder(){
+function tradePlayer(r){
+  const p=getP(r.name);
+  return{name:r.name,pos:(r.pos||p?.pos||"WR").replace("/ST",""),score:ps(r.name),age:p?p.age:null,rank:p?p.rank:null};
+}
+function tradeCombos(roster,max=2){
+  const pool=roster.map(tradePlayer).filter(p=>p.score>=32).sort((a,b)=>b.score-a.score).slice(0,14);
+  const out=pool.map(p=>[p]);
+  if(max>=2){
+    for(let i=0;i<pool.length;i++){
+      for(let j=i+1;j<pool.length;j++){
+        const combo=[pool[i],pool[j]];
+        const val=combo.reduce((s,p)=>s+p.score,0);
+        if(val<=178)out.push(combo);
+      }
+    }
+  }
+  return out;
+}
+function comboVal(players){return players.reduce((s,p)=>s+p.score,0);}
+function comboLabel(players){return players.map(p=>p.name).join(" + ");}
+function positionalFit(players,needs){
+  const needPos=new Set(needs.needs.map(n=>n.pos));
+  return players.reduce((s,p)=>s+(needPos.has(p.pos)?2:0),0);
+}
+function generateBalancedTrades(myKey){
+  const my=TEAMS[myKey];
+  const myNeeds=getTeamNeeds(myKey);
+  const myCombos=tradeCombos(my.roster,2);
+  const trades=[];
+  Object.entries(TEAMS).filter(([k])=>k!==myKey).forEach(([oppKey,opp])=>{
+    const oppNeeds=getTeamNeeds(oppKey);
+    const oppCombos=tradeCombos(opp.roster,2);
+    myCombos.forEach(give=>{
+      const giveVal=comboVal(give);
+      oppCombos.forEach(get=>{
+        const getVal=comboVal(get);
+        const gap=Math.abs(giveVal-getVal);
+        if(gap>3)return;
+        const myFit=positionalFit(get,myNeeds);
+        const oppFit=positionalFit(give,oppNeeds);
+        if(myNeeds.needs.length&&myFit===0)return;
+        if(give.length===2&&get.length===1&&getVal<giveVal)return;
+        if(get.length===2&&give.length===1&&giveVal<getVal)return;
+        const fit=myFit+oppFit;
+        trades.push({
+          title:`${comboLabel(give)} for ${comboLabel(get)}`,
+          opp:opp.name,
+          give,
+          get,
+          myVal:giveVal,
+          theirVal:getVal,
+          gap,
+          fit,
+          need:myFit?get.filter(p=>myNeeds.needs.some(n=>n.pos===p.pos)).map(p=>p.pos).join(", "):"Value match",
+          why:oppFit?`${opp.name} gets help at ${give.filter(p=>oppNeeds.needs.some(n=>n.pos===p.pos)).map(p=>p.pos).join(", ")} while keeping value even.`:"The value is close enough to be negotiable without a major overpay.",
+          whyMe:`This is a strict value match (${gap} point gap). You add ${get.map(p=>`${p.name} (${p.pos}, ${p.score})`).join(" and ")} without giving away more total score than you receive.`
+        });
+      });
+    });
+  });
+  const seen=new Set();
+  return trades
+    .sort((a,b)=>a.gap-b.gap||b.fit-a.fit||b.theirVal-a.theirVal)
+    .filter(t=>{
+      const key=[t.opp,comboLabel(t.give),comboLabel(t.get)].join("|");
+      if(seen.has(key))return false;
+      seen.add(key);
+      return true;
+    })
+    .slice(0,8);
+}
+
+function runFinder(){
   if(!finderKey)return;
   const btn=document.getElementById("finder-btn");
-  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Scanning all rosters…';
-  document.getElementById("finder-result").innerHTML='<div class="ai-out"><span class="loading">⏳ Analyzing team needs and finding balanced trades (±5 pts)…</span></div>';
-  const key=localStorage.getItem("dc_api_key");
-  if(!key){document.getElementById("finder-result").innerHTML='<div class="ai-out"><span style="color:var(--gold)">⚠ No Groq API key — click 🔑 in the sidebar.</span></div>';btn.disabled=false;btn.innerHTML="🎯 Find Balanced Trades";return;}
-
+  btn.disabled=true;btn.innerHTML='<span class="spin"></span> Finding even trades…';
   const my=TEAMS[finderKey];
   const myNeeds=getTeamNeeds(finderKey);
-  const myRoster=my.roster.map(r=>({...r,score:ps(r.name)})).sort((a,b)=>b.score-a.score);
-  
-  const opps=Object.entries(TEAMS).filter(([k])=>k!==finderKey).map(([k,t])=>({
-    k,name:t.name,
-    roster:t.roster.map(r=>({...r,score:ps(r.name)})).sort((a,b)=>b.score-a.score),
-    needs:getTeamNeeds(k)
-  }));
-
-  const myNeedsStr=myNeeds.needs.map(n=>`${n.pos}(avg ${n.avg})`).join(", ")||"balanced";
-  const myStrStr=myNeeds.strengths.map(s=>`${s.pos}(avg ${s.avg})`).join(", ")||"none standout";
-
-  const prompt=`You are a dynasty fantasy football trade expert. Find 5 BALANCED trades (±5 pts of equal value) that help address team needs.
-
-STRICT RULES:
-- Each trade must have a value gap of NO MORE THAN 5 points between sides
-- Trades must address the requesting team's positional needs
-- Only use players from the exact rosters listed
-- Make trades realistic — opponents must benefit too
-
-MY TEAM: ${my.name}
-My needs: ${myNeedsStr}
-My strengths: ${myStrStr}
-My roster (score):
-${myRoster.slice(0,16).map(r=>r.name+"("+r.pos+","+r.score+")").join(", ")}
-
-OPPONENTS:
-${opps.map(o=>o.name+" | needs:"+(o.needs.needs.map(n=>n.pos).join("/")||"balanced")+" | strengths:"+(o.needs.strengths.map(s=>s.pos).join("/")||"none")+" | roster:"+o.roster.slice(0,10).map(r=>r.name+"("+r.pos+","+r.score+")").join(", ")).join("\n")}
-
-
-Format EXACTLY — no extra text before or after:
-TRADE_START
-TITLE: [title]
-OPPONENT: [exact team name]
-IGIVE: [name]|[pos]|[score]||[name]|[pos]|[score]
-IGET: [name]|[pos]|[score]||[name]|[pos]|[score]
-MY_VAL: [total I give]
-THEIR_VAL: [total I get]
-NEED_FILLED: [which of my needs this addresses]
-WHY: [why opponent does this — one sentence]
-WHY_ME: [2 sentences on why this is good for me, focusing on need filled]
-TRADE_END`;
-
-  try{
-    const r=await fetch("https://api.groq.com/openai/v1/chat/completions",{
-      method:"POST",
-      headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
-      body:JSON.stringify({model:"llama-3.3-70b-versatile",max_tokens:1400,messages:[{role:"user",content:prompt}]})
-    });
-    const d=await r.json();
-    if(d.error){document.getElementById("finder-result").innerHTML=`<div class="ai-out">API error: ${d.error.message}</div>`;btn.disabled=false;btn.innerHTML="🎯 Find Balanced Trades";return;}
-    renderFinderResults(d.choices?.[0]?.message?.content||"",my.name,myNeeds);
-  }catch(e){
-    document.getElementById("finder-result").innerHTML='<div class="ai-out">Network error — check your API key.</div>';
-  }
+  const trades=generateBalancedTrades(finderKey);
+  renderFinderCandidates(trades,my.name,myNeeds);
   btn.disabled=false;btn.innerHTML="🎯 Find Balanced Trades";
+}
+
+function renderFinderCandidates(trades,myName,myNeeds){
+  if(!trades.length){
+    document.getElementById("finder-result").innerHTML=`<div class="ai-out">No strict matches found within a 3-point gap. Try a manual package in Trade Analyzer or loosen values by adding a second player.</div>`;
+    return;
+  }
+  renderFinderTradeCards(trades,myName,myNeeds);
 }
 
 function renderFinderResults(text,myName,myNeeds){
@@ -1275,12 +1299,14 @@ function renderFinderResults(text,myName,myNeeds){
   const pp=str=>str.split("||").map(s=>{const p=s.split("|");return{name:(p[0]||"").trim(),pos:(p[1]||"WR").trim(),score:parseInt(p[2])||0};}).filter(p=>p.name);
   const trades=blocks.map(b=>{const ls=b.split("\n").map(l=>l.trim()).filter(Boolean);return{
     title:g(ls,"TITLE"),opp:g(ls,"OPPONENT"),
-    title:g(ls,"TITLE"),opp:g(ls,"OPPONENT"),
     give:pp(g(ls,"IGIVE")),get:pp(g(ls,"IGET")),
     myVal:parseInt(g(ls,"MY_VAL"))||0,theirVal:parseInt(g(ls,"THEIR_VAL"))||0,
     need:g(ls,"NEED_FILLED"),why:g(ls,"WHY"),whyMe:g(ls,"WHY_ME")
-  };});
+  };}).filter(t=>Math.abs((t.theirVal||0)-(t.myVal||0))<=3);
+  renderFinderTradeCards(trades,myName,myNeeds);
+}
 
+function renderFinderTradeCards(trades,myName,myNeeds){
   // Need summary
   const needsHtml = myNeeds.needs.length
     ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">${myNeeds.needs.map(n=>`<span style="background:var(--red-dim);color:var(--red);border:1px solid rgba(255,77,109,.25);border-radius:6px;padding:3px 10px;font-size:12px;font-family:'JetBrains Mono',monospace">⚠ Need ${n.pos} (avg ${n.avg})</span>`).join("")}${myNeeds.strengths.map(s=>`<span style="background:var(--green-dim);color:var(--green);border:1px solid rgba(0,255,157,.2);border-radius:6px;padding:3px 10px;font-size:12px;font-family:'JetBrains Mono',monospace">✓ Strong ${s.pos} (avg ${s.avg})</span>`).join("")}</div>`
@@ -1288,11 +1314,12 @@ function renderFinderResults(text,myName,myNeeds){
 
   document.getElementById("finder-result").innerHTML=
     `<div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px">${trades.length} BALANCED TRADES FOR ${myName.toUpperCase()}</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:12px;font-family:'JetBrains Mono',monospace">Only showing trades with a 0-3 point score gap.</div>
     ${needsHtml}`+
     trades.map((t,i)=>{
       const gap=Math.abs((t.theirVal||0)-(t.myVal||0));
-      const gapLabel=gap<=5?`⚖ Even (${gap} pt gap)`:gap<=10?`≈ Close (${gap} pt gap)`:`⚠ ${gap} pt gap`;
-      const gapColor=gap<=5?"var(--green)":gap<=10?"var(--gold)":"var(--red)";
+      const gapLabel=gap===0?`Perfect match`:gap===1?`1 pt gap`:`${gap} pt gap`;
+      const gapColor=gap<=1?"var(--green)":gap<=3?"var(--gold)":"var(--red)";
       return `<div class="prop-card">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:8px;flex-wrap:wrap">
           <div><div class="prop-title">${t.title||"Trade "+(i+1)}</div><div class="prop-opp">vs. ${t.opp}</div></div>
