@@ -248,22 +248,29 @@ function resetChart(id){
   const existing=el&&Chart.getChart?Chart.getChart(el):null;
   if(existing)existing.destroy();
 }
-function windowBucket(profile, scoreRank){
-  if(scoreRank<=4&&profile.avgAge<=27.4)return{label:"Young Contender",cls:"window-young",color:"rgba(37,99,235,.72)"};
-  if(scoreRank<=4)return{label:"Win-Now Contender",cls:"window-contender",color:"rgba(5,150,105,.72)"};
-  if(profile.avgAge>=29)return{label:"Aging Core",cls:"window-aging",color:"rgba(202,138,4,.72)"};
-  if(profile.avgAge<=26.5)return{label:"Rebuild / Ascending",cls:"window-rebuild",color:"rgba(220,38,38,.62)"};
-  return{label:"Balanced Middle",cls:"",color:"rgba(124,58,237,.62)"};
-}
-function dynastyWindowProfiles(){
-  const base=Object.entries(TEAMS).map(([k,t])=>{
-    const scored=t.roster.map(r=>({roster:r,p:getP(r.name),score:ps(r.name)})).sort((a,b)=>b.score-a.score);
-    const core=scored.filter(x=>x.p&&Number(x.p.age)).slice(0,8);
-    const avgAge=core.length?Math.round(core.reduce((s,x)=>s+Number(x.p.age),0)/core.length*10)/10:0;
-    const top75=scored.filter(x=>x.p&&x.p.rank<=75).length;
-    return{k,name:t.name,score:teamScore(k),avgAge,top75,coreCount:core.length};
-  }).sort((a,b)=>b.score-a.score);
-  return base.map((p,i)=>({...p,scoreRank:i+1,window:windowBucket(p,i+1)}));
+function waiverOpportunityProfiles(){
+  const starterSlots={QB:1,RB:3,WR:3,TE:1};
+  const waiverByPos={QB:[],RB:[],WR:[],TE:[]};
+  getWaiverPlayers().forEach(p=>{if(waiverByPos[p.pos])waiverByPos[p.pos].push(p);});
+  Object.values(waiverByPos).forEach(list=>list.sort((a,b)=>b.score-a.score));
+
+  return Object.entries(TEAMS).map(([k,t])=>{
+    const upgrades=[];
+    Object.entries(starterSlots).forEach(([pos,slots])=>{
+      const bestWaiver=waiverByPos[pos][0];
+      if(!bestWaiver)return;
+      const own=t.roster
+        .filter(r=>r.pos.replace("/ST","")===pos)
+        .map(r=>({name:r.name,score:ps(r.name)}))
+        .sort((a,b)=>b.score-a.score);
+      const current=own.length>=slots?own[slots-1]:{name:`Need ${pos}`,score:0};
+      const gain=Math.max(0,bestWaiver.score-current.score);
+      if(gain>0)upgrades.push({pos,gain,bestWaiver,current});
+    });
+    upgrades.sort((a,b)=>b.gain-a.gain);
+    const total=upgrades.reduce((s,u)=>s+u.gain,0);
+    return{k,name:t.name,total,upgrades,best:upgrades[0]||null};
+  }).sort((a,b)=>b.total-a.total);
 }
 
 // ── Sparkline ──
@@ -990,21 +997,24 @@ function initTrends(){
 // METRICS
 // ═══════════════════════════════════════════════
 function initMetrics(){
-  ["dynasty-window-chart","age-chart","scarcity-chart","pos-breakdown-chart","elite-dist-chart","youth-chart","concentration-chart"].forEach(resetChart);
-  const windowProfiles=dynastyWindowProfiles();
-  const wctx=document.getElementById("dynasty-window-chart").getContext("2d");
-  new Chart(wctx,{type:"bubble",data:{datasets:[{
-    label:"Dynasty Window",
-    data:windowProfiles.map(p=>({x:p.avgAge,y:p.score,r:Math.max(9,Math.min(28,8+p.top75*4)),team:p.name,top75:p.top75,window:p.window.label,rank:p.scoreRank})),
-    backgroundColor:windowProfiles.map(p=>p.window.color),
-    borderColor:windowProfiles.map(p=>p.window.color.replace(".72",".95").replace(".62",".9")),
-    borderWidth:2,
-    hoverBorderWidth:3
-  }]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const p=ctx.raw;return`${p.team}: ${p.window} · score ${p.y} · core age ${p.x} · top-75 ${p.top75}`;}}}},scales:{x:{title:{display:true,text:"Average age of top 8 core",color:chartMuted(),font:{size:11}},ticks:{color:chartText()},grid:{color:chartGrid()},suggestedMin:24,suggestedMax:31},y:{title:{display:true,text:"Roster value score",color:chartMuted(),font:{size:11}},ticks:{color:chartText()},grid:{color:chartGrid()},suggestedMin:250}}}});
-  document.getElementById("dynasty-window-legend").innerHTML=windowProfiles.map(p=>`
-    <div class="window-chip ${p.window.cls}">
+  ["waiver-opportunity-chart","age-chart","scarcity-chart","pos-breakdown-chart","elite-dist-chart","youth-chart","concentration-chart"].forEach(resetChart);
+  const waiverOpp=waiverOpportunityProfiles();
+  const wctx=document.getElementById("waiver-opportunity-chart").getContext("2d");
+  new Chart(wctx,{type:"bar",data:{
+    labels:waiverOpp.map(p=>p.name),
+    datasets:[{
+      label:"Possible starter-point gain",
+      data:waiverOpp.map(p=>p.total),
+      backgroundColor:waiverOpp.map((p,i)=>i<3?"rgba(185,28,28,.68)":p.total>=20?"rgba(183,121,31,.68)":"rgba(47,133,90,.58)"),
+      borderColor:waiverOpp.map((p,i)=>i<3?"rgba(185,28,28,.95)":p.total>=20?"rgba(183,121,31,.95)":"rgba(47,133,90,.9)"),
+      borderWidth:1,
+      borderRadius:6
+    }]
+  },options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>{const p=waiverOpp[ctx.dataIndex];return p.best?`+${p.total} total · best: ${p.best.bestWaiver.name} over ${p.best.current.name} (+${p.best.gain})`:`+0 upgrade found`;}}}},scales:{x:{title:{display:true,text:"Total upgrade opportunity",color:chartMuted(),font:{size:11}},ticks:{color:chartText()},grid:{color:chartGrid()},beginAtZero:true},y:{ticks:{color:chartText(),font:{size:10}},grid:{display:false}}}}});
+  document.getElementById("waiver-opportunity-legend").innerHTML=waiverOpp.slice(0,8).map(p=>`
+    <div class="window-chip ${p.total>=25?"window-rebuild":p.total>=12?"window-aging":"window-contender"}">
       <div class="window-chip-title">${p.name}</div>
-      <div class="window-chip-meta">${p.window.label} · score ${p.score} · age ${p.avgAge} · ${p.top75} top-75</div>
+      <div class="window-chip-meta">${p.best?`${p.best.pos}: add ${p.best.bestWaiver.name} (${p.best.bestWaiver.score}) over ${p.best.current.name} (${p.best.current.score}) · +${p.best.gain}`:"No clear waiver upgrade"}</div>
     </div>`).join("");
 
   // ── 1. Age Distribution by Position (box-style via bar) ──
