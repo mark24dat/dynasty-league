@@ -1503,9 +1503,11 @@ function renderFinderTradeCards(trades,myName,myNeeds,heading){
 // ═══ ROSTER EDITOR ═══
 function initEditor(){
   const opts=Object.entries(TEAMS).map(([k,t])=>`<option value="${k}">${t.name}</option>`).join("");
+  const prevAddDropTeam=document.getElementById("adddrop-team")?.value||"";
   ["trade-team-give","trade-team-recv","adddrop-team"].forEach(id=>{
     document.getElementById(id).innerHTML="<option value=''>— select team —</option>"+opts;
   });
+  if(prevAddDropTeam&&TEAMS[prevAddDropTeam])document.getElementById("adddrop-team").value=prevAddDropTeam;
   document.getElementById("editor-team-grid").innerHTML=Object.entries(TEAMS).map(([k,t])=>`
     <div class="team-tile" onclick="editorViewTeam('${k}')">
       <div style="font-size:13px;font-weight:600;font-family:'Syne',sans-serif">${t.name}</div>
@@ -1515,7 +1517,9 @@ function initEditor(){
   // Wire up team select → player dropdowns
   document.getElementById("trade-team-give").onchange=function(){loadTradeGivePlayers();};
   document.getElementById("trade-team-recv").onchange=function(){loadTradeRecvPlayers();};
-  document.getElementById("adddrop-team").onchange=function(){loadDropSelect();};
+  document.getElementById("adddrop-team").onchange=function(){loadAddSelect();loadDropSelect();};
+  loadAddSelect();
+  loadDropSelect();
 }
 
 function loadTradeGivePlayers(){
@@ -1544,6 +1548,16 @@ function loadDropSelect(){
   if(!k){sel.innerHTML="<option value=''>— pick player to drop —</option>";return;}
   sel.innerHTML="<option value=''>— pick player to drop —</option>"+
     TEAMS[k].roster.map(r=>`<option value="${r.name}">${r.name} (${r.pos})</option>`).join("");
+}
+
+function loadAddSelect(){
+  const k=document.getElementById("adddrop-team").value;
+  const sel=document.getElementById("add-player-select");
+  if(!sel)return;
+  const waiverPlayers=getWaiverPlayers();
+  if(!k){sel.innerHTML="<option value=''>— select team first —</option>";return;}
+  sel.innerHTML="<option value=''>— pick waiver player to add —</option>"+
+    waiverPlayers.map(p=>`<option value="${escAttr(p.name)}">${escHtml(p.name)} (${p.pos}) — ${p.nfl||"FA"} · ${p.score}</option>`).join("");
 }
 
 function executeTrade(){
@@ -1585,20 +1599,15 @@ function executeTrade(){
 
 function addPlayer(){
   const k=document.getElementById("adddrop-team").value;
-  const val=document.getElementById("add-player-input").value.trim();
-  if(!k||!val){document.getElementById("adddrop-status").innerHTML='<span style="color:var(--red)">Select a team and enter a player name.</span>';return;}
-  
-  const parts=val.split(",").map(s=>s.trim());
-  const name=parts[0];
-  const pos=(parts[1]||"WR").toUpperCase().replace("/ST","");
-  const validPos=["QB","RB","WR","TE","K","DEF"].includes(pos)?pos:"WR";
-  
+  const name=document.getElementById("add-player-select").value;
+  if(!k||!name){document.getElementById("adddrop-status").innerHTML='<span style="color:var(--red)">Select a team and waiver player.</span>';return;}
   const ranked=getP(name);
+  if(!ranked||ownerOfPlayer(ranked)){document.getElementById("adddrop-status").innerHTML='<span style="color:var(--red)">That player is no longer available on waivers.</span>';loadAddSelect();return;}
   removePlayerFromAllRosters(name);
-  TEAMS[k].roster.push(ranked?rosterPlayerFromRanked(ranked):{name,pos:validPos});
+  TEAMS[k].roster.push(rosterPlayerFromRanked(ranked));
   refreshRosterViews();
-  document.getElementById("add-player-input").value="";
-  document.getElementById("adddrop-status").innerHTML=`<span style="color:var(--green)">✓ Added ${escHtml(ranked?ranked.name:name)} (${ranked?ranked.pos:validPos}) to ${escHtml(TEAMS[k].name)}</span>`;
+  document.getElementById("adddrop-status").innerHTML=`<span style="color:var(--green)">✓ Added ${escHtml(ranked.name)} (${ranked.pos}) from waivers to ${escHtml(TEAMS[k].name)}</span>`;
+  loadAddSelect();
   loadDropSelect();
 }
 
@@ -1612,6 +1621,7 @@ function dropPlayer(){
     TEAMS[k].roster.splice(idx,1);
     refreshRosterViews();
     document.getElementById("adddrop-status").innerHTML=`<span style="color:var(--gold)">✓ Dropped ${escHtml(name)} from ${escHtml(TEAMS[k].name)}. Player is now on waivers.</span>`;
+    loadAddSelect();
     loadDropSelect();
   }
 }
