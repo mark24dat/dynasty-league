@@ -1178,6 +1178,8 @@ let finderKey=localStorage.getItem("dc_my_team")||null;
 if(finderKey&&!TEAMS[finderKey])finderKey=null;
 let finderMode="any";
 let finderShop=[];
+let finderTargetTeam="";
+let finderTargetName="";
 function initFinder(){
   document.getElementById("finder-team-grid").innerHTML=Object.entries(TEAMS).map(([k,t])=>`
     <div class="team-tile ${finderKey===k?"sel":""}" onclick="selFinder('${k}')">
@@ -1186,11 +1188,12 @@ function initFinder(){
     </div>`).join("");
   renderFinderControls();
 }
-function selFinder(k){saveMyTeam(k);finderShop=[];initFinder();document.getElementById("finder-btn").disabled=false;document.getElementById("finder-result").innerHTML="";}
+function selFinder(k){saveMyTeam(k);finderShop=[];finderTargetTeam="";finderTargetName="";initFinder();document.getElementById("finder-btn").disabled=false;document.getElementById("finder-result").innerHTML="";}
 function setFinderMode(mode){
   finderMode=mode;
   document.getElementById("finder-mode-any")?.classList.toggle("active",mode==="any");
   document.getElementById("finder-mode-shop")?.classList.toggle("active",mode==="shop");
+  document.getElementById("finder-mode-target")?.classList.toggle("active",mode==="target");
   document.getElementById("finder-result").innerHTML="";
   renderFinderControls();
 }
@@ -1200,12 +1203,40 @@ function toggleFinderShop(name){
   else{document.getElementById("finder-result").innerHTML='<div class="ai-out">Select up to 3 players to shop at once.</div>';}
   renderFinderControls();
 }
+function setFinderTargetTeam(teamKey){
+  finderTargetTeam=teamKey;
+  finderTargetName="";
+  document.getElementById("finder-result").innerHTML="";
+  renderFinderControls();
+}
+function setFinderTargetName(name){
+  finderTargetName=name;
+  document.getElementById("finder-result").innerHTML="";
+}
 function renderFinderControls(){
   const picker=document.getElementById("finder-player-picker");
   if(!picker)return;
   if(!finderKey){picker.innerHTML='<div style="font-size:12px;color:var(--text3)">Pick your team first.</div>';return;}
   if(finderMode==="any"){
     picker.innerHTML=`<div style="font-size:12px;color:var(--text2);font-family:'JetBrains Mono',monospace">Mode: scan your roster and find the closest even-value deals.</div>`;
+    return;
+  }
+  if(finderMode==="target"){
+    const teams=Object.entries(TEAMS).filter(([k])=>k!==finderKey);
+    const targetTeam=TEAMS[finderTargetTeam];
+    const players=targetTeam?targetTeam.roster.map(tradePlayer).sort((a,b)=>b.score-a.score):[];
+    picker.innerHTML=`
+      <div style="font-size:12px;color:var(--text2);margin-bottom:10px;font-family:'JetBrains Mono',monospace">Pick the team and player you want. The matcher will suggest what you should give.</div>
+      <div class="finder-target-row">
+        <select class="inp" onchange="setFinderTargetTeam(this.value)">
+          <option value="">— choose opponent team —</option>
+          ${teams.map(([k,t])=>`<option value="${k}" ${finderTargetTeam===k?"selected":""}>${escHtml(t.name)}</option>`).join("")}
+        </select>
+        <select class="inp" onchange="setFinderTargetName(this.value)" ${players.length?"":"disabled"}>
+          <option value="">— choose target player —</option>
+          ${players.map(p=>`<option value="${escAttr(p.name)}" ${finderTargetName===p.name?"selected":""}>${escHtml(p.name)} (${p.pos}) — ${p.score}</option>`).join("")}
+        </select>
+      </div>`;
     return;
   }
   const roster=TEAMS[finderKey].roster.map(tradePlayer).sort((a,b)=>b.score-a.score);
@@ -1318,6 +1349,38 @@ function generateBalancedTrades(myKey,fixedGive=null){
     .slice(0,8);
 }
 
+function generateTargetTrades(myKey,targetTeamKey,targetName){
+  const targetTeam=TEAMS[targetTeamKey];
+  if(!targetTeam)return[];
+  const targetRosterPlayer=targetTeam.roster.find(r=>fuzzyName(r.name)===fuzzyName(targetName));
+  if(!targetRosterPlayer)return[];
+  const target=tradePlayer(targetRosterPlayer);
+  const myNeeds=getTeamNeeds(myKey);
+  const oppNeeds=getTeamNeeds(targetTeamKey);
+  const myCombos=tradeCombos(TEAMS[myKey].roster,3);
+  const trades=myCombos.map(give=>{
+    const giveVal=comboVal(give);
+    const getVal=target.score;
+    const gap=Math.abs(giveVal-getVal);
+    if(gap>3)return null;
+    const oppFit=positionalFit(give,oppNeeds);
+    return{
+      title:`Offer ${comboLabel(give)} for ${target.name}`,
+      opp:targetTeam.name,
+      give,
+      get:[target],
+      myVal:giveVal,
+      theirVal:getVal,
+      gap,
+      fit:oppFit,
+      need:`Target: ${target.name}`,
+      why:oppFit?`${targetTeam.name} gets need help at ${give.filter(p=>oppNeeds.needs.some(n=>n.pos===p.pos)).map(p=>p.pos).join(", ")} while staying within ${gap} points of value.`:`This is a value-matched offer for ${target.name}; it may need team-fit persuasion because it does not directly hit a listed need.`,
+      whyMe:`You get the target player (${target.name}, ${target.pos}, ${target.score}) with a strict ${gap}-point value gap. ${myNeeds.needs.length?`It also fits your roster if ${target.pos} is a priority.`:"This is primarily a star-target move."}`
+    };
+  }).filter(Boolean);
+  return trades.sort((a,b)=>a.gap-b.gap||b.fit-a.fit||a.give.length-b.give.length||b.myVal-a.myVal).slice(0,8);
+}
+
 function runFinder(){
   if(!finderKey)return;
   const btn=document.getElementById("finder-btn");
@@ -1333,17 +1396,35 @@ function runFinder(){
       return;
     }
   }
+  if(finderMode==="target"){
+    if(!finderTargetTeam||!finderTargetName){
+      document.getElementById("finder-result").innerHTML='<div class="ai-out">Pick the opponent team and target player first.</div>';
+      btn.disabled=false;btn.innerHTML="🎯 Find Balanced Trades";
+      return;
+    }
+    const targetRosterPlayer=TEAMS[finderTargetTeam]?.roster.find(r=>fuzzyName(r.name)===fuzzyName(finderTargetName));
+    if(!targetRosterPlayer){
+      document.getElementById("finder-result").innerHTML='<div class="ai-out">That target is no longer on the selected roster. Pick a target again.</div>';
+      btn.disabled=false;btn.innerHTML="🎯 Find Balanced Trades";
+      return;
+    }
+    const target=tradePlayer(targetRosterPlayer);
+    const trades=generateTargetTrades(finderKey,finderTargetTeam,finderTargetName);
+    renderFinderCandidates(trades,my.name,myNeeds,`TARGETING ${target.name.toUpperCase()}`);
+    btn.disabled=false;btn.innerHTML="🎯 Find Balanced Trades";
+    return;
+  }
   const trades=generateBalancedTrades(finderKey,fixedGive);
   renderFinderCandidates(trades,my.name,myNeeds);
   btn.disabled=false;btn.innerHTML="🎯 Find Balanced Trades";
 }
 
-function renderFinderCandidates(trades,myName,myNeeds){
+function renderFinderCandidates(trades,myName,myNeeds,heading){
   if(!trades.length){
-    document.getElementById("finder-result").innerHTML=`<div class="ai-out">No strict matches found within a 3-point gap. Try selecting a different player/package or switch to Find Any Trade.</div>`;
+    document.getElementById("finder-result").innerHTML=`<div class="ai-out">No strict matches found within a 3-point gap. Try a larger outgoing package, a different target, or use Trade Analyzer manually.</div>`;
     return;
   }
-  renderFinderTradeCards(trades,myName,myNeeds);
+  renderFinderTradeCards(trades,myName,myNeeds,heading);
 }
 
 function renderFinderResults(text,myName,myNeeds){
@@ -1360,14 +1441,14 @@ function renderFinderResults(text,myName,myNeeds){
   renderFinderTradeCards(trades,myName,myNeeds);
 }
 
-function renderFinderTradeCards(trades,myName,myNeeds){
+function renderFinderTradeCards(trades,myName,myNeeds,heading){
   // Need summary
   const needsHtml = myNeeds.needs.length
     ? `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px">${myNeeds.needs.map(n=>`<span style="background:var(--red-dim);color:var(--red);border:1px solid rgba(255,77,109,.25);border-radius:6px;padding:3px 10px;font-size:12px;font-family:'JetBrains Mono',monospace">⚠ Need ${n.pos} (avg ${n.avg})</span>`).join("")}${myNeeds.strengths.map(s=>`<span style="background:var(--green-dim);color:var(--green);border:1px solid rgba(0,255,157,.2);border-radius:6px;padding:3px 10px;font-size:12px;font-family:'JetBrains Mono',monospace">✓ Strong ${s.pos} (avg ${s.avg})</span>`).join("")}</div>`
     : `<div style="margin-bottom:16px;font-size:13px;color:var(--green)">✓ Balanced roster — all positions solid</div>`;
 
   document.getElementById("finder-result").innerHTML=
-    `<div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px">${trades.length} BALANCED TRADES FOR ${myName.toUpperCase()}</div>
+    `<div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:700;margin-bottom:8px">${trades.length} ${heading||`BALANCED TRADES FOR ${myName.toUpperCase()}`}</div>
     <div style="font-size:12px;color:var(--text2);margin-bottom:12px;font-family:'JetBrains Mono',monospace">Only showing trades with a 0-3 point score gap.</div>
     ${needsHtml}`+
     trades.map((t,i)=>{

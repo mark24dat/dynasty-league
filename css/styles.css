@@ -230,6 +230,7 @@ select.inp{cursor:pointer;-webkit-appearance:none;appearance:none}
 .finder-player-chip:hover,.finder-player-chip.sel{border-color:var(--accent);background:var(--accent-dim);transform:translateY(-1px)}
 .finder-player-chip .chip-name{font-size:13px;font-weight:700;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .finder-player-chip .chip-score{font-size:11px;color:var(--text2);font-family:'JetBrains Mono',monospace}
+.finder-target-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
 /* ── INBOX / ACTIVITY ── */
 .activity-row{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
