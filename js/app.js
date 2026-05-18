@@ -112,7 +112,7 @@ const TEAMS = {
     {name:'Nico Collins',pos:'WR'},{name:'Mike Evans',pos:'WR'},{name:'Tucker Kraft',pos:'TE'},
     {name:'Makai Lemon',pos:'WR'},{name:'Deebo Samuel',pos:'WR'},{name:'Romeo Doubs',pos:'WR'},
     {name:'Jaylen Warren',pos:'RB'},{name:'T.J. Hockenson',pos:'TE'},{name:'Harold Fannin Jr.',pos:'TE'},
-    {name:'Tyler Shough',pos:'QB'},{name:'Jonathan Brooks',pos:'RB'},{name:'Tank Dell',pos:'WR'},
+    {name:'Tyler Shough',pos:'QB'},{name:'Jonathon Brooks',pos:'RB'},{name:'Tank Dell',pos:'WR'},
   ]},
   ray_rice:{name:'Ray Rice Is Innocent',roster:[
     {name:'Kyler Murray',pos:'QB'},{name:'Braelon Allen',pos:'RB'},{name:'Tyrone Tracy Jr.',pos:'RB'},
